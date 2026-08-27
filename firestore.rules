@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Deny everything by default. Domain rules are added collection-by-collection
+    // as the Phase 2 rearchitecture proceeds (see docs/rearchitecture-plan.md).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

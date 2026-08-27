@@ -7,3 +7,14 @@ api/logs/
 
 # macOS
 .DS_Store
+
+# Node
+node_modules/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Web build output
+web/dist/

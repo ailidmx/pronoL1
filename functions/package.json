@@ -1,0 +1,17 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "Prono-L1 Cloud Functions (Phase 2 backend)",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.3.0",
+    "firebase-functions": "^7.3.2"
+  }
+}

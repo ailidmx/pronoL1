@@ -4,7 +4,7 @@
   "description": "Prono-L1 Cloud Functions (Phase 2 backend)",
   "main": "index.js",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "scripts": {
     "serve": "firebase emulators:start --only functions",

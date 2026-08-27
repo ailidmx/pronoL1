@@ -8,6 +8,11 @@ runConfig:
   memoryMiB: 512
 
 env:
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: https://pronol1-public--pronol1.us-east4.hosted.app
+    availability:
+      - BUILD
+      - RUNTIME
   - variable: NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
     value: G-3QE39K3F79
     availability:

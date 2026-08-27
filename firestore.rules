@@ -24,6 +24,24 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Signed-in users can read the reference data; only admins can write.
+    match /standings/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /clubs/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /seasons/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /matches/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
     // Deny everything else by default. Domain rules are added collection by
     // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {

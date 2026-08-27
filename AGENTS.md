@@ -45,6 +45,15 @@ Agreed direction (finalize each decision as it is implemented):
   templates → pages), replacing the vanilla JS app.
 - **Auth:** Firebase Auth.
 
+### Public growth application
+
+- `public-web/` is the independent SEO/freemium application (Next.js App
+  Router + TypeScript). Do not merge it into the private `web/` SPA.
+- Its monetization and experiment behavior must be resolved through policy
+  modules, not hardcoded into pages.
+- Indexable pages must render useful HTML on the server and satisfy the SEO
+  contract in `docs/public-growth-architecture.md`.
+
 ### Phase plan
 1. **Phase 1 — stabilize + cloud-deploy as-is** (fallback): get the current
    PHP/MySQL app running on a hosted PHP+MySQL environment so it stays live

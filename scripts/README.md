@@ -2,6 +2,27 @@
 
 One-off operational scripts.
 
+## import-sql-to-firestore.mjs (primary)
+
+Parses `prono_l1.sql` directly (no live MySQL needed) and rebuilds Firestore.
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node import-sql-to-firestore.mjs            # dry-run
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node import-sql-to-firestore.mjs --execute  # write
+```
+
+Imports: `saisons`, `clubs`, `matches`, `cotes_matchs` (→ match `odds` field),
+`classement_equipes_cache` (→ `standings`).
+
+## sync-football-data.mjs
+
+Seeds/refreshes Firestore from API-Football (clubs + standings) without waiting
+for the hourly Cloud Function.
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json API_FOOTBALL_KEY=... node sync-football-data.mjs
+```
+
 ## import-mysql-to-firestore.mjs
 
 Imports the legacy MySQL data into Firestore (Phase 5).

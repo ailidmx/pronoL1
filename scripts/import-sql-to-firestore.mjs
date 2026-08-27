@@ -167,12 +167,12 @@ const mapClub = (c) => ({
   smId: c.sm_id,
 });
 
-const mapMatch = (m) => ({
+const mapMatch = (m, legacyToApf) => ({
   seasonId: m.saison_id,
   journee: m.journee,
   date: m.date,
-  clubDomId: m.club_dom_id,
-  clubExtId: m.club_ext_id,
+  clubDomId: legacyToApf.get(Number(m.club_dom_id)) ?? m.club_dom_id,
+  clubExtId: legacyToApf.get(Number(m.club_ext_id)) ?? m.club_ext_id,
   scoreDom: m.score_dom,
   scoreExt: m.score_ext,
   statut: m.statut,
@@ -192,8 +192,8 @@ const mapOdds = (o) => ({
   figeeLe: o.figee_le,
 });
 
-const mapStanding = (s) => ({
-  clubId: s.club_id,
+const mapStanding = (s, legacyToApf) => ({
+  clubId: legacyToApf.get(Number(s.club_id)) ?? s.club_id,
   rang: s.rang,
   j: s.j,
   g: s.g,
@@ -220,6 +220,10 @@ async function main() {
   console.log(`Mode: ${DRY_RUN ? "DRY-RUN" : "EXECUTE"}`);
 
   const summary = {};
+  const legacyToApf = new Map();
+  for (const c of byTable["clubs"] ?? []) {
+    if (c.apf_id != null) legacyToApf.set(Number(c.id), Number(c.apf_id));
+  }
 
   const importRows = async (table, mapper, targetPath) => {
     const rows = byTable[table] ?? [];
@@ -236,8 +240,8 @@ async function main() {
   };
 
   await importRows("saisons", mapSeason, (r) => `${collections.seasons}/${r.id}`);
-  await importRows("clubs", mapClub, (r) => `${collections.clubs}/${r.id}`);
-  await importRows("matches", mapMatch, (r) => `${collections.matches}/${r.id}`);
+  await importRows("clubs", mapClub, (r) => `${collections.clubs}/${r.apf_id ?? r.id}`);
+  await importRows("matches", (m) => mapMatch(m, legacyToApf), (r) => `${collections.matches}/${r.id}`);
 
   // odds: 1:1 with matches → store as a field on the match doc
   const odds = byTable["cotes_matchs"] ?? [];
@@ -257,7 +261,7 @@ async function main() {
   for (const row of standings) {
     const key = `${row.saison_id}_${row.mode}`;
     if (!grouped.has(key)) grouped.set(key, { seasonId: row.saison_id, mode: row.mode, rows: [] });
-    grouped.get(key).rows.push(mapStanding(row));
+    grouped.get(key).rows.push(mapStanding(row, legacyToApf));
   }
   for (const [key, doc] of grouped) {
     const path = `${collections.standings}/${key}`;

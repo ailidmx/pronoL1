@@ -17,6 +17,34 @@ main { min-height:calc(100vh - 144px); }
 .grid article,.placeholder { background:var(--panel); border:1px solid #252b35; border-radius:18px; padding:1.5rem; }
 .grid p { color:var(--muted); }
 .placeholder { margin-top:2rem; color:var(--muted); min-height:180px; }
+.intro { color:var(--muted); font-size:1.1rem; }
+.data-grid,.season-layout { max-width:1120px; margin:0 auto 5rem; padding:0 5vw; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr); gap:1rem; align-items:start; }
+.season-layout { max-width:none; padding:2rem 0 0; grid-template-columns:minmax(360px,.72fr) minmax(0,1.28fr); }
+.data-panel { background:var(--panel); border:1px solid #252b35; border-radius:18px; overflow:hidden; }
+.section-heading { display:flex; justify-content:space-between; gap:1rem; align-items:end; padding:1.25rem; border-bottom:1px solid #252b35; }
+.section-heading h2 { margin:.1rem 0 0; font-size:1.35rem; }
+.section-heading p { margin:0; }
+.section-heading>a { color:var(--accent); font-size:.85rem; }
+.match-row { padding:1rem 1.25rem; border-bottom:1px solid #252b35; }
+.match-row:last-child { border-bottom:0; }
+.match-meta { display:flex; justify-content:space-between; color:var(--muted); font-size:.75rem; margin-bottom:.7rem; }
+.match-teams { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.8rem; }
+.match-teams>.club-mark:last-child { justify-content:flex-end; text-align:right; }
+.club-mark { display:inline-flex; align-items:center; gap:.55rem; min-width:0; }
+.club-mark img { width:28px; height:28px; object-fit:contain; flex:0 0 auto; }
+.club-fallback { width:28px; height:28px; border-radius:50%; background:#343b47; flex:0 0 auto; }
+.table-scroll { overflow-x:auto; }
+.standings-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+.standings-table th,.standings-table td { padding:.7rem .65rem; text-align:center; border-bottom:1px solid #252b35; }
+.standings-table th:nth-child(2),.standings-table td:nth-child(2) { text-align:left; min-width:170px; }
+.standings-table tbody tr:last-child>* { border-bottom:0; }
+.empty-state { padding:1.5rem; color:var(--muted); }
+.journeys { display:grid; gap:1rem; }
+.ad-slot { max-width:1120px; margin:0 auto 2rem; padding:1rem 5vw; min-height:110px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.2rem; color:#737b88; border:1px dashed #343b47; border-radius:14px; background:#10141a; text-align:center; }
+.ad-slot span { font-size:.72rem; text-transform:uppercase; letter-spacing:.15em; }
+.ad-slot small { font-size:.7rem; }
+.ad-slot-rectangle { max-width:360px; min-height:280px; padding:1rem; }
+.ad-slot-in-feed { margin:0 0 1rem; min-height:130px; }
 footer { padding:1.5rem 5vw; color:var(--muted); border-top:1px solid #252b35; font-size:.85rem; display:flex; justify-content:space-between; gap:1rem; }
 .privacy-settings { border:0; background:none; color:var(--muted); cursor:pointer; text-decoration:underline; }
 .consent-banner { position:fixed; z-index:1000; left:1rem; right:1rem; bottom:1rem; max-width:900px; margin:auto; padding:1.25rem; display:flex; align-items:center; justify-content:space-between; gap:1.5rem; background:#f7f7f2; color:#0b0e13; border-radius:18px; box-shadow:0 18px 70px #0009; }
@@ -25,4 +53,5 @@ footer { padding:1.5rem 5vw; color:var(--muted); border-top:1px solid #252b35; f
 .consent-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.5rem; }
 .consent-actions button { white-space:nowrap; padding:.7rem .85rem; border:1px solid #747b86; border-radius:999px; background:transparent; color:#0b0e13; cursor:pointer; font-weight:700; }
 .consent-actions .consent-primary { background:#0b0e13; color:#f7f7f2; border-color:#0b0e13; }
-@media (max-width:700px) { nav { gap:.75rem; font-size:.85rem; } .hero,.content { padding-top:5rem; } .grid { grid-template-columns:1fr; } .actions { align-items:flex-start; flex-direction:column; } .consent-banner { align-items:stretch; flex-direction:column; } .consent-actions { justify-content:stretch; } .consent-actions button { flex:1 1 100%; } footer { flex-direction:column; } }
+@media (max-width:850px) { .data-grid,.season-layout { grid-template-columns:1fr; } }
+@media (max-width:700px) { nav { gap:.75rem; font-size:.85rem; } .hero,.content { padding-top:5rem; } .grid { grid-template-columns:1fr; } .actions { align-items:flex-start; flex-direction:column; } .consent-banner { align-items:stretch; flex-direction:column; } .consent-actions { justify-content:stretch; } .consent-actions button { flex:1 1 100%; } footer { flex-direction:column; } .match-teams { gap:.4rem; } .club-mark { font-size:.8rem; } .standings-table th,.standings-table td { padding:.6rem .45rem; } }

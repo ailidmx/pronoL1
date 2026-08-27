@@ -6,6 +6,8 @@ import {
   isNonEmptyString,
   validateFields,
   buildPayload,
+  validateUserProfile,
+  DEFAULT_USER_PROFILE,
 } from "./index.js";
 
 test("collection names are the single source of truth", () => {
@@ -43,4 +45,26 @@ test("buildPayload validates and stamps metadata", () => {
   assert.equal(payload.updatedAt, now);
 
   assert.throws(() => buildPayload({ name: "" }, { schema: { name: isNonEmptyString } }));
+});
+
+test("user profile validation", () => {
+  const valid = {
+    email: "a@example.com",
+    displayName: "Doc",
+    avatarInitiales: "DO",
+    equipeCoeurId: null,
+    isAdmin: false,
+    notifEmail: true,
+    notifPush: false,
+    notifTelegram: false,
+    telegramChatId: null,
+  };
+  assert.equal(validateUserProfile(valid), null);
+  assert.equal(validateUserProfile({ ...valid, email: "" }), "email");
+  assert.equal(validateUserProfile({ ...valid, isAdmin: "yes" }), "isAdmin");
+});
+
+test("default user profile is safe", () => {
+  assert.equal(DEFAULT_USER_PROFILE.isAdmin, false);
+  assert.equal(DEFAULT_USER_PROFILE.notifEmail, true);
 });

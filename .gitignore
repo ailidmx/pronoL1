@@ -19,5 +19,8 @@ firebase-debug.*.log
 # Web build output
 web/dist/
 
+# Functions build output
+functions/dist/
+
 # Database dump — contains user PII (emails, hashes, tokens). Keep local only.
 prono_l1.sql

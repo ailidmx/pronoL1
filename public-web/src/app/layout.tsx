@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
+import { GoogleTags } from "@/components/analytics/google-tags";
+import { ConsentBanner, PrivacySettingsButton } from "@/components/privacy/consent-banner";
 import "./styles.css";
 
 export const metadata: Metadata = {
@@ -18,6 +20,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang={siteConfig.language}>
       <body>
+        <GoogleTags />
         <header className="site-header">
           <a href="/" className="brand">Prono L1</a>
           <nav aria-label="Navigation principale">
@@ -26,7 +29,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           </nav>
         </header>
         <main>{children}</main>
-        <footer>Prono L1 — site indépendant, non affilié à la Ligue 1.</footer>
+        <footer>
+          <span>Prono L1 — site indépendant, non affilié à la Ligue 1.</span>
+          <PrivacySettingsButton />
+        </footer>
+        <ConsentBanner />
       </body>
     </html>
   );

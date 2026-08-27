@@ -67,3 +67,6 @@ template has enough unique, useful and current data.
 5. Consent, analytics and experiment event pipeline
 6. Quotas, account bridge, ads and subscription entitlements
 7. Search Console, Bing Webmaster Tools and production sitemap submission
+
+Google measurement setup and consent behavior are documented in
+`docs/google-measurement-setup.md`.

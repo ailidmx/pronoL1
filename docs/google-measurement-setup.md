@@ -20,6 +20,11 @@ when registering the web app is also a public client identifier, but it is not
 required by the direct Google tag integration. Firebase SDK configuration will
 be introduced separately when the public app starts consuming Auth/Firestore.
 
+`NEXT_PUBLIC_SITE_URL` is also pinned to the production App Hosting origin.
+Canonical URLs, Open Graph URLs, `robots.txt` and sitemaps must never fall back
+to the local development origin in a production rollout. Update this variable
+when a custom domain becomes canonical.
+
 In Firebase Console, link or create the GA4 property for the public web app,
 then copy its Web stream Measurement ID (`G-...`). In Google Ads, link that
 GA4 property and copy the Google Ads tag ID (`AW-...`).

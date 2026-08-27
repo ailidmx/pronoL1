@@ -1,0 +1,47 @@
+/**
+ * Single source of truth for Firestore collection + subcollection names and
+ * document path builders. See docs/rearchitecture-plan.md §4 for the model.
+ *
+ * Never hardcode a collection name anywhere else — import it from here.
+ */
+
+export const collections = {
+  users: "users",
+  seasons: "seasons",
+  clubs: "clubs",
+  players: "players",
+  matches: "matches",
+  standings: "standings",
+  leaderboardPronostics: "leaderboardPronostics",
+  leaderboardQuiz: "leaderboardQuiz",
+  quizWeeks: "quizWeeks",
+  bonus: "bonus",
+  pushSubscriptions: "pushSubscriptions",
+  pushRappels: "pushRappels",
+  annonces: "annonces",
+};
+
+export const subcollections = {
+  pronostics: "pronostics",
+  compositions: "compositions",
+  stats: "stats",
+  odds: "odds",
+  questions: "questions",
+  answers: "answers",
+  options: "options",
+};
+
+// Path builders — return Firestore document paths as strings.
+export const paths = {
+  user: (userId) => `${collections.users}/${userId}`,
+  season: (seasonId) => `${collections.seasons}/${seasonId}`,
+  club: (clubId) => `${collections.clubs}/${clubId}`,
+  match: (matchId) => `${collections.matches}/${matchId}`,
+  pronostic: (matchId, userId) =>
+    `${collections.matches}/${matchId}/${subcollections.pronostics}/${userId}`,
+  quizWeek: (weekId) => `${collections.quizWeeks}/${weekId}`,
+  quizQuestion: (weekId, questionId) =>
+    `${collections.quizWeeks}/${weekId}/${subcollections.questions}/${questionId}`,
+  pushSubscription: (userId, hash) => `${collections.pushSubscriptions}/${userId}_${hash}`,
+  pushRappel: (userId, matchId) => `${collections.pushRappels}/${userId}_${matchId}`,
+};

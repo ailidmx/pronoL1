@@ -2,8 +2,30 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Deny everything by default. Domain rules are added collection-by-collection
-    // as the Phase 2 rearchitecture proceeds (see docs/rearchitecture-plan.md).
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isOwnUser(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // A user may read/write their own profile, but may never self-grant admin.
+    match /users/{uid} {
+      allow read: if isOwnUser(uid) || isAdmin();
+      allow create: if isOwnUser(uid) && request.resource.data.isAdmin != true;
+      allow update: if (isOwnUser(uid) && request.resource.data.isAdmin != true) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Deny everything else by default. Domain rules are added collection by
+    // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {
       allow read, write: if false;
     }

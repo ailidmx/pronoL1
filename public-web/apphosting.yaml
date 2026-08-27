@@ -1,0 +1,15 @@
+# Firebase App Hosting configuration for the independent public application.
+# Public Google tag identifiers are safe to expose in browser bundles.
+runConfig:
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  - variable: NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
+    value: G-3QE39K3F79
+    availability:
+      - BUILD
+      - RUNTIME

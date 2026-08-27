@@ -8,11 +8,17 @@ page views. Firebase may still own/link the GA4 property.
 
 Configure these public identifiers in the public app hosting environment:
 
-- `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=G-...`
+- `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=G-3QE39K3F79`
 - `NEXT_PUBLIC_GOOGLE_ADS_ID=AW-...`
 
 They are routing identifiers, not secrets. Never add service-account JSON,
 API secrets or credentials to these variables.
+
+The GA4 Measurement ID is committed in `public-web/apphosting.yaml` so Firebase
+App Hosting injects it at build and runtime. The Firebase browser API key shown
+when registering the web app is also a public client identifier, but it is not
+required by the direct Google tag integration. Firebase SDK configuration will
+be introduced separately when the public app starts consuming Auth/Firestore.
 
 In Firebase Console, link or create the GA4 property for the public web app,
 then copy its Web stream Measurement ID (`G-...`). In Google Ads, link that

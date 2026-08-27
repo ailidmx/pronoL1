@@ -86,6 +86,7 @@ export const syncFixtures = onSchedule(
   async () => {
     const db = getFirestore();
     const fixtures = await apiFootball(`/fixtures?league=${LIGUE1_ID}&season=${SEASON}`);
+    console.log("syncFixtures: fetched", fixtures.response?.length, "fixtures");
     let count = 0;
     for (const item of fixtures.response ?? []) {
       const f = item.fixture;
@@ -111,6 +112,7 @@ export const syncFixtures = onSchedule(
       );
       count++;
     }
+    console.log("syncFixtures: wrote", count, "matches");
     return { matches: count };
   },
 );

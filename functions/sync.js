@@ -70,3 +70,47 @@ export const syncFootballData = onSchedule(
     return { clubs: (teams.response ?? []).length, standings: rows.length };
   },
 );
+
+function mapStatus(short) {
+  if (!short) return "a_venir";
+  if (["NS", "TBD"].includes(short)) return "a_venir";
+  if (["1H", "HT", "2H", "ET", "BT", "P", "LIVE"].includes(short)) return "en_cours";
+  if (["FT", "AET", "PEN"].includes(short)) return "termine";
+  if (["PST", "SUSP", "INT", "CANC", "ABD", "AWD", "WO"].includes(short)) return "reporte";
+  return "a_venir";
+}
+
+// Sync Ligue 1 fixtures (matches + scores) from API-Football.
+export const syncFixtures = onSchedule(
+  { schedule: "0 * * * *", timeoutSeconds: 300, secrets: [apiFootballKey] },
+  async () => {
+    const db = getFirestore();
+    const fixtures = await apiFootball(`/fixtures?league=${LIGUE1_ID}&season=${SEASON}`);
+    let count = 0;
+    for (const item of fixtures.response ?? []) {
+      const f = item.fixture;
+      const teams = item.teams;
+      const goals = item.goals;
+      const round = item.league?.round ?? null;
+      const m = round ? round.match(/(\d+)\s*$/) : null;
+      const journee = m ? Number(m[1]) : null;
+      await db.collection(collections.matches).doc(String(f.id)).set(
+        {
+          seasonId: SEASON,
+          apfFixtureId: f.id,
+          journee,
+          date: f.date ?? null,
+          clubDomId: teams.home.id,
+          clubExtId: teams.away.id,
+          scoreDom: goals?.home ?? null,
+          scoreExt: goals?.away ?? null,
+          statut: mapStatus(f.status?.short),
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+      count++;
+    }
+    return { matches: count };
+  },
+);

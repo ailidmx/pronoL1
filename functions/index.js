@@ -47,3 +47,5 @@ export const getProfile = onCall({ cors: true }, async (request) => {
   await ref.set(profile);
   return { id: uid, ...profile };
 });
+
+export { syncFootballData } from "./sync.js";

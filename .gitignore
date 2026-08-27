@@ -1,0 +1,9 @@
+# Secrets / environment-specific config
+api/config.php
+
+# Runtime logs
+api/logs/
+*.log
+
+# macOS
+.DS_Store

@@ -1,0 +1,4415 @@
+/* ============================================================
+   PRONO-L1 — Feuille de styles principale
+   Style.css — Mode sombre par défaut, mode clair disponible
+   Palette : fond sombre #0D1117, vert #00A550, or #F5A623
+   ============================================================ */
+
+/* ── TOKENS MODE SOMBRE (défaut) ── */
+:root {
+  /* Palette principale */
+  --vert:       #00A550;
+  --vert-f:     #007A3A;
+  --vert-pale:  #00A55020;
+  --bleu-fonce: #0d2d6b;
+  --bleu-vif:   #1a4a8a;
+  --bleu-pale:  #1a4a8a20;
+  --bleu-clair: #5b9bd5;
+  /* Couleur d'accent pour les chiffres/en-têtes de tableaux : plus vive
+     en mode sombre pour rester lisible sur fond foncé (voir override
+     dans [data-theme="light"] ci-dessous) */
+  --bleu-accent: #5b9bd5;
+  /* Couleur des noms de clubs/joueurs dans les tableaux : blanc/clair en
+     mode sombre (texte normal), bleu foncé en mode clair (voir override) */
+  --nom-color: var(--txt);
+  --coeur-bg:   #0EA5E940;
+  --coeur-vif:  #0EA5E9;
+  --or:         #F5A623;
+  --or-pale:    #F5A62320;
+  --rouge:      #E03030;
+  --rouge-pale: #E0303020;
+
+  /* Fonds */
+  --bg:         #0D1117;
+  --bg2:        #161B22;
+  --bg3:        #1F2937;
+  --bg4:        #263040;
+
+  /* Bordures & textes */
+  --bord:       #2D3748;
+  --bord-f:     #3D4A5C;
+  --txt:        #E8EDF2;
+  --txt2:       #8B98A8;
+  --txt3:       #4A5568;
+  --blanc:      #FFFFFF;
+
+  /* Qualifications (mode sombre, défaut) */
+  --ldc:        #1D4ED8;
+  --ldc-clair:  #38BDF8;
+  --europa:     #EB6A0A;
+  --conference: #00B041;
+  --barrage:    #FF9900;
+  --relégation: #FF3333;
+  --ldc-bg:        #0A2540;
+  --ldc-clair-bg:  #07365A;
+  --europa-bg:     #411B05;
+  --conference-bg: #042F1A;
+  --barrage-bg:    #4A2000;
+  --relegation-bg: #3B0712;
+
+  /* Forme matchs */
+  --forme-w:    #00A550;
+  --forme-d:    var(--txt3);
+  --forme-l:    #E03030;
+
+  /* Stats match — couleurs dédiées domicile/extérieur (mode sombre, défaut) */
+  --stat-dom:   #F59E0B;
+  --stat-ext:   #3B82F6;
+
+  /* Badges résultats */
+  --badge-exact:   #00A550;
+  --badge-bon:     #F5A623;
+  --badge-mauvais: #E03030;
+
+  /* Grille complète : fond + texte par résultat (mode sombre — fond
+     teinté sombre existant conservé, textes néon aux valeurs exactes
+     demandées) */
+  --grille-dom-bg:  #00A5502a;
+  --grille-dom-txt: #4ade80;
+  --grille-nul-bg:  #F5A6232a;
+  --grille-nul-txt: #facc15;
+  --grille-ext-bg:  #E030302a;
+  --grille-ext-txt: #f87171;
+  /* Overlay clair pour le survol ligne/colonne : sur fond déjà sombre
+     et parfois coloré (vert/ambre/rouge), une teinte grise assombrissante
+     se voyait à peine — un overlay blanc translucide éclaircit au
+     contraire, beaucoup plus visible quel que soit le fond en dessous */
+  --grille-hover-tint: rgba(255, 255, 255, .16);
+
+  /* Dimensions */
+  --radius:     10px;
+  --radius-s:   6px;
+  --radius-xs:  4px;
+  --header-h:   50px;
+  --nav-h:      46px;
+  --subnav-h:   38px;
+  --shadow:     0 2px 8px rgba(0,0,0,.4);
+  --shadow-f:   0 4px 16px rgba(0,0,0,.6);
+}
+
+/* ── TOKENS MODE CLAIR ── */
+[data-theme="light"] {
+  --bg:         #F0F4F8;
+  --bg2:        #FFFFFF;
+  --bg3:        #E8EDF2;
+  --bg4:        #D8E2EE;
+  --bord:       #CBD5E0;
+  --bord-f:     #A0AEC0;
+  --txt:        #1A202C;
+  --txt2:       #4A5568;
+  --txt3:       #A0AEC0;
+  --vert-pale:  #00A55015;
+  --bleu-pale:  #1a4a8a15;
+  --coeur-bg:   #0EA5E930;
+  --or-pale:    #F5A62315;
+  --rouge-pale: #E0303015;
+  --shadow:     0 2px 8px rgba(0,0,0,.1);
+  --shadow-f:   0 4px 16px rgba(0,0,0,.15);
+  --bleu-accent: var(--bleu-vif);
+  --nom-color:  var(--bleu-fonce);
+  --stat-dom:   #D97706;
+  --stat-ext:   #2563EB;
+  --ldc:        #0042B3;
+  --ldc-clair:  #38BDF8;
+  --europa:     #EB6A0A;
+  --conference: #00B041;
+  --barrage:    #FF9900;
+  --relégation: #CC0000;
+  --ldc-bg:        #0042B315;
+  --ldc-clair-bg:  #38BDF815;
+  --europa-bg:     #EB6A0A15;
+  --conference-bg: #00B04115;
+  --barrage-bg:    #FF990015;
+  --relegation-bg: #CC000015;
+
+  /* Grille complète — fonds pastel demandés inchangés ; texte gris très
+     foncé unique pour les 3 résultats plutôt que des teintes différentes
+     par résultat : c'est le fond qui porte l'info, un texte coloré en
+     plus était redondant et réduisait le contraste (nul/défaite peu
+     distincts à l'œil) */
+  --grille-dom-bg:  #dcfce7;
+  --grille-dom-txt: #1e293b;
+  --grille-nul-bg:  #fef3c7;
+  --grille-nul-txt: #1e293b;
+  --grille-ext-bg:  #fee2e2;
+  --grille-ext-txt: #1e293b;
+  /* Overlay sombre translucide en mode clair (assombrit, plutôt
+     qu'éclaircir comme en mode sombre) */
+  --grille-hover-tint: rgba(15, 23, 42, .09);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+a { color: var(--vert); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+input, select, textarea { font-family: inherit; }
+
+/* ── SCROLLBAR (webkit) ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--bord-f); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--txt3); }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: linear-gradient(135deg, var(--bleu-fonce) 0%, var(--bleu-vif) 65%, var(--or) 100%);
+  border-bottom: 2px solid var(--bleu-fonce);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow);
+}
+
+.header-main {
+  position: relative;
+}
+
+.header-topline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  padding: 0 34px 0 24px;
+  min-height: var(--header-h);
+}
+
+.header-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 18px;
+  padding: 2px 16px 10px;
+}
+
+.header-stats-lg {
+  gap: 2px 16px;
+  padding: 0 16px 5px;
+}
+.header-stats-lg .hstat-val { font-size: .92rem; }
+.header-stats-lg .hstat-lbl { font-size: .55rem; }
+.header-stats-lg .hstat { min-width: 46px; }
+
+.header-stats-compact {
+  display: none;
+  align-items: baseline;
+  justify-content: center;
+  gap: 18px;
+  padding: 3px 16px 10px;
+  cursor: pointer;
+}
+@media (max-width: 480px) {
+  .header-stats-compact { padding: 1px 16px 6px; }
+}
+.header-stats-compact:hover { opacity: .85; }
+.header-stats-compact .hstat-val { font-size: 1.15rem; }
+@media (max-width: 480px) {
+  .header-stats-compact .hstat-val { font-size: 1rem; }
+}
+.hstats-loupe { font-size: .85rem; opacity: .8; align-self: center; }
+
+.hstat { text-align: center; min-width: 54px; }
+.hstat-val { font-size: 1.05rem; font-weight: 800; color: #fff; line-height: 1.2; }
+.hstat-lbl { font-size: .6rem; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .3px; white-space: nowrap; }
+/* Libellés du récapitulatif header (barre PC "lg" + modale mobile de
+   détail) remplacés par des icônes, avec le libellé complet en tooltip
+   (title, 1ère lettre majuscule). Combo (Buts D/E, Pronos+Bonus) : en
+   ligne sur la barre PC (colonnes assez larges), empilé par défaut
+   (utilisé dans la modale mobile, plus étroite) */
+.hstat-icon { display: inline-block; font-size: .8rem; line-height: 1.1; }
+.hstat-icon-combo { display: inline-flex; flex-direction: column; align-items: center; }
+.header-stats-lg .hstat-icon-combo { flex-direction: row; gap: 2px; }
+
+@media (max-width: 640px) {
+  .header-stats-lg { display: none; }
+  .header-stats-compact { display: flex; }
+}
+
+/* Dans la modale de détail, fond neutre selon le thème → texte adapté au thème
+   plutôt que blanc fixe (qui n'était pensé que pour le dégradé du header) */
+#modal-stats-header .header-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 20px; padding: 4px 0 0; }
+#modal-stats-header .hstat-val { color: var(--txt); }
+#modal-stats-header .hstat-lbl { color: var(--txt2); }
+
+#compte-rebours {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  background: rgba(0,0,0,.18);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 600;
+  /* Hauteur fixe (2 lignes) pour que le compte à rebours ne change jamais
+     de taille selon la largeur des chiffres affichés (ex: 9j vs 10j) —
+     sinon la hauteur du header varie en direct, ce qui décale la position
+     du sticky pile pendant un scroll et crée un "saut" visible sur mobile. */
+  min-height: 48px;
+}
+#compte-rebours:empty { display: none; }
+/* Pulse doux (plutôt qu'un clignotement strict, fatigant et
+   déconseillé côté accessibilité) pour attirer l'œil sur le décompte,
+   repéré comme peu visible par plusieurs joueurs */
+.cr-titre {
+  margin-right: 2px;
+  color: var(--or);
+  font-weight: 700;
+  font-size: .88rem;
+  animation: cr-titre-pulse 1.8s ease-in-out infinite;
+}
+@keyframes cr-titre-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-titre { animation: none; }
+}
+.cr-bloc {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  background: rgba(255,255,255,.12);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-variant-numeric: tabular-nums;
+}
+.cr-val { font-weight: 800; font-size: .88rem; }
+.cr-lbl { font-size: .68rem; opacity: .8; }
+
+@media (max-width: 480px) {
+  .hstat { min-width: 44px; }
+  .hstat-val { font-size: .92rem; }
+  .hstat-lbl { font-size: .56rem; }
+}
+
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--blanc);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.logo-icon { height: 64px; width: 64px; border-radius: 14px; display: block; }
+.logo-img { height: 64px; width: auto; display: block; }
+@media (max-width: 480px) {
+  .logo-icon {
+    height: 50px; width: 50px; border-radius: 11px;
+    position: relative;
+    top: 6px;
+    left: 34px;
+  }
+  .logo-img { height: 33px; margin-left: -4px; }
+  .logo {
+    position: absolute;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 2px;
+    left: 10px;
+    transform: translateY(calc(-50% - 4px));
+  }
+}
+.logo span { color: var(--vert); }
+.logo small {
+  font-size: .62rem;
+  font-weight: 400;
+  color: rgba(255,255,255,.7);
+  display: block;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#header-version { text-transform: none; position: relative; right: 8px; }
+
+.header-saison-centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px 20px;
+  border-left: 1px solid rgba(255,255,255,.25);
+  border-right: 1px solid rgba(255,255,255,.25);
+  grid-column: 2;
+}
+@media (max-width: 480px) {
+  .header-saison-centre { padding: 4px 8px; }
+}
+#select-saison-header {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  text-align: center;
+}
+#select-saison-header option {
+  background: var(--bg2);
+  color: var(--txt);
+  text-transform: none;
+}
+#badge-saison-archivee {
+  font-size: .6rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,.18);
+  border-radius: 4px;
+  padding: 1px 6px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: end;
+  padding-top: 6px;
+  grid-column: 3;
+}
+.header-right-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+@media (max-width: 480px) { .header-right { padding-top: 0; } }
+
+/* Raccourcis équipe de cœur/mdp/notifs/déconnexion dans le modal profil —
+   seul point d'accès à ces actions, le header ne garde que thème + avatar */
+.modal-profil-liens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bord);
+}
+.modal-profil-liens a {
+  color: var(--txt2);
+  font-size: .85rem;
+  transition: color .2s;
+}
+.modal-profil-liens a:hover { color: var(--vert); text-decoration: none; }
+.modal-profil-liens a.txt-rouge:hover { color: var(--rouge); opacity: .8; }
+
+.btn-theme {
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  padding: 5px 7px;
+  border-radius: var(--radius-s);
+  font-size: .72rem;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn-theme:hover { border-color: #fff; background: rgba(255,255,255,.25); }
+
+/* Bouton thème — icône seule, sur tous les écrans */
+.btn-theme-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 50%;
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1.05rem; }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+  .header-topline { padding: 8px 14px; }
+  .logo { left: 14px; }
+}
+@media (max-width: 480px) {
+  .header-topline {
+    padding: 8px 14px;
+    min-height: 40px;
+    grid-template-columns: minmax(124px, 1fr) auto minmax(80px, 1fr);
+  }
+  .header-saison-centre { max-width: 160px; }
+  #select-saison-header,
+  #badge-saison-archivee,
+  #badge-saison-entrainement {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+.avatar-chevron {
+  color: rgba(255,255,255,.75);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: color .2s, transform .2s;
+}
+.avatar-wrap:hover .avatar-chevron { color: #fff; transform: translateY(1px); }
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--vert);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .85rem;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .2s;
+  position: relative;
+}
+@media (max-width: 480px) {
+  .avatar { width: 26px; height: 26px; font-size: .7rem; }
+  .btn-theme-icon { width: 24px; height: 24px; font-size: .85rem; }
+  .header-right-icons { gap: 6px; }
+  #header-version { margin-top: 1px !important; }
+}
+.avatar:hover { background: var(--vert-f); }
+
+/* ============================================================
+   NAVIGATION PRINCIPALE
+   ============================================================ */
+nav#main-nav {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--bord);
+  display: flex;
+  align-items: center;
+  justify-content: safe center;
+  gap: 4px;
+  padding: 8px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: var(--header-dynamic-h, 0px);
+  z-index: 190;
+}
+nav#main-nav::-webkit-scrollbar { display: none; }
+
+nav#main-nav button {
+  background: none;
+  border: none;
+  color: var(--txt2);
+  padding: 8px 18px;
+  height: auto;
+  border-radius: 999px;
+  font-size: .88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+nav#main-nav button:hover { color: var(--txt); background: var(--bg3); }
+nav#main-nav button.active {
+  color: var(--blanc);
+  background: var(--bleu-vif);
+  font-weight: 800;
+}
+
+/* ── Mobile : boutons carrés icône au-dessus du texte (façon CDM) ── */
+@media (max-width: 480px) {
+  nav#main-nav {
+    padding: 6px 6px;
+    gap: 3px;
+  }
+  nav#main-nav button {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px;
+    height: auto;
+    min-width: 0;
+    border-radius: 8px;
+  }
+  nav#main-nav .nav-icon { font-size: 17px; line-height: 1; }
+  nav#main-nav .nav-txt  { font-size: 9.5px; line-height: 1.15; white-space: normal; font-weight: 700; }
+  nav#main-nav button.active {
+    background: var(--bleu-vif);
+    color: var(--blanc);
+    border-radius: 8px;
+  }
+}
+
+/* ── Contenu de la fenêtre Règlement ── */
+.reglement-contenu h4 {
+  font-size: .95rem;
+  color: var(--bleu-vif);
+  margin: 16px 0 8px;
+}
+.reglement-contenu h4:first-child { margin-top: 4px; }
+.reglement-contenu ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--txt);
+  font-size: .88rem;
+  line-height: 1.6;
+}
+.reglement-contenu li { margin-bottom: 4px; }
+
+.reglement-contact {
+  text-align: center;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bord);
+}
+.reglement-contact a {
+  color: var(--txt2);
+  font-size: .85rem;
+  transition: color .2s;
+}
+.reglement-contact a:hover { color: var(--vert); text-decoration: none; }
+
+.contact-email-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.contact-email-row code {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius-xs);
+  padding: 4px 8px;
+  font-size: .82rem;
+  color: var(--txt);
+}
+
+/* ── Podium > Stats — taux de réussite ── */
+.stats-card {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.stats-card-titre {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.stats-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--bord);
+  font-size: .88rem;
+}
+.stats-ligne:last-child { border-bottom: none; }
+.stats-ligne .lbl { color: var(--txt2); font-weight: 700; }
+.stats-ligne .val { font-weight: 700; color: var(--bleu-vif); }
+.stats-ligne .pct { color: var(--txt2); font-size: .78rem; margin-left: 6px; }
+
+@media (max-width: 640px) {
+  .stats-ligne-match {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .stats-ligne-match .lbl { white-space: nowrap; }
+  .stats-ligne-match .lbl::after { content: ' :'; }
+}
+
+.stats-taux-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.stats-taux-table th {
+  text-align: center;
+  padding: 8px 6px;
+  font-size: .72rem;
+  color: var(--txt2);
+  border-bottom: 1px solid var(--bord);
+  font-weight: 700;
+}
+.stats-taux-table th:first-child { text-align: left; }
+.stats-taux-table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--bord); }
+.stats-taux-table td:first-child { text-align: left; white-space: nowrap; }
+.stats-taux-table tr:hover td { background: var(--bg3); }
+.stats-taux-pct { font-weight: 700; }
+.stats-taux-sous { font-size: .72rem; color: var(--txt2); }
+
+/* ── Podium > Évolution — graphiques SVG ── */
+.evolution-section { margin-bottom: 24px; }
+.evolution-titre {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+/* Grid 3 colonnes (spacer / titre / échelle) plutôt que flex+space-between :
+   le titre est ainsi vraiment centré sur toute la largeur (à l'aplomb du
+   titre "Évolution des rangs" au-dessus), quelle que soit la largeur de
+   l'échelle, qui elle reste ancrée à droite (justify-self:end) */
+.evolution-entete {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.evolution-entete .evolution-titre { grid-column: 2; margin-bottom: 0; }
+.evolution-entete .evolution-echelle { grid-column: 3; justify-self: end; }
+@media (max-width: 640px) {
+  .evolution-entete {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .evolution-entete .evolution-titre { grid-column: unset; text-align: left; }
+  .evolution-entete .evolution-echelle { grid-column: unset; justify-self: unset; }
+}
+.evolution-echelle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  color: var(--txt2);
+}
+.evolution-echelle select {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+  border-radius: var(--radius-s);
+  padding: 4px 8px;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.evolution-scroll {
+  overflow-x: auto;
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 12px 8px;
+}
+.evolution-scroll svg { display: block; }
+.evolution-note {
+  font-size: .78rem;
+  color: var(--txt2);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ── Stats détaillées du match (onglet Stats des cartes) ── */
+.buts-match-titre {
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  margin-bottom: 8px;
+}
+.timeline-match {
+  position: relative;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--bord);
+}
+.timeline-match::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--bord);
+  transform: translateX(-50%);
+}
+.timeline-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  font-size: .78rem;
+}
+.timeline-side { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.timeline-side-dom { justify-content: flex-end; text-align: right; }
+.timeline-side-ext { justify-content: flex-start; text-align: left; }
+.timeline-minute {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  border-radius: 999px;
+  padding: 1px 5px;
+  font-size: .62rem;
+  font-weight: 700;
+  color: var(--or);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+[data-theme="light"] .timeline-minute { color: var(--bleu-accent); }
+.timeline-icone { flex-shrink: 0; font-size: .74rem; }
+.ballon-csc {
+  filter: hue-rotate(140deg) saturate(200%);
+  color: #ef4444;
+}
+
+@media (max-width: 480px) {
+  /* Le filtre hue-rotate ne teinte pas l'emoji ⚽ sur tous les moteurs de
+     rendu mobiles (Apple/Noto Color Emoji) — solution fiable de repli :
+     un badge à fond rouge plein, qui fonctionne indépendamment du rendu. */
+  .ballon-csc {
+    filter: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #dc2626;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    font-size: .62rem;
+    line-height: 1;
+  }
+}
+.timeline-icone-chaussure { font-size: .62rem; margin-right: 2px; }
+.timeline-joueur {
+  color: var(--txt);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.timeline-joueur.timeline-csc { color: #f87171; }
+[data-theme="light"] .timeline-joueur.timeline-csc { color: #991b1b; }
+.timeline-assist {
+  color: var(--txt2);
+  font-size: .64rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.stats-match-entetes {
+  display: flex;
+  justify-content: space-between;
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--txt2);
+  padding: 0 2px 10px;
+  border-bottom: 1px solid var(--bord);
+  margin-bottom: 10px;
+}
+.stat-ligne { margin-bottom: 14px; }
+.stat-ligne:last-child { margin-bottom: 0; }
+.stat-valeurs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: .78rem;
+  margin-bottom: 5px;
+}
+.stat-match-val {
+  width: 38px;
+  flex-shrink: 0;
+  font-weight: 500;
+  color: var(--txt2);
+  font-variant-numeric: tabular-nums;
+}
+.stat-match-val.stat-val-dom { text-align: left; }
+.stat-match-val.stat-val-ext { text-align: right; }
+.stat-val-gagnant { font-weight: 800; font-size: 1.08em; opacity: 1; }
+.stat-val-gagnant.stat-val-dom { color: var(--stat-dom); }
+.stat-val-gagnant.stat-val-ext { color: var(--stat-ext); }
+.stat-val-perdant { font-weight: 500; opacity: .55; }
+.stat-val-perdant.stat-val-dom { color: var(--stat-dom); }
+.stat-val-perdant.stat-val-ext { color: var(--stat-ext); }
+.stat-val-egalite { color: var(--txt2); font-weight: 700; }
+.stat-label {
+  color: var(--txt2);
+  font-size: .72rem;
+  text-align: center;
+  flex: 1;
+}
+.stat-barre {
+  display: flex;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--bg3);
+}
+.stat-barre-dom { background: var(--stat-dom); }
+.stat-barre-ext { background: var(--stat-ext); }
+.stat-barre-neutre { background: var(--bord); width: 100%; }
+
+/* ── Regroupement thématique des stats (Clés du match / Attaque / Discipline) ── */
+.stats-groupe { margin-bottom: 18px; }
+.stats-groupe:last-child { margin-bottom: 0; }
+.stats-groupe-titre {
+  font-size: .74rem;
+  font-weight: 700;
+  color: var(--txt2);
+  text-align: center;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--bord);
+}
+.stats-toggle-btn {
+  display: block;
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  color: var(--txt2);
+  font-size: .74rem;
+  font-weight: 700;
+  padding: 7px;
+  border-radius: 8px;
+  margin: 4px 0 16px;
+  transition: color .2s, border-color .2s;
+}
+.stats-toggle-btn:hover { color: var(--txt); border-color: var(--txt3); }
+.stats-toggle-txt-ouvert { display: none; }
+.stats-toggle-btn.ouvert .stats-toggle-txt-ferme { display: none; }
+.stats-toggle-btn.ouvert .stats-toggle-txt-ouvert { display: inline; }
+
+/* ── SOUS-ONGLETS — boutons pilule ── */
+#subtabs {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--bord);
+  display: flex;
+  align-items: center;
+  justify-content: safe center;
+  gap: 4px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#subtabs::-webkit-scrollbar { display: none; }
+#subtabs:empty { display: none; }
+
+#subtabs button {
+  background: none;
+  border: none;
+  color: var(--txt2);
+  padding: 6px 14px;
+  height: auto;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all .2s;
+}
+#subtabs button:hover { color: var(--txt); background: var(--bg4); }
+#subtabs button.active { color: var(--blanc); background: var(--or); font-weight: 800; }
+
+/* ── GRILLE 18×18 avec logos ── */
+.grille-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 2px;
+}
+.grille-th-dom {
+  text-align: left;
+  white-space: nowrap;
+  min-width: 120px;
+}
+/* Entêtes de ligne (club à gauche) : logo + nom/trigramme sur la même
+   ligne, PC et mobile — scopé au tbody uniquement (jamais à la case
+   coin "Dom\Ext" du thead, où le mélange flex+sticky cassait
+   l'alignement avec le reste de la ligne d'entêtes) */
+.grille-table tbody th.grille-th-dom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.grille-th-dom .grille-logo { margin: 0; }
+.grille-nom-dom { font-size: .72rem; font-weight: 600; }
+.grille-code-dom { display: none; font-size: .7rem; color: var(--txt2); }
+.grille-code-ext { font-size: .65rem; color: var(--txt2); }
+
+@media (max-width: 640px) {
+  .grille-nom-dom { display: none; }
+  .grille-code-dom { display: inline; font-weight: 800; }
+  .grille-th-dom { min-width: 62px; }
+  .grille-th-dom .grille-logo { width: 14px; height: 14px; }
+}
+
+/* ============================================================
+   CONTENU PRINCIPAL
+   ============================================================ */
+main {
+  padding: 20px 24px;
+  max-width: 1630px;
+  margin: 0 auto;
+}
+
+.hidden { display: none !important; }
+
+/* ── TITRES DE SECTION ── */
+.section-title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bord);
+}
+/* Programme (titre "Prochains matchs" + titres "Journée X") et Grille
+   (titre "Grille complète") : titres centrés avec une ligne de part et
+   d'autre, plutôt que la ligne unique par défaut qui pousse le texte
+   à gauche */
+#sub-programme .section-title,
+#sub-grille .section-title,
+#sub-mes-pronos .section-title {
+  justify-content: center;
+}
+#sub-programme .section-title::before,
+#sub-grille .section-title::before,
+#sub-mes-pronos .section-title::before {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bord);
+}
+
+/* ── NOTE MAQUETTE / INFO ── */
+.note-info {
+  background: var(--or-pale);
+  border: 1px dashed var(--or);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: .8rem;
+  color: var(--or);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   JOURNÉE — EN-TÊTE ET NAVIGATION
+   ============================================================ */
+.journee-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 56px;
+}
+/* Podium > Par journée : ce header ne contient que le sélecteur (pas de
+   titre à gauche), donc centré plutôt que space-between */
+#sub-par-journee .journee-header { justify-content: center; }
+
+.journee-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.journee-nav button {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-s);
+  font-size: .9rem;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.journee-nav button:hover { border-color: var(--vert); color: var(--vert); }
+.journee-nav button:disabled { opacity: .4; cursor: not-allowed; }
+
+.journee-nav select,
+.journee-nav-select {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+  border-radius: var(--radius-s);
+  padding: 0 8px;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  height: 34px;
+  transition: border-color .2s;
+}
+.journee-nav select:hover,
+.journee-nav-select:hover { border-color: var(--vert); }
+
+.journee-nav-btn {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-s);
+  font-size: .9rem;
+  transition: all .2s;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.journee-nav-row {
+  position: sticky;
+  top: calc(var(--header-dynamic-h, 0px) + var(--nav-dynamic-h, var(--nav-h)));
+  z-index: 180;
+  background: var(--bg);
+  padding: 6px 0;
+}
+
+.journee-nav-btn:hover { border-color: var(--vert); color: var(--vert); }
+.journee-nav-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .journee-nav-row { gap: 2px !important; }
+  .journee-nav-select {
+    padding: 0 4px;
+    font-size: .76rem;
+    height: 28px;
+    max-width: 112px;
+  }
+  .journee-nav-btn {
+    width: 26px;
+    height: 26px;
+    font-size: .76rem;
+  }
+}
+
+.journee-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.journee-date {
+  font-size: .75rem;
+  color: var(--txt2);
+  margin-top: 2px;
+  text-align: center;
+}
+
+.badge-j {
+  background: var(--bleu-vif);
+  color: #fff;
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+  display: inline-block;
+  min-width: 72px;
+  text-align: center;
+  box-sizing: border-box;
+}
+.badge-j.terminee { background: var(--txt3); }
+.badge-j.en-cours { background: var(--rouge); animation: pulse 1.5s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .6; }
+}
+
+/* Tampon "Bonus sans-faute" — encart légèrement de travers façon
+   tampon encreur, en haut de la page Quizz. */
+.tampon-bonus {
+  display: inline-block;
+  margin: 4px auto 16px;
+  padding: 8px 20px;
+  border: 3px solid var(--rouge);
+  border-radius: 10px;
+  color: var(--rouge);
+  font-weight: 800;
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  text-align: center;
+  line-height: 1.5;
+  transform: rotate(-4deg);
+  opacity: .88;
+}
+.tampon-bonus span {
+  display: block;
+  font-size: 1.1rem;
+  letter-spacing: .02em;
+}
+.tampon-bonus-conteneur { text-align: center; }
+
+/* Barre "Mon historique / Aller au classement" en haut de l'onglet Quizz
+   — sticky sous le header et la nav, même mécanisme que .journee-nav-row,
+   pour rester accessible sans remonter tout en haut (utile notamment
+   pour une liste d'historique longue). */
+.quizz-boutons-row {
+  position: sticky;
+  top: calc(var(--header-dynamic-h, 0px) + var(--nav-dynamic-h, var(--nav-h)));
+  z-index: 180;
+  background: var(--bg);
+}
+
+/* Mini-tampon "Bonus" dans une carte de liste (historique quizz) — plus
+   petit que .tampon-bonus (qui a besoin de place pour 2 lignes), mais
+   agrandi un peu passé 640px où il paraissait trop riquiqui sur PC. */
+.mini-tampon-bonus {
+  flex-shrink: 0;
+  transform: rotate(-8deg);
+  border: 2px solid var(--rouge);
+  color: var(--rouge);
+  border-radius: 6px;
+  padding: 2px 9px;
+  font-size: .62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  opacity: .9;
+}
+@media (min-width: 640px) {
+  .mini-tampon-bonus {
+    padding: 4px 14px;
+    font-size: .82rem;
+    border-width: 2.5px;
+  }
+}
+
+/* ============================================================
+   CARTE MATCH
+   ============================================================ */
+.matches-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 10px;
+  margin: 4px auto 0;
+}
+
+/* Repère de date quand une journée est éclatée sur plusieurs jours
+   (vendredi/samedi/dimanche…) — badge arrondi centré (même style que
+   le bandeau d'en-tête des cartes matchs), avec un trait plein largeur
+   en dessous pour bien scinder visuellement les paquets de matchs. */
+.separateur-date-journee {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin: 18px 0 14px;
+}
+.separateur-date-journee:first-child { margin-top: 0; }
+.separateur-date-journee span {
+  display: inline-block;
+  background: var(--ldc);
+  color: #fff;
+  font-weight: 600;
+  font-size: .78rem;
+  padding: 6px 18px;
+  border-radius: 999px;
+  text-transform: capitalize;
+  margin-bottom: 10px;
+}
+.separateur-date-journee::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--bord);
+  width: 100%;
+}
+
+/* Grands écrans (≈19" et plus, fenêtre ≥ 980px) : 3 colonnes.
+   Une journée de Ligue 1 compte 9 matchs → 3×3 parfait, sans reliquat. */
+@media (min-width: 980px) {
+  .matches-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* Sur grand écran, on a de la place : cartes plus espacées entre elles */
+@media (min-width: 980px) {
+  .matches-grid { gap: 44px; }
+}
+
+@media (max-width: 640px) {
+  .matches-grid { grid-template-columns: 1fr; }
+}
+
+/* Si le nombre de matchs de la journée est impair, la dernière carte
+   se retrouve seule sur sa ligne — on la centre au lieu de la laisser
+   collée à gauche (ex: journée incomplète suite à un report). */
+@media (min-width: 641px) and (max-width: 979px) {
+  .matches-grid > .match-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    max-width: calc(50% - 5px);
+  }
+}
+@media (min-width: 980px) {
+  .matches-grid > .match-card:last-child:nth-child(3n+1) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    max-width: calc(33.333% - 7px);
+  }
+}
+
+.match-card {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+  position: relative;
+  z-index: 1;
+}
+.match-card:hover { border-color: var(--bord-f); }
+.match-card.expanded { border-color: var(--vert); box-shadow: var(--shadow); }
+.match-card.reporte { opacity: .7; border-style: dashed; }
+
+.match-main {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: start;
+  padding: 8px 12px;
+  gap: 4px;
+}
+
+/* ── ÉQUIPE ── */
+.team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.team.right { flex-direction: row-reverse; }
+
+.team > div { min-width: 0; }
+
+.team-logo-wrap {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+.team-rang {
+  position: absolute;
+  bottom: -4px;
+  left: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--bg4);
+  border: 1px solid var(--bord);
+  color: var(--txt2);
+  font-size: .6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.team.right .team-rang { left: auto; right: -6px; }
+.team-rang:empty { display: none; }
+
+.team-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.team-logo-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--txt2);
+  flex-shrink: 0;
+}
+
+.team-name {
+  font-weight: 700;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.team.right .team-name { text-align: right; }
+
+.team-name-link {
+  cursor: pointer;
+  transition: color .2s;
+}
+.team-name-link:hover { color: var(--bleu-vif); text-decoration: underline; }
+
+/* ── FORME (5 points) ── */
+.team-forme {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 3px;
+}
+.team.right .team-forme { justify-content: flex-end; }
+
+/* Carte match (mobile) : logo au-dessus du nom plutôt que côte à côte,
+   pour laisser toute la largeur au nom et éviter le retour à la ligne.
+   Placé ICI, tout en bas de la section ÉQUIPE, après TOUTES les règles
+   .team.right ci-dessus, pour être sûr de passer après elles dans la
+   cascade (même spécificité à chaque fois → l'ordre dans le fichier
+   décide, pas la media query). */
+@media (max-width: 480px) {
+  .team, .team.right {
+    flex-direction: column;
+    text-align: center;
+    gap: 4px;
+  }
+  .team.right .team-name { text-align: center; }
+  .team-forme, .team.right .team-forme { justify-content: center; }
+}
+
+/* ── CARTE MATCH EN MODE PRONOSTIC (score éditable) ──
+   Le widget de saisie (steppers +/-) prend beaucoup de largeur au centre
+   et tronquait les noms d'équipe en layout normal (logo à gauche, nom+
+   forme empilés à droite, qui se partagent le peu de largeur restante).
+   Structure HTML dédiée (cf. _teamBlockHtml dans app.js) : logo+forme
+   dans un même bloc ".team-top", nom séparé — réagencés différemment
+   selon la largeur d'écran.
+   Toujours écrit avec autant de classes que les règles .team.right à
+   contourner (même logique de spécificité que le commentaire ci-dessus),
+   placé après elles dans le fichier par sécurité. */
+
+/* Mobile (<641px) : empilé comme le mode résultat — logo, nom, forme.
+   .team-top passe en display:contents pour que logo et forme redeviennent
+   des enfants directs de .team, ce qui permet de les intercaler avec le
+   nom via l'ordre flex (sinon logo+forme resteraient groupés ensemble
+   avant le nom). */
+@media (max-width: 640px) {
+  .carte-prono .team,
+  .carte-prono .team.right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+  }
+  .carte-prono .team-top { display: contents; }
+  .carte-prono .team-logo-wrap { order: 0; }
+  .carte-prono .team-name,
+  .carte-prono .team.right .team-name { order: 1; text-align: center; }
+  .carte-prono .team-forme,
+  .carte-prono .team.right .team-forme { order: 2; justify-content: center; margin-top: 0; }
+}
+
+/* PC (≥641px) : logo + forme côte à côte, nom centré en dessous sur
+   l'ensemble du bloc */
+@media (min-width: 641px) {
+  .carte-prono .team,
+  .carte-prono .team.right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+  }
+  .carte-prono .team-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .carte-prono .team-name,
+  .carte-prono .team.right .team-name {
+    text-align: center;
+    white-space: normal;
+    max-width: 140px;
+  }
+  .carte-prono .team-forme,
+  .carte-prono .team.right .team-forme { justify-content: center; margin-top: 0; }
+  /* Réduits ici, contrairement au reste de l'appli : sur cette ligne
+     précisément, la forme partage la largeur avec le logo (40px) au
+     sein d'une colonne déjà compressée par le widget de saisie au
+     centre — c'est le seul cas où l'espace est vraiment compté sur PC */
+  .carte-prono .team-forme .forme-dot { width: 6px; height: 6px; }
+  .carte-prono .team-top .team-forme { gap: 2px; }
+}
+
+.forme-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.forme-dot.W { background: var(--forme-w); }
+.forme-dot.D { background: var(--forme-d); }
+.forme-dot.L { background: var(--forme-l); }
+
+/* Rendu détaillé "Forme" (onglet Analyse) : date + score complet en
+   badge coloré, au lieu de simples lettres G/N/P */
+.forme-competition-label {
+  text-align: center;
+  font-size: .64rem;
+  font-style: italic;
+  color: var(--txt2);
+  margin-bottom: 2px;
+  line-height: 1;
+}
+.forme-2col {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 12px;
+}
+.forme-divider {
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(160,160,160,.13) 15%,
+    rgba(160,160,160,.13) 85%,
+    transparent 100%);
+}
+.forme-detail-list { display: flex; flex-direction: column; gap: 6px; }
+.forme-detail-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 32px 1fr;
+  align-items: center;
+  gap: 4px;
+  font-size: .7rem;
+}
+.forme-detail-date {
+  color: var(--txt);
+  font-weight: 600;
+  font-size: .62rem;
+  white-space: nowrap;
+}
+.forme-detail-nom-dom {
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.forme-detail-nom-ext {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.forme-nom-code { display: none; }
+.forme-score-badge {
+  display: inline-block;
+  text-align: center;
+  min-width: 26px;
+  padding: 1px 2px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: .62rem;
+  color: #fff;
+}
+.forme-score-W { background: var(--forme-w); }
+.forme-score-D { background: var(--forme-d); }
+.forme-score-L { background: var(--forme-l); }
+
+.forme-bpbc-badge {
+  margin-top: 3px;
+  font-size: .66rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+.forme-bp { color: var(--forme-w); }
+.forme-bc { color: var(--forme-l); }
+.forme-bpbc-sep { color: var(--txt2); opacity: .5; }
+
+@media (max-width: 480px) {
+  .forme-nom-complet { display: none; }
+  .forme-nom-code { display: inline; }
+  .forme-detail-row { grid-template-columns: 38px 1fr 24px 1fr; gap: 2px; font-size: .68rem; }
+  .forme-detail-date { font-size: .58rem; }
+  .forme-score-badge { min-width: 20px; padding: 0 1px; font-size: .58rem; }
+}
+
+.forme-dot-lg { width: 12px; height: 12px; }
+
+/* ── CENTRE MATCH ── */
+.match-center { text-align: center; min-width: 120px; }
+
+.match-heure {
+  font-size: .75rem;
+  color: var(--txt2);
+  margin-bottom: 6px;
+}
+
+.match-score-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.score-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Boutons +/- des scores — icônes dessinées en CSS pur (barres en
+   position absolute, centrées à l'aide de top/left:50% + translate)
+   plutôt que de compter sur le rendu du caractère "−"/"+" : le glyphe
+   Unicode n'est jamais parfaitement centré optiquement selon la police
+   (constaté malgré un flexbox géométriquement correct), alors que 2
+   barres dessinées en CSS le sont par construction, indépendamment de
+   toute police. Le texte d'origine (−/+) est conservé mais rendu
+   invisible (color:transparent) pour rester lisible par un lecteur
+   d'écran. Minus = 1ère barre (::before, toujours présente) ; Plus =
+   2e barre (::after, ajoutée seulement sur le bouton :last-child de
+   chaque .score-stepper, qui est toujours celui du "+"). */
+.score-stepper-btn {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--bord);
+  background: var(--bg2);
+  color: transparent;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+  position: relative;
+}
+.score-stepper-btn::before,
+.score-stepper-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--txt);
+  border-radius: 1px;
+}
+.score-stepper-btn::before { width: 12px; height: 2px; transform: translate(-50%, -50%); }
+.score-stepper-btn:last-child::after { width: 2px; height: 12px; transform: translate(-50%, -50%); }
+
+/* Inputs pronostic */
+.prono-input {
+  width: 44px;
+  height: 44px;
+  background: var(--bg3);
+  border: 2px solid var(--bord);
+  border-radius: var(--radius-s);
+  color: var(--txt);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color .2s;
+  -moz-appearance: textfield;
+}
+.prono-input::-webkit-outer-spin-button,
+.prono-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.prono-input:focus { border-color: var(--vert); }
+.prono-input.saisi { border-color: var(--vert); background: var(--vert-pale); }
+.prono-input:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  border-color: var(--bord);
+  background: var(--bg3);
+}
+
+.score-sep {
+  color: var(--txt3);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* Score final affiché après match */
+.score-final {
+  background: var(--bg3);
+  border-radius: var(--radius-s);
+  padding: 6px 14px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--txt);
+}
+
+/* Zone résultat (badge + hint) — la ligne badge est toujours présente
+   dans le DOM (invisible si pas de pronostic) pour garantir un
+   alignement pixel-perfect entre toutes les cartes "Terminé" */
+.match-result-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.match-result-zone .prono-hint { margin-top: 0; }
+.invisible { visibility: hidden; }
+
+/* Résultat prono */
+.prono-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: .75rem;
+}
+
+.badge-exact   { background: var(--badge-exact);   color: #fff; padding: 2px 7px; border-radius: 20px; font-weight: 700; font-size: .72rem; }
+.badge-bon     { background: var(--badge-bon);     color: #000; padding: 2px 7px; border-radius: 20px; font-weight: 700; font-size: .72rem; }
+.badge-mauvais { background: var(--badge-mauvais); color: #fff; padding: 2px 7px; border-radius: 20px; font-weight: 700; font-size: .72rem; }
+.badge-pts     { color: var(--bleu-vif); font-weight: 700; }
+
+.prono-hint { font-size: .7rem; color: var(--txt3); margin-top: 4px; }
+.prono-hint.ok { color: var(--vert); }
+
+/* ── EN-TÊTE CARTE (journée / date / heure / statut) — toujours visible ── */
+.match-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--ldc);
+  font-size: .74rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.match-header-date {
+  color: #fff;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.match-header-stade {
+  color: #fff;
+  opacity: .78;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+.match-header-statut {
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: .92;
+}
+.match-header-statut-en-cours { opacity: 1; }
+
+/* ── BLOC COTES (bookmakers + joueurs) — matchs à venir uniquement ── */
+.match-cotes {
+  padding: 8px 14px;
+  border-top: 1px solid var(--bord);
+}
+.cotes-grid {
+  display: grid;
+  grid-template-columns: 76px repeat(3, 44px);
+  gap: 2px 4px;
+  align-items: center;
+  font-size: .72rem;
+}
+.cotes-cell { min-width: 0; }
+.cotes-label {
+  color: var(--txt2);
+  white-space: nowrap;
+}
+.cotes-val {
+  text-align: center;
+  font-weight: 600;
+  color: var(--txt);
+}
+.cotes-entete {
+  color: var(--txt2);
+  font-weight: 400;
+}
+.cotes-attente {
+  grid-column: 2 / 5;
+  text-align: center;
+  font-weight: 400;
+  color: var(--txt2);
+  font-style: italic;
+}
+.cotes-score-populaire {
+  grid-column: 1 / 5;
+  text-align: center;
+  font-size: .72rem;
+  font-style: italic;
+  color: var(--txt2);
+  margin-top: 2px;
+}
+.match-cotes-figee { position: relative; }
+.cotes-badge-figee {
+  position: absolute;
+  left: 234px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: .58rem;
+  font-weight: 700;
+  color: var(--txt2);
+  white-space: nowrap;
+}
+
+/* ── PIED DE CARTE — raccourcis, toujours visibles ── */
+.match-footer {
+  display: flex;
+  padding: 0 10px;
+  border-top: 1px solid var(--bord);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.match-footer::-webkit-scrollbar { display: none; }
+
+.match-footer button {
+  background: none;
+  border: none;
+  border-top: 2px solid transparent;
+  color: var(--txt2);
+  padding: 0 9px;
+  height: 36px;
+  font-size: .74rem;
+  white-space: nowrap;
+  transition: all .2s;
+}
+.match-footer button:hover { color: var(--txt); }
+.match-footer button.active {
+  color: var(--or);
+  border-top-color: var(--or);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--or) 12%, transparent);
+  border-radius: 6px 6px 0 0;
+}
+
+.footer-label-court { display: none; }
+
+/* Badge nombre de pronostics — poussé à droite du pied de carte, cliquable
+   pour ouvrir la liste des pronos des autres joueurs une fois le match
+   commencé ; simple compteur non cliquable avant (données encore masquées) */
+.match-nb-pronos-badge {
+  margin-left: auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--txt2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+button.match-nb-pronos-badge {
+  cursor: pointer;
+  transition: all .2s;
+}
+button.match-nb-pronos-badge:hover,
+button.match-nb-pronos-badge.active { color: var(--or); border-color: var(--or); }
+.match-nb-pronos-badge.disabled { opacity: .6; }
+
+@media (max-width: 480px) {
+  .match-footer button { padding: 0 6px; font-size: .7rem; }
+  .footer-label-full  { display: none; }
+  .footer-label-court { display: inline; }
+}
+
+/* ── DÉTAIL MATCH (panneau dépliable sous le pied de carte) ── */
+.match-detail {
+  border-top: 1px solid var(--bord);
+  display: none;
+}
+.match-card.expanded .match-detail { display: block; }
+
+.detail-body { padding: 10px 14px; }
+.detail-panel { display: none; }
+.detail-panel.active { display: block; }
+
+/* ── Sous-onglets internes du panneau "Analyse" (H2H/Forme/Stats/Tendances/Classement) ── */
+.detail-subtabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bord);
+}
+.detail-subtabs::-webkit-scrollbar { display: none; }
+.detail-subtabs button {
+  background: var(--bg3);
+  border: 1px solid transparent;
+  color: var(--txt2);
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: .74rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.detail-subtabs button:hover { color: var(--txt); }
+.detail-subtabs button.active { color: #fff; background: var(--bleu-vif); }
+
+@media (max-width: 480px) {
+  .detail-subtabs button { padding: 4px 9px; font-size: .7rem; }
+}
+
+/* ── Panneau Tendances (aide à la décision pré-match) ── */
+.tendances-periode-select {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tendances-periode-select button {
+  flex: 1;
+  padding: 6px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--bord);
+  background: var(--bg2);
+  color: var(--txt2);
+  font-size: .75rem;
+  cursor: pointer;
+}
+.tendances-periode-select button.active {
+  background: var(--bleu-vif);
+  color: #fff;
+  border-color: var(--bleu-vif);
+  font-weight: 700;
+}
+
+.tendances-sous-onglets {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 3px;
+  background: var(--bg2);
+  border-radius: 999px;
+}
+.tendances-sous-onglets button {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--bord);
+  background: transparent;
+  color: var(--txt2);
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all .15s;
+}
+.tendances-sous-onglets button:hover { color: var(--txt); border-color: var(--txt2); }
+.tendances-sous-onglets button.active {
+  background: var(--bleu-vif);
+  color: #fff;
+  border-color: var(--bleu-vif);
+}
+
+.tendances-bloc {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--bord);
+}
+.tendances-bloc:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.tendances-takeaway {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(91,155,213,.10), rgba(245,158,11,.08));
+  border: 1px solid rgba(245,158,11,.35);
+  border-radius: var(--radius-s);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+.tendances-takeaway-icone { font-size: 1.15rem; flex-shrink: 0; line-height: 1.3; }
+.tendances-takeaway-titre {
+  font-size: .66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--or);
+  margin-bottom: 2px;
+}
+.tendances-takeaway-texte { font-size: .82rem; font-weight: 600; color: var(--txt); line-height: 1.35; }
+
+.tendances-titre {
+  font-weight: 700;
+  font-size: .88rem;
+  text-align: center;
+}
+.tendances-souscadre {
+  text-align: center;
+  margin: 2px 0 8px;
+}
+.tendances-badge-reduit {
+  font-size: .65rem;
+  font-weight: 600;
+  color: var(--or);
+  background: rgba(245, 158, 11, .15);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+.tendances-nb-matchs {
+  font-size: .68rem;
+  font-weight: 500;
+  color: var(--txt2);
+  opacity: .8;
+}
+
+/* Gros chiffre mis en avant (ex : buts/match du championnat) */
+.tendances-gros-chiffre {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.tendances-gros-chiffre b { display: block; font-size: 1.25rem; color: var(--txt); line-height: 1.1; }
+.tendances-gros-chiffre span { font-size: .72rem; color: var(--txt2); }
+
+.tendances-ligne {
+  font-size: .8rem;
+  padding: 2px 0;
+  color: var(--txt2);
+}
+.tendances-ligne b { color: var(--txt); }
+
+.tendances-repartition {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+.tendances-repart-item {
+  flex: 1;
+  text-align: center;
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 6px 4px;
+}
+.tendances-repart-item b { display: block; font-size: 1.05rem; }
+.tendances-repart-item span { font-size: .62rem; color: var(--txt2); }
+
+/* Barre empilée à segments (victoires dom/nuls/ext, possession...) —
+   chaque segment affiche son texte centré à l'intérieur de lui-même */
+.tendances-repart-barre {
+  display: flex;
+  height: 26px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--bg2);
+  margin-bottom: 8px;
+}
+.tendances-repart-barre-fine { height: 22px; }
+.tendances-repart-barre > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.tendances-repart-barre span {
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  padding: 0 4px;
+}
+.tendances-repart-barre-fine span { font-size: .6rem; padding: 0 2px; }
+
+/* Contraste : texte blanc illisible sur fond orange clair (les 2 modes)
+   et sur fond gris (mode sombre) — texte foncé à la place sur ces 2 fonds */
+.tendances-seg-orange span {
+  color: #1e293b;
+  text-shadow: none;
+}
+.tendances-seg-gris span {
+  color: #0f172a;
+  text-shadow: none;
+}
+[data-theme="light"] .tendances-seg-gris span {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+
+/* Segments dont le texte ne rentre pas (détecté après affichage) —
+   soulignement pointillé + curseur pour indiquer "cliquable" (utile
+   surtout sur mobile, où le survol/title ne fonctionne pas) */
+.tendances-segment-tronque {
+  cursor: pointer;
+}
+.tendances-segment-tronque span {
+  text-decoration: underline dotted rgba(255,255,255,.7);
+  text-underline-offset: 2px;
+}
+
+/* Jauge simple (une seule stat en %) avec sous-titre explicatif */
+.tendances-jauge { margin-bottom: 8px; }
+.tendances-jauge-label {
+  font-size: .8rem;
+  color: var(--txt);
+  margin-bottom: 3px;
+  text-align: center;
+}
+.tendances-jauge-label small {
+  font-size: .72rem;
+  font-weight: 400;
+  color: var(--txt2);
+}
+
+.tendances-scores { margin-top: 6px; font-size: .75rem; color: var(--txt2); }
+.tendances-scores > span { display: block; text-align: center; text-decoration: underline; }
+.tendances-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+.tendances-fermer {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px;
+  border-radius: 8px;
+  border: 1px solid var(--bord);
+  background: var(--bg2);
+  color: var(--txt2);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tendances-fermer:hover { border-color: var(--rouge); color: var(--rouge); }
+.tendances-chip {
+  background: var(--bg2);
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: .72rem;
+  color: var(--txt);
+}
+.tendances-chip i { font-style: normal; color: var(--txt2); }
+
+
+/* ── H2H ── */
+.h2h-list { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.h2h-venue-selector {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.h2h-venue-btn {
+  background: var(--bg3);
+  color: var(--txt2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  padding: 4px 10px;
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.h2h-venue-btn:hover { color: var(--txt); }
+.h2h-venue-btn.active {
+  background: var(--bleu-accent);
+  color: #fff;
+}
+.h2h-venue-emoji { margin-left: 4px; }
+
+.h2h-resume-pill {
+  background: var(--bg3);
+  border-radius: var(--radius-sm, 10px);
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.h2h-resume-titre {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: 4px;
+}
+.h2h-resume-ligne {
+  font-size: .74rem;
+  font-weight: 600;
+  color: var(--txt2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.h2h-resume-w { color: var(--txt); }
+.h2h-resume-d { color: var(--txt2); }
+.h2h-resume-sep { color: var(--txt2); opacity: .5; }
+
+.h2h-resume-bar {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+  background: var(--bg2);
+}
+.h2h-bar-seg { height: 100%; }
+.h2h-bar-w { background: var(--forme-w); }
+.h2h-bar-d { background: var(--forme-d); }
+.h2h-bar-l { background: var(--forme-l); }
+
+.h2h-resume-pct {
+  display: flex;
+  width: 100%;
+  font-size: .66rem;
+  font-weight: 700;
+  margin-top: 3px;
+}
+.h2h-pct-seg { text-align: center; white-space: nowrap; }
+.h2h-resume-pct .h2h-resume-l { color: var(--forme-l); }
+.h2h-resume-pct .h2h-resume-w { color: var(--forme-w); }
+.h2h-resume-pct .h2h-resume-d { color: var(--txt2); }
+.h2h-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .82rem;
+  width: 100%;
+}
+.h2h-core {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex: 1;
+}
+.h2h-date {
+  color: var(--txt);
+  font-weight: 600;
+  font-size: .68rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  width: 58px;
+}
+.h2h-nom-dom {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  width: 90px;
+  flex-shrink: 0;
+}
+.h2h-score {
+  text-align: center;
+  font-weight: 700;
+  background: var(--bg3);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  font-size: .84rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.h2h-nom-ext {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+/* ── STATS BARRES ── */
+.stat-row { display: flex; flex-direction: column; gap: 10px; }
+.stat-item {
+  display: grid;
+  grid-template-columns: 90px 36px 1fr 1fr 36px 90px;
+  align-items: center;
+  gap: 8px;
+  font-size: .8rem;
+}
+.stat-label { color: var(--txt2); font-size: .75rem; }
+.stat-label.right { text-align: right; }
+.stat-val { font-weight: 700; text-align: center; }
+.stat-bar-wrap { height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.stat-bar { height: 100%; border-radius: 3px; }
+.stat-bar.dom { background: var(--vert); }
+.stat-bar.ext { background: var(--or); float: right; }
+
+/* ============================================================
+   CLASSEMENT ÉQUIPES
+   ============================================================ */
+.legende {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 auto 12px;
+  max-width: 1120px;
+  font-size: .73rem;
+  color: var(--txt2);
+}
+.legende-item { display: flex; align-items: center; gap: 5px; }
+.leg-dot { width: 12px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+
+/* Popup "Légende des icônes" (classement joueurs) */
+.legende-icones-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 8px;
+}
+.legende-icones-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .85rem;
+  color: var(--txt);
+}
+.legende-icones-ico {
+  flex-shrink: 0;
+  width: 40px;
+  text-align: center;
+  font-size: 1.15rem;
+}
+
+/* Wrapper scrollable horizontal */
+.classement-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* Indicateur scroll à droite */
+.scroll-hint {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(to right, transparent, var(--bg2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: .9rem;
+  color: var(--txt2);
+  transition: opacity .3s;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.scroll-hint.hidden { opacity: 0; }
+
+.classement-table {
+  border-collapse: collapse;
+  font-size: .82rem;
+  width: 100%;
+}
+
+/* Nom court visible sur PC, code sur mobile */
+.club-nom-court { font-weight: 600; color: var(--nom-color); }
+.club-code-mobile { display: none; font-weight: 600; font-size: .75rem; }
+.classement-table th {
+  color: var(--bleu-accent);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .3px;
+  padding: 8px 5px;
+  text-align: center;
+  border-bottom: 2px solid var(--bleu-accent);
+  white-space: nowrap;
+}
+.classement-table th:first-child { text-align: center; width: 28px; }
+.classement-table th:nth-child(2) { text-align: center; }
+
+.classement-table td {
+  padding: 7px 5px;
+  text-align: center;
+  border-bottom: 1px solid var(--bord);
+  transition: background .15s;
+  white-space: nowrap;
+  font-weight: 700;
+}
+/* Padding vertical réduit sur PC pour faire tenir plus de lignes sans
+   scroll (même logique que pour la Grille complète) */
+@media (min-width: 900px) {
+  .classement-table { font-size: .8rem; }
+  .classement-table th { padding: 4px 5px; }
+  .classement-table td { padding: 3px 5px; }
+  .classement-table .club-logo { width: 22px; height: 22px; }
+}
+.classement-table td:first-child { text-align: center; }
+.classement-table td:nth-child(2) { text-align: left; }
+.classement-table th:nth-child(2),
+.classement-table td:nth-child(2) {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.classement-table tr:hover td { background: var(--bg3); }
+
+.club-cell-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.club-nom-txt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--nom-color);
+  width: 85px !important;
+}
+.stat-fort { font-weight: 700; color: var(--txt); }
+.joueur-nom { text-align: left; font-weight: 700; color: var(--nom-color); }
+.stat-moy  { font-weight: 800; color: var(--bleu-accent); }
+
+@media (min-width: 641px) {
+  .classement-table th:nth-child(n+3),
+  .classement-table td:nth-child(n+3) {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  /* Resserrer un peu le tableau sur PC : Club, Forme et Pén. n'ont pas
+     besoin de toute la place qu'elles prenaient */
+  .classement-table th { font-size: .82rem; }
+  /* :not(.stats-joueurs-table) car dans Classement-équipes la colonne 2
+     est "Club" (à resserrer), mais dans Buteurs/Passeurs la colonne 2 est
+     "Joueur" — c'est CETTE règle, et non le conteneur flex/grid, qui
+     plafonnait silencieusement le nom du joueur à 60px sur PC depuis le
+     début, quels que soient les width!important posés par ailleurs. */
+  .classement-table:not(.stats-joueurs-table) th:nth-child(2),
+  .classement-table:not(.stats-joueurs-table) td:nth-child(2) { max-width: 60px; }
+  .classement-table .club-logo { width: 28px; height: 28px; }
+  .classement-table .club-nom-court { font-size: .9rem; }
+  .classement-table th:nth-child(11),
+  .classement-table td:nth-child(11) { width: 60px; }
+  .classement-table th:nth-child(12),
+  .classement-table td:nth-child(12) { width: 42px; }
+}
+
+/* Traits verticaux : uniquement entre les grands blocs logiques (avant le
+   trio G/N/P, avant le trio BP/BC/±) plutôt que sur chaque colonne — évite
+   l'effet "tableur" tout en gardant un minimum de repère de lecture */
+.classement-table th:nth-child(5),
+.classement-table td:nth-child(5),
+.classement-table th:nth-child(8),
+.classement-table td:nth-child(8) {
+  border-left: 1px solid var(--bord);
+}
+
+/* ── Buteurs & Passeurs côte à côte sur PC ──
+   La vraie cause du bug de largeur Joueur était une règle générique
+   .classement-table td:nth-child(2){max-width:60px} qui visait la colonne
+   Club du Classement équipes — corrigée (exclusion .stats-joueurs-table).
+   Le conteneur flex n'y était pour rien ; flex:none reste néanmoins en
+   place pour garantir que chaque tableau garde sa largeur de contenu. */
+.buteurs-passeurs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+@media (min-width: 900px) {
+  .buteurs-passeurs-grid { flex-direction: row; gap: 60px; justify-content: center; flex-wrap: wrap; }
+  .bp-col { flex: none; }
+}
+.bp-col-titre {
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--bleu-accent);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.bonus-toggle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+}
+.bonus-toggle-label {
+  font-weight: 800;
+  color: var(--txt);
+  font-size: .88rem;
+}
+/* Table plus compacte pour tenir à 2 sur PC, largeurs harmonisées entre
+   Buteurs et Passeurs via des classes dédiées (et non nth-child, puisque
+   Buteurs a une colonne Pén. de plus que Passeurs).
+   table-layout: fixed + largeur figée sur CHAQUE colonne (et pas juste
+   max-width sur une cellule) : en layout "auto" par défaut, réduire une
+   colonne libère de la place que le navigateur redistribue ailleurs de
+   façon imprévisible (constaté avec Joueur/Club qui se "renvoyaient" la
+   largeur l'une à l'autre). En layout fixe, chaque colonne obtient
+   exactement la largeur déclarée, point final. */
+.stats-joueurs-table { table-layout: fixed; width: auto; margin: 0 auto; }
+.stats-joueurs-table .col-rang { width: 26px; }
+.stats-joueurs-table th.col-club { text-align: center; }
+.stats-joueurs-table .rang { font-size: 1rem; font-weight: 800; }
+.stats-joueurs-table .col-joueur {
+  width: 115px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.joueur-nom-txt { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 115px; }
+.stats-joueurs-table .col-club {
+  width: 85px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+@media (min-width: 641px) {
+  .stats-joueurs-table .col-joueur { width: 210px !important; }
+  .joueur-nom-txt { width: 200px !important; }
+}
+.stats-joueurs-table .col-principal,
+.stats-joueurs-table .col-pen,
+.stats-joueurs-table .col-mj,
+.stats-joueurs-table .col-moy { width: 50px; }
+
+/* Bordures + fond qualifications — stabilo soutenu */
+.classement-table tr.qualif-ldc td:first-child        { border-left: 6px solid var(--ldc); }
+.classement-table tr.qualif-ldc-prelim td:first-child  { border-left: 6px solid var(--ldc-clair); }
+.classement-table tr.qualif-europa td:first-child  { border-left: 6px solid var(--europa); }
+.classement-table tr.qualif-conf td:first-child    { border-left: 6px solid var(--conference); }
+.classement-table tr.barrage td:first-child        { border-left: 6px solid var(--barrage); }
+.classement-table tr.relegue td:first-child        { border-left: 6px solid var(--relégation); }
+
+.rang { font-weight: 700; color: var(--txt2); width: 24px; }
+.rang.top3 { color: var(--or); }
+
+.club-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.club-cell-clic {
+  cursor: pointer;
+}
+.club-cell-clic:hover .club-nom-court,
+.club-cell-clic:hover .club-nom {
+  text-decoration: underline;
+}
+.club-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+.club-nom { font-weight: 600; color: var(--nom-color); }
+
+.pts-cell { font-weight: 800; color: var(--bleu-accent); font-size: .95rem; }
+.classement-table:not(.stats-joueurs-table) td:nth-child(5) { color: var(--bleu-accent); font-weight: 700; }
+.classement-table:not(.stats-joueurs-table) td:nth-child(7) { color: var(--rouge); font-weight: 700; }
+
+/* Records du classement — meilleure attaque/défense, plus de victoires,
+   de nuls, de défaites. Fond soutenu + texte en gras, coloré selon le sens
+   du record (vert = positif, or = neutre, rouge = négatif) */
+.stat-record { font-weight: 800; border-radius: 4px; }
+.stat-record-vert  { background: var(--bleu-pale);  color: var(--bleu-vif); }
+.stat-record-or    { background: var(--or-pale);    color: var(--or); }
+.stat-record-rouge { background: var(--rouge-pale); color: var(--rouge); }
+.pts-rouge { color: var(--rouge); }
+.pts-or    { color: var(--or); }
+
+.forme-cell { display: flex; gap: 3px; justify-content: center; }
+
+/* ============================================================
+   CLASSEMENT JOUEURS — PODIUM (logique CDM : groupes de points
+   distincts, gère les ex-aequo sur une même marche)
+   ============================================================ */
+.vide {
+  text-align: center;
+  color: var(--txt2);
+  font-size: .85rem;
+  padding: 2rem;
+}
+
+.podium-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
+  gap: 8px;
+  padding-top: 8px;
+  margin: 16px 0 28px;
+}
+.pod-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+.couronne { font-size: 22px; margin-bottom: 4px; }
+.pod-barre {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  margin-top: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,.25);
+}
+.pod-rang {
+  font-size: 26px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 1px 2px 4px rgba(0,0,0,.5);
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Tableau joueurs */
+.joueurs-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.joueurs-table th {
+  color: var(--txt2);
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  padding: 9px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--bord);
+}
+.joueurs-table th:nth-child(2) { text-align: left; }
+.joueurs-table td { padding: 10px 10px; text-align: center; border-bottom: 1px solid var(--bord); }
+.joueurs-table td:nth-child(2) { text-align: left; }
+.joueurs-table tr:hover td { background: var(--bg3); }
+
+.ligne-champion td { background: var(--or-pale); }
+.ligne-champion:hover td { background: var(--or-pale); }
+
+#joueurs-table-contenu { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Entêtes Podium (Général / Par journée) : icônes partout (mobile ET PC),
+   texte uniquement dans le title (tooltip) — cf. helpers _thTexteIcone /
+   _thIconeCombo. Sur mobile, .th-icon-combo (Buts D/E) est empilé en
+   colonne pour économiser la largeur ; sur PC, affiché en ligne, la
+   colonne étant assez large pour les 2 icônes côte à côte */
+.joueurs-table th .th-txt { display: none; }
+.joueurs-table th .th-icon {
+  display: inline-block;
+  font-size: .95rem;
+  line-height: 1.15;
+}
+.joueurs-table th .th-icon-combo {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+@media (min-width: 641px) {
+  .joueurs-table th .th-icon { font-size: 1.05rem; }
+  .joueurs-table th .th-icon-combo { flex-direction: row; gap: 3px; }
+}
+@media (max-width: 640px) {
+  .joueurs-table { font-size: .74rem; }
+  .joueurs-table th, .joueurs-table td { padding: 8px 4px; }
+  /* Les 8 colonnes d'icônes (Pronos, Exacts, Bons, Écart, Buts D, Buts E,
+     Champion, Bonus — nth-child 4 à 11) n'ont besoin que de très peu de
+     largeur (1-2 chiffres) : padding resserré pour gagner de la place.
+     La colonne Pts (nth-child 3) garde son padding normal, pour rester
+     confortable même avec de futurs totaux à 6 caractères (ex: 123.45
+     en mode "Avec cotes"). */
+  .joueurs-table th:nth-child(n+4), .joueurs-table td:nth-child(n+4) { padding-left: 2px; padding-right: 2px; }
+  .joueurs-table .user-av { width: 24px; height: 24px; font-size: .68rem; }
+  .joueurs-table .user-cell { gap: 5px; }
+}
+
+/* Podium > Général et Par journée : entêtes en 1ère lettre majuscule
+   (celle du HTML) plutôt qu'en majuscules forcées par .joueurs-table th —
+   scopé à ces 2 tableaux seulement, la règle de base reste inchangée pour
+   les autres usages de .joueurs-table (Mon historique, Admin > Joueurs).
+   Colonne Joueur décalée pour être à l'aplomb du nom plutôt que de
+   l'avatar : padding cellule + largeur avatar + gap */
+#joueurs-table-contenu .joueurs-table th,
+#joueurs-journee-contenu .joueurs-table th {
+  text-transform: none;
+  font-weight: 700;
+}
+/* Entêtes agrandis sur PC uniquement (mobile reste à .72rem, l'espace y
+   est plus compté) */
+@media (min-width: 641px) {
+  #joueurs-table-contenu .joueurs-table th,
+  #joueurs-journee-contenu .joueurs-table th,
+  #sub-stats .stats-taux-table th {
+    font-size: .82rem;
+  }
+}
+#joueurs-table-contenu .joueurs-table th:nth-child(2),
+#joueurs-journee-contenu .joueurs-table th:nth-child(2) {
+  padding-left: 48px;
+}
+@media (max-width: 640px) {
+  #joueurs-table-contenu .joueurs-table th:nth-child(2),
+  #joueurs-journee-contenu .joueurs-table th:nth-child(2) {
+    padding-left: 33px;
+  }
+}
+
+.user-cell { display: flex; align-items: center; gap: 8px; }
+.user-av {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .78rem;
+  color: #fff;
+  flex-shrink: 0;
+  background: var(--bleu-vif);
+}
+
+/* ============================================================
+   BONUS
+   ============================================================ */
+.bonus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+}
+
+.bonus-card {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: border-color .2s;
+}
+.bonus-card:hover { border-color: var(--or); }
+.bonus-card.valide { border: 2px solid var(--vert); background: var(--vert-pale); }
+.bonus-card.expire { opacity: .6; }
+
+.bonus-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+.bonus-label { font-weight: 700; font-size: .92rem; }
+.bonus-pts {
+  background: var(--or);
+  color: #000;
+  font-weight: 800;
+  font-size: .72rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bonus-select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius-s);
+  color: var(--txt);
+  padding: 9px 12px;
+  font-size: .86rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s;
+  margin-bottom: 4px;
+}
+.bonus-select:focus { border-color: var(--or); }
+.bonus-select:disabled { opacity: .5; cursor: not-allowed; }
+.bonus-select.saisi { font-weight: 700; border: 2px solid var(--vert); background: var(--vert-pale); padding: 8px 11px; }
+.input-field.saisi { font-weight: 700; border: 2px solid var(--vert); background: var(--vert-pale); padding: 8px 11px; }
+
+.bonus-deadline {
+  font-size: .72rem;
+  color: var(--txt3);
+  margin-top: 6px;
+}
+.bonus-deadline.urgent { color: var(--rouge); }
+
+/* ============================================================
+   FORMULAIRES & INPUTS GÉNÉRIQUES
+   ============================================================ */
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.form-label { font-size: .82rem; color: var(--txt2); font-weight: 500; }
+
+.input-field {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius-s);
+  color: var(--txt);
+  padding: 10px 14px;
+  font-size: .9rem;
+  outline: none;
+  transition: border-color .2s;
+  width: 100%;
+}
+.input-field:focus { border-color: var(--vert); }
+.input-field.error { border-color: var(--rouge); }
+
+/* ── BOUTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-s);
+  font-size: .88rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary { background: var(--vert); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--vert-f); }
+
+.btn-secondary {
+  background: var(--bg3);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+}
+.btn-secondary:hover:not(:disabled) { border-color: var(--vert); color: var(--vert); }
+
+.btn-danger { background: var(--rouge); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: #b52424; }
+
+.btn-or { background: var(--or); color: #000; }
+.btn-or:hover:not(:disabled) { background: #d4891a; }
+
+.btn-sm { padding: 6px 14px; font-size: .8rem; }
+.btn-full { width: 100%; }
+
+/* ── MESSAGES D'ERREUR / SUCCÈS ── */
+.msg-erreur {
+  background: var(--rouge-pale);
+  border: 1px solid var(--rouge);
+  border-radius: var(--radius-s);
+  color: var(--rouge);
+  padding: 10px 14px;
+  font-size: .84rem;
+  margin-top: 10px;
+}
+.msg-ok {
+  background: var(--vert-pale);
+  border: 1px solid var(--vert);
+  border-radius: var(--radius-s);
+  color: var(--vert);
+  padding: 10px 14px;
+  font-size: .84rem;
+  margin-top: 10px;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-f);
+  position: relative;
+}
+
+/* Modal effectif — scrollable */
+#modal-club .modal {
+  max-width: 500px;
+  height: 82vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px;
+}
+#modal-club-contenu {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Modal classement (depuis une carte match) — scrollable, même principe */
+#modal-classement-match .modal {
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#modal-classement-match-contenu {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ============================================================
+   MODAL COMPOSITION — terrain en perspective + banc
+   ============================================================ */
+.modal-composition-box {
+  max-width: 440px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 20px 18px;
+}
+
+.compo-formation {
+  text-align: center;
+  font-size: .8rem;
+  color: var(--txt2);
+  margin: 4px 0 10px;
+}
+.compo-formation strong { color: var(--txt); }
+
+.compo-coach {
+  text-align: center;
+  font-size: .74rem;
+  color: var(--txt3);
+  margin: 10px 0 4px;
+}
+
+/* ── Terrain en perspective (trapèze vert sur cadre rectangulaire noir) ── */
+.pitch-wrap {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 360px;
+  background: #0b0e12;
+  border-radius: 12px;
+  padding: 14px 10px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 8px 20px rgba(0,0,0,.35);
+}
+
+.pitch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(255,255,255,.10), transparent 55%),
+    linear-gradient(180deg, #1a7a42 0%, #14622f 55%, #0f4d25 100%);
+  border-radius: 4px;
+  overflow: hidden;
+  clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+  box-shadow: 0 12px 28px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+/* Bandes de tonte alternées */
+.pitch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,.05) 0, rgba(255,255,255,.05) 12.5%,
+    transparent 12.5%, transparent 25%
+  );
+  pointer-events: none;
+}
+
+.pitch-lines-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Quadrillage de repérage (admin) ── */
+.btn-grille-debug {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 6px;
+  color: #fff;
+  font-size: .85rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.btn-grille-debug:hover { background: rgba(255,255,255,.2); }
+.pitch-grid-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 5;
+}
+.pitch-grid-overlay.visible { display: block; }
+.pitch-grid-svg-v {
+  stroke: #ff00ff;
+  stroke-width: 1.3;
+  stroke-dasharray: 4,4;
+  opacity: .85;
+  vector-effect: non-scaling-stroke;
+}
+.pitch-grid-svg-h {
+  stroke: #00e5ff;
+  stroke-width: 1.3;
+  stroke-dasharray: 4,4;
+  opacity: .85;
+  vector-effect: non-scaling-stroke;
+}
+.pitch-grid-svg-label {
+  fill: #ff00ff;
+  font-size: 11px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #000;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.pitch-grid-svg-label-h {
+  fill: #00e5ff;
+  font-size: 10px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #000;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.pitch-grid-line-v {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, #ff00ff, #ff00ff 4px, transparent 4px, transparent 8px);
+}
+.pitch-grid-line-h-debug {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #ff00ff, #ff00ff 4px, transparent 4px, transparent 8px);
+}
+.pitch-grid-label {
+  position: absolute;
+  top: 2px; left: 2px;
+  transform: translateX(-50%);
+  background: #ff00ff;
+  color: #fff;
+  font-size: .55rem;
+  font-weight: 800;
+  padding: 0 3px;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+.pitch-grid-line-h-debug .pitch-grid-label {
+  top: 2px; left: 2px;
+  transform: translateY(-50%);
+}
+.pitch-grid-line-col {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, #00e5ff, #00e5ff 4px, transparent 4px, transparent 8px);
+}
+.pitch-grid-label-col {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #00e5ff;
+  color: #04262b;
+  font-size: .55rem;
+  font-weight: 800;
+  padding: 0 3px;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+.pitch-player {
+  position: absolute;
+  transform: translateX(-50%);
+  margin-top: -20px; /* -(hauteur photo-wrap 40px / 2) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 54px;
+  z-index: 2;
+}
+.pitch-player-photo-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+.pitch-player-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg3);
+  border: 2px solid #fff;
+  box-shadow: 0 3px 10px rgba(0,0,0,.5);
+  display: block;
+}
+.pitch-player-num {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  background: #2563eb;
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fff;
+  z-index: 3;
+}
+.pitch-player-name {
+  margin-top: 3px;
+  font-size: .58rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.7);
+  line-height: 1.15;
+  max-width: 66px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+/* Flèche de sortie — sous le nom, en flux normal (jamais superposée) */
+.pitch-player-sorti {
+  margin-top: 1px;
+  font-size: .85rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #ef4444;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+/* Badge note — coin haut-gauche de la photo (le n° de maillot reste en
+   bas-droite, le badge capitaine en haut-droite : les 3 badges ne se
+   chevauchent jamais) */
+.pitch-player-note {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  color: #fff;
+  font-size: .56rem;
+  font-weight: 800;
+  min-width: 17px;
+  height: 14px;
+  padding: 0 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fff;
+  z-index: 3;
+}
+.note-bonne   { background: #22c55e; }
+.note-moyenne { background: #f59e0b; }
+.note-faible  { background: #ef4444; }
+/* Badge capitaine — coin haut-droite */
+.pitch-player-capitaine {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #2563eb;
+  color: #fff;
+  font-size: .58rem;
+  font-weight: 800;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fff;
+  z-index: 3;
+}
+/* Badge carton — coin bas-gauche (seul coin restant : n° en bas-droite,
+   note en haut-gauche, capitaine en haut-droite) */
+.pitch-player-carton {
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 9px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,.4);
+  z-index: 3;
+}
+.pitch-player-carton-jaune { background: #eab308; }
+.pitch-player-carton-rouge { background: #dc2626; }
+/* Dans le banc, ce même badge est un enfant en flux normal (pas de photo-wrap
+   positionné à côté) : on annule l'absolute pour éviter qu'il s'échappe
+   n'importe où dans la page, comme .pitch-player-note avant lui. */
+.bench-player .pitch-player-carton {
+  position: static;
+  display: inline-block;
+  flex-shrink: 0;
+}
+/* Photos/noms agrandis x1.5 sur PC uniquement (mobile reste tel quel,
+   l'espace y est plus compté) */
+@media (min-width: 641px) {
+  .pitch-player { width: 68px; margin-top: -24px; /* -(48px/2) */ }
+  .pitch-player-photo-wrap { width: 48px; height: 48px; }
+  .pitch-player-photo { width: 48px; height: 48px; }
+  .pitch-player-num { width: 19px; height: 19px; font-size: .72rem; }
+  .pitch-player-name { font-size: .62rem; max-width: 64px; }
+  .pitch-player-sorti { font-size: 1rem; }
+  .pitch-player-note { min-width: 20px; height: 16px; font-size: .66rem; }
+  .pitch-player-capitaine { width: 16px; height: 16px; font-size: .68rem; }
+}
+
+/* Fallback photo (initiale) — mêmes dimensions que l'image remplacée */
+.photo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg3);
+  color: var(--txt2);
+  font-weight: 800;
+}
+.pitch-player-photo.photo-fallback { font-size: 1rem; }
+
+/* ── Banc de touche ── */
+.bench-title {
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--txt);
+  margin: 16px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.bench-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bench-player {
+  display: grid;
+  grid-template-columns: 22px 32px 20px minmax(0, max-content) 18px 44px 14px;
+  grid-template-areas:
+    "min photo num nom fleche note carton"
+    ".   photo .   sortnom sortfleche . .";
+  align-items: center;
+  column-gap: 4px;
+  row-gap: 0;
+  background: var(--bg3);
+  border-radius: var(--radius-s);
+  padding: 6px 10px;
+}
+.bench-player-photo {
+  grid-area: photo;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg2);
+  display: block;
+}
+.bench-player-photo.photo-fallback { font-size: .8rem; }
+.bench-player-num {
+  grid-area: num;
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--txt2);
+}
+.bench-player-nom {
+  grid-area: nom;
+  font-size: .78rem;
+  font-weight: 700;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bench-player-poste { font-size: .68rem; color: var(--txt3); }
+
+/* ── Banc : groupé par poste — minute, photo, #, nom (sortant en dessous,
+   plus petit et discret), flèche verte, note. Miroir complet pour la
+   colonne ext (symétrie avec le reste de la vue combinée). ── */
+/* ── Banc : grille stricte à 7 colonnes — minute, photo, #, nom, flèche
+   verte, note, carton — pour un alignement identique quelle que soit la
+   longueur des noms. 2e ligne : sortant (nom réduit + flèche rouge),
+   uniquement dans les colonnes 4 et 5. Miroir complet pour la colonne
+   ext (symétrie avec le reste de la vue combinée). ── */
+.bench-cell-min {
+  grid-area: min;
+  font-size: .68rem;
+  color: var(--txt2);
+  text-align: right;
+}
+.bench-cell-fleche { grid-area: fleche; }
+.bench-cell-note { grid-area: note; }
+.bench-cell-carton { grid-area: carton; }
+.bench-player-sortant-nom {
+  grid-area: sortnom;
+  font-size: .66rem;
+  color: var(--txt3);
+  line-height: 1;
+  margin-top: -2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bench-sub-fleche-out { grid-area: sortfleche; line-height: 1; margin-top: -2px; }
+.bench-player-note {
+  font-size: .68rem;
+  font-weight: 800;
+  color: #000;
+  padding: 1px 6px;
+  border-radius: 10px;
+  display: inline-block;
+}
+.bench-sub-fleche {
+  font-size: .85rem;
+  font-weight: 800;
+}
+.bench-sub-fleche-out { color: var(--rouge); }
+.bench-sub-fleche-in  { color: var(--vert); }
+
+/* Miroir (colonne ext) : mêmes colonnes, ordre inversé —
+   carton, note, flèche, nom, #, photo, minute */
+.bench-player.bench-miroir {
+  grid-template-columns: 14px 44px 18px minmax(0, max-content) 20px 32px 22px;
+  grid-template-areas:
+    "carton note fleche nom num photo min"
+    ". . sortfleche sortnom . photo .";
+  justify-content: end;
+}
+
+.bench-groupe-titre {
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 10px 0 4px;
+}
+.bench-groupe-titre:first-child { margin-top: 0; }
+.bench-groupe-titre-compact { font-size: .62rem; margin: 8px 0 3px; }
+.bench-separateur {
+  height: 1px;
+  background: var(--bord);
+  margin: 8px 0 0;
+}
+
+/* ============================================================
+   VUE COMBINÉE — terrain unique en largeur, coupé en 2
+   ============================================================ */
+.modal-composition-wide { max-width: 640px; }
+@media (min-width: 641px) {
+  /* Modale élargie sur PC pour donner de la place aux photos/noms
+     agrandis sans que les joueurs proches (ex: le trio offensif d'un
+     4-2-3-1) ne se chevauchent */
+  .modal-composition-wide { max-width: 1080px; }
+  /* Vue équipe seule (.modal par défaut, 420px) : même élargissement,
+     :not() pour ne pas entrer en conflit de spécificité avec la règle
+     ci-dessus qui gère la vue combinée */
+  #modal-composition .modal:not(.modal-composition-wide) { max-width: 680px; }
+}
+
+/* Vue combinée (2 compos sur 1 terrain) : marges resserrées sur mobile
+   pour donner le maximum de largeur au terrain — les étiquettes de noms
+   y sont déjà très petites, chaque pixel gagné compte */
+@media (max-width: 480px) {
+  .modal-composition-wide.modal { padding: 14px 8px; }
+}
+
+.compo-vs-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 4px 0 10px;
+  flex-wrap: wrap;
+}
+.compo-vs-team {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.compo-vs-team.droite { text-align: right; }
+.compo-vs-nom {
+  font-size: .86rem;
+  font-weight: 800;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.compo-vs-formation {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--txt2);
+  background: var(--bg3);
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  /* Le nom de l'équipe est déjà affiché juste au-dessus (titre de la
+     modale) — on le masque ici pour que formation+note tiennent sur
+     une seule ligne, sans se faire couper. L'ordre HTML (nom-formation-
+     note à gauche, note-formation-nom à droite) fait qu'il reste bien
+     "formation note" à gauche et "note formation" à droite une fois le
+     nom retiré. */
+  .compo-vs-nom { display: none; }
+}
+.compo-note-moyenne-h {
+  font-size: .78rem;
+  font-weight: 800;
+  color: #000;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.compo-note-moyenne {
+  font-size: .8rem;
+  font-weight: 800;
+  color: #000;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+.compo-vs-coachs {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: .74rem;
+  color: var(--txt2);
+  margin-bottom: 8px;
+}
+
+.pitch-h-wrap {
+  background: #0b0e12;
+  border-radius: 12px;
+  padding: 12px 8px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 8px 20px rgba(0,0,0,.35);
+}
+.pitch-h {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.08), transparent 60%),
+    linear-gradient(90deg, #14622f 0%, #1a7a42 50%, #14622f 100%);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,.5);
+}
+/* Terrain plus large que haut reste possible sur PC vu la largeur
+   disponible, mais toujours plus haut que le 16/9 d'origine : l'écart
+   vertical entre joueurs (positions calculées en % sur cette hauteur)
+   dépend directement de ce ratio — trop plat = collisions de noms */
+@media (min-width: 641px) {
+  .pitch-h { aspect-ratio: 3 / 2; }
+}
+.pitch-h::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(255,255,255,.05) 0, rgba(255,255,255,.05) 12.5%,
+    transparent 12.5%, transparent 25%
+  );
+  pointer-events: none;
+}
+.pitch-h-mid {
+  position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+  background: rgba(255,255,255,.5); transform: translateX(-50%);
+}
+.pitch-h-circle {
+  position: absolute; left: 50%; top: 50%;
+  width: 17%; aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255,255,255,.45);
+  border-radius: 50%;
+}
+.pitch-h-box-left {
+  position: absolute; left: 0; top: 20%; bottom: 20%; width: 13%;
+  border: 2px solid rgba(255,255,255,.45); border-left: none;
+}
+.pitch-h-box-right {
+  position: absolute; right: 0; top: 20%; bottom: 20%; width: 13%;
+  border: 2px solid rgba(255,255,255,.45); border-right: none;
+}
+.pitch-h-goal-left {
+  position: absolute; left: 0; top: 42%; height: 16%; width: 1.8%;
+  background: rgba(255,255,255,.85); border-radius: 0 2px 2px 0;
+}
+.pitch-h-goal-right {
+  position: absolute; right: 0; top: 42%; height: 16%; width: 1.8%;
+  background: rgba(255,255,255,.85); border-radius: 2px 0 0 2px;
+}
+
+.pitch-player-h { width: 36px; margin-top: -12px; /* -(24px/2), remplace le -20px de .pitch-player */ }
+.pitch-player-photo-wrap-h { position: relative; width: 24px; height: 24px; margin: 0 auto; }
+.pitch-player-photo-h {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg3);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  display: block;
+}
+.pitch-player-photo-h.photo-fallback { display: flex; align-items: center; justify-content: center; font-size: .66rem; }
+.pitch-player-num-h {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 12px; height: 12px; font-size: .5rem;
+}
+/* Badges note/capitaine et flèche : versions réduites pour les petites
+   photos de la vue combinée (sinon disproportionnées à 24px) */
+.pitch-player-photo-wrap-h .pitch-player-note {
+  top: -2px; left: -2px; min-width: 12px; height: 10px; font-size: .4rem; border-width: 1px;
+}
+.pitch-player-photo-wrap-h .pitch-player-capitaine {
+  top: -2px; right: -2px; width: 10px; height: 10px; font-size: .42rem; border-width: 1px;
+}
+.pitch-player-h .pitch-player-sorti { font-size: .58rem; }
+.pitch-player-name-h {
+  margin-top: 2px;
+  font-size: .43rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.9);
+  line-height: 1.1;
+  max-width: 46px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* Photos/noms agrandis x1.5 sur PC uniquement (mobile reste tel quel) */
+@media (min-width: 641px) {
+  .pitch-player-h { width: 70px; margin-top: -23.5px; /* -(47px/2) */ }
+  .pitch-player-photo-wrap-h { width: 47px; height: 47px; }
+  .pitch-player-photo-h { width: 47px; height: 47px; }
+  .pitch-player-num-h { width: 23px; height: 23px; font-size: .9rem; bottom: -3px; right: -3px; }
+  .pitch-player-name-h { font-size: .78rem; max-width: 108px; }
+  .pitch-player-photo-wrap-h .pitch-player-note {
+    top: -3px; left: -3px; min-width: 19px; height: 15px; font-size: .62rem; border-width: 1.5px;
+  }
+  .pitch-player-photo-wrap-h .pitch-player-capitaine {
+    top: -3px; right: -3px; width: 15px; height: 15px; font-size: .64rem; border-width: 1.5px;
+  }
+  .pitch-player-h .pitch-player-sorti { font-size: .78rem; }
+}
+
+.compo-bench-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-top: 14px;
+  position: relative;
+}
+.compo-bench-cols::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 50%;
+  width: 1px;
+  background: var(--bord);
+  transform: translateX(-8px);
+}
+.bench-title-compact { margin: 0 0 8px; font-size: .76rem; justify-content: center; text-align: center; }
+.bench-title-right { justify-content: center; text-align: center; }
+.bench-player-compact {
+  padding: 5px 8px;
+  column-gap: 3px;
+  row-gap: 0;
+  grid-template-columns: 18px 26px 14px minmax(32px, max-content) 14px 38px 12px;
+}
+.bench-player-compact.bench-miroir {
+  grid-template-columns: 12px 38px 14px minmax(32px, max-content) 14px 26px 18px;
+}
+.bench-player-compact .bench-player-photo { width: 26px; height: 26px; }
+.bench-player-compact .bench-player-nom {
+  font-size: .7rem;
+  max-width: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bench-player-compact .bench-player-sortant-nom { max-width: none; }
+
+@media (max-width: 480px) {
+  /* Les 2 colonnes restent côte à côte même sur mobile, séparées par le
+     trait vertical ci-dessus — colonnes fixes resserrées au minimum et
+     le nom garde une largeur plancher garantie (minmax) pour ne jamais
+     disparaître, quitte à tronquer avec les "…". */
+  .bench-player-compact { padding: 3px 4px; column-gap: 1px; }
+  .bench-player-compact { grid-template-columns: 12px 18px 9px minmax(34px, max-content) 9px 27px 7px; }
+  .bench-player-compact.bench-miroir { grid-template-columns: 7px 27px 9px minmax(34px, max-content) 9px 18px 12px; }
+  .bench-player-compact .bench-player-photo { width: 18px; height: 18px; }
+  .bench-player-compact .bench-player-num { width: 9px; font-size: .56rem; }
+  .bench-player-compact .bench-cell-min { font-size: .54rem; }
+  .bench-player-compact .bench-player-nom { font-size: .6rem; margin-left: 3px; }
+  .bench-player-compact.bench-miroir .bench-player-nom { margin-left: 0; margin-right: 3px; }
+  .bench-player-compact .bench-player-sortant-nom { font-size: .52rem; }
+  .bench-player-compact .bench-player-note { font-size: .56rem; padding: 0 3px; }
+  .bench-player-compact .bench-sub-fleche { font-size: .64rem; }
+  .bench-groupe-titre-compact { font-size: .56rem; margin: 6px 0 2px; }
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding-right: 30px;
+  cursor: move;
+  user-select: none;
+}
+/* Titre centré (PC + mobile) pour la modale Composition seulement,
+   sans affecter les autres modales qui partagent .modal-title */
+#hdr-composition { text-align: center; padding-left: 30px; }
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--txt2);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--txt); }
+
+/* ============================================================
+   LOADING / SPINNER
+   ============================================================ */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--txt2);
+  font-size: .88rem;
+  gap: 10px;
+}
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--bord);
+  border-top-color: var(--vert);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--txt2);
+  font-size: .88rem;
+}
+.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+/* ============================================================
+   GRILLE COMPLÈTE 18x18
+   ============================================================ */
+/* Hauteur bornée + overflow:auto (au lieu de overflow-x seul) : sans
+   conteneur borné, "position:sticky" pour la 1ère ligne/colonne n'a pas
+   de contexte de scroll propre et entre en conflit avec les barres
+   sticky globales de l'appli (nav principale, sous-onglets) */
+.grille-wrapper { overflow: auto; max-height: 70vh; }
+.grille-table {
+  border-collapse: collapse;
+  font-size: .72rem;
+  min-width: 700px;
+  margin: 0 auto;
+}
+.grille-table th, .grille-table td {
+  padding: 6px 8px;
+  border: 2px solid var(--bord-f);
+  text-align: center;
+  white-space: nowrap;
+  font-weight: 700;
+}
+/* Beaucoup d'espace inexploité autour du tableau sur grand écran :
+   police, cellules et logos agrandis pour occuper davantage la largeur
+   disponible. Le tableau n'étant pas en table-layout:fixed, augmenter
+   le padding/la police suffit à le faire grandir naturellement. */
+@media (min-width: 900px) {
+  .grille-table { font-size: .88rem; }
+  /* Padding vertical réduit (7px au lieu de 10) pour que les 18 lignes
+     tiennent dans les 70vh du conteneur sans scroll vertical — largeur
+     inchangée, l'agrandissement demandé portait sur la largeur */
+  .grille-table th, .grille-table td { padding: 4px 14px; }
+  .grille-table .grille-logo { width: 24px; height: 24px; }
+}
+.grille-table th {
+  background: var(--bg3);
+  color: var(--txt2);
+  font-weight: 800;
+}
+/* Trigrammes des entêtes de colonne en gras (renforcé explicitement,
+   au cas où .grille-code-ext hériterait d'un poids plus faible ailleurs) */
+.grille-code-ext { font-weight: 800; }
+
+/* Diagonale : fond gris neutre + motif hachuré très discret, pas de
+   tiret (retiré du HTML) */
+.grille-table td.diag {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      var(--bord) 0, var(--bord) 1px,
+      transparent 1px, transparent 7px
+    ),
+    var(--bg3);
+}
+
+/* Résultats : cellule neutre, seul un badge pastel arrondi centré porte
+   la couleur du résultat (choix retenu après comparaison, cf. tokens
+   --grille-*-bg/txt définis en haut du fichier pour les 2 thèmes) */
+.grille-table td.dom,
+.grille-table td.nul,
+.grille-table td.ext {
+  background: var(--bg3);
+  color: var(--txt);
+}
+.grille-score-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-weight: 800;
+}
+.grille-table td.dom .grille-score-badge { background: var(--grille-dom-bg); color: var(--grille-dom-txt); }
+.grille-table td.nul .grille-score-badge { background: var(--grille-nul-bg); color: var(--grille-nul-txt); }
+.grille-table td.ext .grille-score-badge { background: var(--grille-ext-bg); color: var(--grille-ext-txt); }
+
+/* 1ère ligne (entêtes de colonnes) et 1ère colonne (entêtes de lignes)
+   sticky — la cellule coin haut-gauche cumule les deux avec le z-index
+   le plus élevé pour rester au-dessus des deux barres sticky */
+.grille-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  /* Box-shadow plutôt que compter sur la bordure (border-collapse) pour
+     le trait du bas : avec border-collapse, cette bordure appartient en
+     partie à la ligne suivante (non sticky) et disparaît au scroll —
+     le box-shadow est peint par la cellule elle-même, donc toujours là */
+  box-shadow: inset 0 -2px 0 var(--bord-f);
+}
+.grille-table tbody th.grille-th-dom {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--bg2);
+  box-shadow: inset -2px 0 0 var(--bord-f);
+}
+.grille-table thead th.grille-th-dom {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  box-shadow: inset 0 -2px 0 var(--bord-f), inset -2px 0 0 var(--bord-f);
+}
+
+/* Survol : ligne ET colonne du club survolé légèrement teintées (classes
+   posées en JS, cf. _armerHoverGrille dans app.js — une teinte neutre
+   fonctionne pareil sur les 2 thèmes puisqu'elle se superpose au fond
+   existant plutôt que de le remplacer) */
+.grille-table .grille-hover-row,
+.grille-table .grille-hover-col {
+  background-color: var(--grille-hover-tint) !important;
+}
+
+/* ============================================================
+   PROGRAMME & RÉSULTATS
+   ============================================================ */
+.match-liste { display: flex; flex-direction: column; gap: 8px; max-width: 660px; margin: 0 auto; }
+
+.match-ligne {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 140px 160px 62px 160px 28px;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  transition: border-color .2s;
+  min-height: 54px;
+}
+.match-ligne:hover { border-color: var(--bord-f); }
+
+.ml-date {
+  color: var(--txt2);
+  font-size: .71rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.ml-equipe-dom {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  min-width: 0;
+}
+.ml-equipe-dom img { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
+.ml-equipe-dom span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ml-equipe-ext {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  font-weight: 600;
+  min-width: 0;
+}
+.ml-equipe-ext img { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
+.ml-equipe-ext span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+
+.ml-score {
+  background: var(--bg3);
+  border-radius: var(--radius-xs);
+  padding: 4px 5px;
+  font-weight: 700;
+  font-size: .85rem;
+  letter-spacing: 1px;
+  text-align: center;
+  white-space: nowrap;
+}
+.ml-j { color: var(--txt3); font-size: .68rem; font-weight: 700; text-align: right; white-space: nowrap; }
+
+.match-ligne.reporte {
+  border-style: dashed;
+  border-color: var(--or);
+  background: var(--or-pale);
+}
+.match-ligne.reporte .ml-j { color: var(--or); font-weight: 600; }
+
+.filtre-programme {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.filtre-btn {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.filtre-btn:hover { border-color: var(--bord-f); color: var(--txt); }
+.filtre-btn.active {
+  background: var(--bleu-vif);
+  border-color: var(--bleu-vif);
+  color: var(--blanc);
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .match-ligne {
+    grid-template-columns: 90px minmax(0,1fr) 46px minmax(0,1fr) 20px;
+    padding: 7px 8px;
+    gap: 4px;
+    font-size: .75rem;
+  }
+  .ml-date { font-size: .67rem; white-space: normal; line-height: 1.3; }
+  .ml-equipe-dom img,
+  .ml-equipe-ext img { width: 14px; height: 14px; }
+}
+
+/* ============================================================
+   FICHE CLUB
+   ============================================================ */
+.fiche-club {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.fiche-club-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.fiche-club-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+.fiche-club-nom { font-size: 1.2rem; font-weight: 800; }
+.fiche-club-info { font-size: .82rem; color: var(--txt2); margin-top: 2px; }
+
+.stats-club-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.stat-club-item {
+  background: var(--bg3);
+  border-radius: var(--radius-s);
+  padding: 10px;
+  text-align: center;
+}
+.stat-club-val { font-size: 1.3rem; font-weight: 800; color: var(--vert); }
+.stat-club-lbl { font-size: .7rem; color: var(--txt2); margin-top: 2px; }
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.admin-card {
+  background: var(--bg2);
+  border: 1px solid var(--bord);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.admin-card-title { font-weight: 700; margin-bottom: 8px; font-size: .9rem; }
+.admin-card p { font-size: .8rem; color: var(--txt2); margin-bottom: 12px; }
+
+/* ============================================================
+   UTILITAIRES
+   ============================================================ */
+.txt-vert   { color: var(--vert); }
+.txt-bleu   { color: var(--bleu-vif); }
+.txt-or     { color: var(--or); }
+.txt-rouge  { color: var(--rouge); }
+.txt-gris   { color: var(--txt3); }
+
+.admin-effectif-ligne {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--bord);
+  font-size: .84rem;
+}
+.admin-effectif-ligne:last-child { border-bottom: none; }
+.admin-effectif-ligne div { font-size: .8rem; margin-top: 2px; padding-left: 8px; }
+
+/* ── Filigrane "VERSION DE TEST" (environnements -test uniquement) ── */
+#filigrane-test {
+  position: fixed;
+  inset: -20vh -20vw;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  justify-content: space-between;
+  gap: 8vh 4vw;
+  transform: rotate(-28deg);
+}
+#filigrane-test span {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: rgba(245, 166, 35, .16);
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+/* En mode clair, ce même orange pâle se fond dans le fond blanc — on
+   remonte l'opacité (et on fonce un peu la teinte) pour rester visible */
+[data-theme="light"] #filigrane-test span {
+  color: rgba(180, 110, 0, .35);
+}
+.txt2       { color: var(--txt2); }
+.txt3       { color: var(--txt3); }
+.fw700      { font-weight: 700; }
+.fw800      { font-weight: 800; }
+.text-right { text-align: right; }
+.text-center{ text-align: center; }
+.mt8        { margin-top: 8px; }
+.mt16       { margin-top: 16px; }
+.mb8        { margin-bottom: 8px; }
+.mb16       { margin-bottom: 16px; }
+.gap8       { gap: 8px; }
+.flex       { display: flex; }
+.flex-center{ display: flex; align-items: center; justify-content: center; }
+
+/* ============================================================
+   RESPONSIVE MOBILE
+   ============================================================ */
+@media (max-width: 640px) {
+  main { padding: 14px 12px; }
+  nav#main-nav { padding: 0 10px; }
+  #subtabs { padding: 0 10px; gap: 2px; }
+  #subtabs button { padding: 5px 9px; font-size: .7rem; }
+
+  .match-main {
+    grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+    align-items: start;
+    padding: 12px 12px;
+    gap: 6px;
+  }
+  .team-name { font-size: .82rem; }
+  .prono-input { width: 38px; height: 38px; font-size: 1rem; }
+  .score-stepper-btn { width: 34px; height: 34px; min-width: 34px; font-size: 1.4rem; }
+  .score-stepper-btn::before { width: 14px; }
+  .score-stepper-btn:last-child::after { height: 14px; }
+
+  /* Classement mobile : nom du club raccourci (ellipsis) pour laisser de
+     la place à la colonne Pen, qui était coupée par le bord de l'écran —
+     le nom complet reste consultable via l'infobulle (title) posée sur
+     .club-cell. Le nom_court lui-même reste affiché (pas le code), sauf
+     s'il dépasse la largeur dispo, auquel cas il est tronqué avec "…". */
+  .club-nom-court { display: inline; }
+  .club-code-mobile { display: none; }
+  .classement-table .club-nom-court {
+    display: inline-block;
+    max-width: 78px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .classement-table { font-size: .7rem; width: auto; }
+  .classement-table th,
+  .classement-table td { padding: 5px 3px; }
+  /* Un peu plus d'air sur J/G/N/P (colonnes 4 à 7) du classement équipes
+     uniquement (:not stats-joueurs-table, dont les colonnes 4-7 ont un
+     tout autre sens) — la place est reprise sur la colonne Club ci-dessus. */
+  .classement-table:not(.stats-joueurs-table) th:nth-child(4),
+  .classement-table:not(.stats-joueurs-table) th:nth-child(5),
+  .classement-table:not(.stats-joueurs-table) th:nth-child(6),
+  .classement-table:not(.stats-joueurs-table) th:nth-child(7),
+  .classement-table:not(.stats-joueurs-table) td:nth-child(4),
+  .classement-table:not(.stats-joueurs-table) td:nth-child(5),
+  .classement-table:not(.stats-joueurs-table) td:nth-child(6),
+  .classement-table:not(.stats-joueurs-table) td:nth-child(7) {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+  /* Points de forme plus petits + colonne plus étroite, pour que Pén.
+     reste visible sans avoir à scroller horizontalement */
+  .classement-table .forme-dot { width: 6px; height: 6px; }
+  .classement-table .forme-cell { gap: 2px; }
+  .classement-table th:nth-child(11),
+  .classement-table td:nth-child(11) { width: 46px; }
+
+  .stat-item {
+    grid-template-columns: 70px 30px 1fr 1fr 30px 70px;
+    font-size: .72rem;
+  }
+
+  .bonus-grid { grid-template-columns: 1fr; }
+  .admin-grid { grid-template-columns: 1fr; }
+
+  .modal { padding: 18px; }
+
+  .h2h-row { font-size: .76rem; }
+  .h2h-date { width: 54px; margin-right: 5px; }
+  .h2h-nom-dom, .h2h-nom-ext { width: 80px; }
+}
+
+/* ============================================================
+   ÉCRAN LOGIN — Style CDM 2026 adapté PronoLigue 1
+   ============================================================ */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #1a3a6b 0%, #0d6efd 50%, #1a3a6b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 32px 20px;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-logo-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--bleu-fonce) 0%, var(--bleu-vif) 65%, var(--or) 100%);
+  border-radius: 14px;
+  padding: 10px 18px;
+  margin-bottom: 8px;
+}
+
+.login-logo-icone {
+  height: 54px;
+  width: 54px;
+  border-radius: 12px;
+  display: block;
+}
+
+.login-logo {
+  width: 200px;
+  height: auto;
+  display: block;
+}
+
+.login-subtitle {
+  font-size: .9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.login-input {
+  width: 100%;
+  background: #f5f7fa;
+  border: 1.5px solid #e0e6ef;
+  border-radius: 10px;
+  color: #1a202c;
+  padding: 12px 16px;
+  font-size: .95rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  margin-bottom: 12px;
+  display: block;
+}
+.login-input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+}
+.login-input::placeholder { color: #aab; }
+
+.login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #0d6efd, #1a3a6b);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+  margin-bottom: 4px;
+  letter-spacing: .3px;
+}
+.login-btn:hover { opacity: .92; }
+.login-btn:active { transform: scale(.98); }
+
+.login-card a {
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 500;
+}
+.login-card a:hover { text-decoration: underline; }
+
+.login-card .msg-erreur {
+  background: #fff0f0;
+  border-color: #f87171;
+  color: #dc2626;
+}
+.login-card .msg-ok {
+  background: #f0fff4;
+  border-color: #4ade80;
+  color: #16a34a;
+}
+
+@media (max-width: 440px) {
+  .login-card { padding: 28px 20px 20px; }
+  .login-logo-badge { padding: 8px 14px; gap: 8px; }
+  .login-logo-icone { height: 44px; width: 44px; border-radius: 10px; }
+  .login-logo { width: 165px; }
+}
+
+.login-lien {
+  text-align: center;
+  font-size: .84rem;
+  color: #666;
+  margin-top: 8px;
+}
+.login-lien a {
+  color: #0d6efd;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ============================================================
+   ÉQUIPE DE CŒUR — surlignage dans le classement et la grille
+   ============================================================ */
+/* Classement équipes : ligne en gras + léger fond doré — pas de liseré
+   (l'ancien liseré à gauche était confondu avec les couleurs de zones
+   de qualification, notamment la Ligue Europa) */
+.classement-table tr.coeur-row {
+  font-weight: 700;
+  background: var(--coeur-bg);
+}
+.coeur-etoile { margin-left: 4px; color: var(--coeur-vif); }
+
+/* Surlignage temporaire des 2 équipes d'un match, dans le modal classement
+   ouvert depuis une carte match — couleur bleue, distincte de l'or (équipe
+   de cœur) et des couleurs de qualification */
+.classement-table tr.match-highlight-row {
+  background: rgba(13, 110, 253, .14);
+}
+.classement-table tr.match-highlight-row td.rang {
+  box-shadow: inset 4px 0 0 #0d6efd;
+}
+
+/* Grille complète : ligne ET colonne du club choisi surlignées */
+.grille-table th.coeur-col,
+.grille-table td.coeur-col,
+.grille-table tr.coeur-row > td,
+.grille-table tr.coeur-row > th.grille-th-dom {
+  background: var(--coeur-bg) !important;
+}
+/* Cas particulier : quand la cellule cœur est AUSSI une cellule sticky
+   (entête de colonne, ou entête de ligne dans tbody), --coeur-bg étant
+   semi-transparente, elle laissait deviner le contenu qui défile en
+   dessous. On repeint la teinte en box-shadow (inset) PAR-DESSUS un
+   fond opaque plutôt que d'utiliser une couleur de fond translucide —
+   rendu identique, mais plus de transparence possible. */
+.grille-table thead th.coeur-col {
+  background: var(--bg3) !important;
+  box-shadow: inset 0 0 0 999px var(--coeur-bg), inset 0 -2px 0 var(--bord-f) !important;
+}
+.grille-table tbody tr.coeur-row > th.grille-th-dom {
+  background: var(--bg2) !important;
+  box-shadow: inset 0 0 0 999px var(--coeur-bg), inset -2px 0 0 var(--bord-f) !important;
+}
+
+.quizz-questions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================================
+   PAGE QUIZZ — grille 2 colonnes sur PC (2 lignes pour 4 questions),
+   1 colonne empilée sur mobile (règle .quizz-questions-grid ci-dessus)
+   ============================================================ */
+@media (min-width: 900px) {
+  #page-quizz {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .quizz-questions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-quizz-config-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Pastille clignotante sur l'onglet Quizz : un quizz publié attend
+   une réponse (reste tant que toutes les questions n'ont pas été
+   répondues, contrairement à la bannière qui ne s'affiche qu'une fois) */
+.quizz-nav-dot {
+  position: absolute;
+  top: 0px;
+  right: 4px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--rouge);
+  animation: quizz-pulse-dot 1.4s infinite;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 8px 1px var(--rouge);
+}
+
+@keyframes quizz-pulse-dot {
+  0%, 100% { opacity: 1;  transform: scale(1); }
+  50%      { opacity: .7; transform: scale(1.25); }
+}
+
+/* Mise en évidence des questions chronométrées du quizz séquentiel
+   (suite à un retour joueurs : le timer passait inaperçu). Le cadre
+   de la question pulse (halo bleu), et bascule en halo rouge + rythme
+   plus rapide dans les 3 dernières secondes (cohérent avec le cercle
+   du timer qui vire aussi au rouge à ce moment-là). */
+.quizz-badge-chrono {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bleu-accent);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  vertical-align: middle;
+  animation: quizz-badge-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes quizz-badge-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .5; }
+}
+
+.quizz-badge-chrono.quizz-urgent {
+  background: var(--rouge);
+  animation: quizz-badge-pulse .6s ease-in-out infinite;
+}
+
+.quizz-carte-chrono {
+  animation: quizz-glow-carte 1.6s ease-in-out infinite;
+}
+
+@keyframes quizz-glow-carte {
+  0%, 100% { border-color: var(--bord); box-shadow: none; }
+  50%       { border-color: var(--bleu-accent); box-shadow: 0 0 0 3px var(--bleu-accent); }
+}
+
+.quizz-carte-chrono.quizz-urgent {
+  animation: quizz-glow-carte-urgent .7s ease-in-out infinite;
+}
+
+@keyframes quizz-glow-carte-urgent {
+  0%, 100% { border-color: var(--bord); box-shadow: none; }
+  50%       { border-color: var(--rouge); box-shadow: 0 0 0 3px var(--rouge); }
+}
+
+/* Carte "Spécial en attente" (liste des Quizz Spéciaux) — repérée comme
+   peu visible par plusieurs joueurs, alignée sur l'habillage "attention"
+   déjà utilisé ailleurs (.note-info : bordure + fond --or/--or-pale),
+   avec une pulsation douce plutôt qu'un clignotement franc (même choix
+   que .cr-titre, pour le confort visuel et l'accessibilité). */
+.quizz-carte-attente {
+  border: 1px solid var(--or);
+  background: var(--or-pale);
+  animation: quizz-carte-attente-pulse 2.2s ease-in-out infinite;
+}
+@keyframes quizz-carte-attente-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%       { box-shadow: 0 0 0 3px var(--or); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quizz-carte-attente { animation: none; }
+}
+
+/* FAQ — accordéon : masque le triangle natif du navigateur sur
+   <summary>, on affiche notre propre flèche ▾ à la place */
+#faq-accordion summary::-webkit-details-marker,
+#faq-accordion summary::marker {
+  display: none;
+  content: '';
+}

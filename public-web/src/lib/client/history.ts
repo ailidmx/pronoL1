@@ -1,12 +1,12 @@
 /**
  * View history (recently viewed matches) — localStorage, no auth yet.
- * Most-recent first, capped at MAX_ENTRIES.
+ * Most-recent first, capped at MAX_ENTRIES. Entries carry href for linking.
  */
 import { storage } from "./storage";
 
 const MAX_ENTRIES = 30;
 
-export type HistoryEntry = { matchId: string; title: string; viewedAt: string };
+export type HistoryEntry = { matchId: string; title: string; href: string; viewedAt: string };
 
 export function getHistory(): HistoryEntry[] {
   return storage.get<HistoryEntry[]>("history", []);
@@ -21,3 +21,4 @@ export function recordMatchView(entry: Omit<HistoryEntry, "viewedAt">): void {
 export function clearHistory(): void {
   storage.set("history", []);
 }
+

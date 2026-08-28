@@ -8,6 +8,8 @@ import { MatchList } from "@/components/football/match-list";
 import { MatchTimeline } from "@/components/football/match-timeline";
 import { MatchStatistics } from "@/components/football/match-statistics";
 import { TeamForm } from "@/components/football/team-form";
+import { FavoriteButton } from "@/components/football/favorite-button";
+import { MatchViewRecorder } from "@/components/football/match-view-recorder";
 import { formatMatchDate, matchScore, matchStatusLabel } from "@/lib/football-format";
 import { slugify } from "@/lib/slug";
 import { createPageMetadata } from "@/lib/seo/metadata";
@@ -48,6 +50,10 @@ export default async function MatchPage({ params }: Props) {
       <p className="match-date"><time dateTime={match.date ?? undefined}>{formatMatchDate(match.date)}</time></p>
       {match.venue || match.referee ? <p className="match-context">{[match.venue, match.city, match.referee ? `Arbitre : ${match.referee}` : null].filter(Boolean).join(" · ")}</p> : null}
       <DataFreshness value={match.updatedAt} />
+      <div className="page-actions">
+        <FavoriteButton kind="match" item={{ id: match.id, name: `${match.homeClub.name} - ${match.awayClub.name}`, href: `/match/${match.id}/${expectedSlug}` }} />
+      </div>
+      <MatchViewRecorder matchId={match.id} title={`${match.homeClub.name} - ${match.awayClub.name}`} href={`/match/${match.id}/${expectedSlug}`} />
       <nav className="section-nav" aria-label="Détails du match"><a href="#resume">Résumé</a><a href="#statistiques">Statistiques</a><a href="#compositions">Compositions</a><a href="#forme">Forme</a><a href="#confrontations">Confrontations</a></nav>
       <AdSlot name="match-top" format="leaderboard" />
       <div className="match-content-grid" id="resume">

@@ -2092,10 +2092,19 @@ function _recalculerClassementQuizz(PDO $db, int $saisonId, array $config): int 
         INSERT INTO quizz_classement_cache (saison_id, user_id, total_points, nb_sans_faute, rang)
         VALUES (?, ?, ?, ?, ?)
     ');
-    $rang = 1;
+    // Rang partagé en cas d'égalité (1, 1, 3, 3, 5... comme le classement
+    // pronostics et le podium quizz), au lieu d'un simple compteur qui
+    // incrémentait à chaque joueur même à points identiques.
+    $i            = 0;
+    $rangCourant  = 0;
+    $ptsPrecedent = null;
     foreach ($totaux as $userId => $d) {
-        $insert->execute([$saisonId, $userId, $d['points'], $d['sans_faute'], $rang]);
-        $rang++;
+        $i++;
+        if ($d['points'] !== $ptsPrecedent) {
+            $rangCourant  = $i;
+            $ptsPrecedent = $d['points'];
+        }
+        $insert->execute([$saisonId, $userId, $d['points'], $d['sans_faute'], $rangCourant]);
     }
 
     return count($totaux);

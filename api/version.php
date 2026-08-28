@@ -10,7 +10,7 @@
 // ============================================================
 header('Content-Type: application/json');
 
-$APP_VERSION_COURANTE = '20260826a';
+$APP_VERSION_COURANTE = '20260828b';
 
 $changelogPath = __DIR__ . '/changelog.json';
 $changelog = [];

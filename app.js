@@ -5,7 +5,7 @@
 
 // ── CONFIGURATION ──
 const API = 'api';  // chemin relatif vers le dossier api/
-const APP_VERSION = '20260826a'; // ⚠️ à garder synchronisé avec api/version.php et le ?v= de index.php
+const APP_VERSION = '20260828b'; // ⚠️ à garder synchronisé avec api/version.php et le ?v= de index.php
 
 // Clé publique VAPID pour les notifications push (la clé privée reste
 // côté serveur dans config.php — celle-ci est publique par nature,
@@ -6890,11 +6890,18 @@ async function chargerClassementQuizz() {
 
     if (elPodium) afficherPodiumQuizz(data.classement, elPodium);
 
+    // Compte combien de joueurs partagent chaque rang, pour savoir s'il
+    // faut afficher le suffixe "ex" (ex: "1ex" si plusieurs joueurs sont 1ers)
+    const compteParRang = {};
+    data.classement.forEach(j => { compteParRang[j.rang] = (compteParRang[j.rang] || 0) + 1; });
+
     zone.innerHTML = `
       <div style="display:flex;flex-direction:column;gap:6px">
-        ${data.classement.map(j => `
+        ${data.classement.map(j => {
+          const rangLabel = j.rang + (compteParRang[j.rang] > 1 ? 'ex' : '');
+          return `
           <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg2);border:1px solid var(--bord);border-radius:var(--radius)">
-            <div style="width:24px;text-align:center;font-weight:700;color:var(--txt2)">${j.rang}</div>
+            <div style="width:24px;text-align:center;font-weight:700;color:var(--txt2)">${rangLabel}</div>
             <div style="width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">${j.avatar_initiales || '?'}</div>
             <div style="flex:1;min-width:0">
               <div style="font-weight:600">${j.nom}</div>
@@ -6905,7 +6912,8 @@ async function chargerClassementQuizz() {
             ${j.nb_sans_faute > 0 ? `<span title="${j.nb_sans_faute} sans-faute" style="font-size:.78rem">👑 x${j.nb_sans_faute}</span>` : ''}
             <div style="font-weight:700;color:var(--or)">${j.total_points} pts</div>
           </div>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
     `;
   } catch (e) {

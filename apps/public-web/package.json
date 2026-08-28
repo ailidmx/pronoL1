@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@prono-l1/design-tokens": "1.0.0",
+    "@prono-l1/design-tokens": "file:../../packages/design-tokens",
     "firebase": "^12.18.0",
     "firebase-admin": "^14.3.0",
     "next": "16.3.3",

@@ -5,21 +5,21 @@
  * notifications (kickoff reminder + full-time) via web-push.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { defineSecret, defineString } from "firebase-functions/params";
+import { defineSecret } from "firebase-functions/params";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import webpush from "web-push";
 import { collections } from "@prono-l1/domain";
 
 const VAPID_PRIVATE_KEY = defineSecret("VAPID_PRIVATE_KEY");
 const VAPID_PUBLIC_KEY = "BO3rO2tkbCVPTgCa-wRgEMBDbLnTpC9lupFIW594liQae2NUxfyxT9P_zjrKG_C_8FTQSRYMdhKITKVFoETPu9Q";
-const VAPID_SUBJECT = defineString("VAPID_SUBJECT", { default: "https://pronol1.web.app" });
+const VAPID_SUBJECT = "https://pronol1.web.app";
 
 const KICKOFF_WINDOW_MS = 30 * 60 * 1000;
 
 export const sendMatchAlerts = onSchedule(
   { schedule: "*/15 * * * *", timeoutSeconds: 300, secrets: [VAPID_PRIVATE_KEY] },
   async () => {
-    webpush.setVapidDetails(VAPID_SUBJECT.value(), VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY.value());
+    webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY.value());
     const db = getFirestore();
 
     const clubsSnap = await db.collection(collections.clubs).get();

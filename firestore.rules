@@ -49,6 +49,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Leaderboard (read model) — written by the scoreFinishedMatches Cloud
+    // Function (Admin SDK); signed-in users can read it.
+    match /leaderboardPronostics/{seasonId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /leaderboardPronostics/{seasonId}/rows/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
     // Deny everything else by default. Domain rules are added collection by
     // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {

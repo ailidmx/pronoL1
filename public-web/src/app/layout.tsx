@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { GoogleTags } from "@/components/analytics/google-tags";
 import { ConsentBanner, PrivacySettingsButton } from "@/components/privacy/consent-banner";
 import { DataFreshness } from "@/components/football/data-freshness";
 import { getSeasonOverview } from "@/server/football-repository";
+import { InstallApp } from "@/components/pwa/install-app";
 import "./styles.css";
 
 export const metadata: Metadata = {
@@ -15,8 +16,13 @@ export const metadata: Metadata = {
   category: "sports",
   creator: siteConfig.name,
   publisher: siteConfig.name,
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Stat de Foot" },
+  icons: { icon: "/app-icon.svg", apple: "/app-icon.svg" },
   formatDetection: { email: false, address: false, telephone: false },
 };
+
+export const viewport: Viewport = { themeColor: "#0b0e13", colorScheme: "dark" };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   let updatedAt: string | null = null;
@@ -34,6 +40,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <a href="/ligue-1/2026-2027/classement/general">Classement</a>
             <a href="/#offres">Offres</a>
             <a href="/pronostics">Pronostics</a>
+            <InstallApp />
           </nav>
         </header>
         <main>{children}</main>

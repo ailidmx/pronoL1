@@ -7,6 +7,12 @@ runConfig:
   cpu: 1
   memoryMiB: 512
 
+# The Firebase adapter otherwise infers `next start`, which exits before
+# listening in the managed container. The standalone server is the artifact
+# produced and verified by the build.
+scripts:
+  runCommand: node .next/standalone/server.js
+
 env:
   - variable: NEXT_PUBLIC_SITE_URL
     value: https://pronol1-public--pronol1.us-east4.hosted.app

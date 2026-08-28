@@ -5,6 +5,7 @@ import { JsonLd } from "@/lib/seo/json-ld";
 import { AdSlot } from "@/components/ads/ad-slot";
 import { MatchList } from "@/components/football/match-list";
 import { StandingsTable } from "@/components/football/standings-table";
+import { DataFreshness } from "@/components/football/data-freshness";
 import { getSeasonOverview, type FootballMatch } from "@/server/football-repository";
 
 type Props = { params: Promise<{ season: string }> };
@@ -45,6 +46,7 @@ export default async function SeasonPage({ params }: Props) {
       <p className="eyebrow">Championnat de France</p>
       <h1>Ligue 1 {season}</h1>
       <p className="intro">Calendrier, résultats et classement alimentés par les données synchronisées de Prono L1.</p>
+      <DataFreshness value={data?.updatedAt ?? null} />
       <AdSlot name="season-top" format="leaderboard" />
       <section className="season-layout">
         <div className="data-panel"><div className="section-heading"><div><p className="eyebrow">Tableau complet</p><h2>Classement</h2></div></div><StandingsTable rows={data?.standings ?? []} /></div>
@@ -52,7 +54,7 @@ export default async function SeasonPage({ params }: Props) {
           {[...journeys.entries()].sort(([a], [b]) => a - b).map(([journey, matches], index) => (
             <div key={journey}>
               {index === 3 ? <AdSlot name="season-in-feed-1" format="in-feed" /> : null}
-              <section className="data-panel journey"><div className="section-heading"><div><p className="eyebrow">Calendrier</p><h2>{journey ? `${journey}e journée` : "Matchs à programmer"}</h2></div></div><MatchList matches={matches} /></section>
+              <section className="data-panel journey"><div className="section-heading"><div><p className="eyebrow">Calendrier</p><h2>{journey ? `${journey}e journée` : "Matchs à programmer"}</h2></div>{journey ? <a href={`/ligue-1/${season}/journee/${journey}`}>Page de la journée</a> : null}</div><MatchList matches={matches} /></section>
             </div>
           ))}
           {journeys.size === 0 ? <p className="empty-state">Les matchs ne sont pas encore disponibles.</p> : null}

@@ -1,10 +1,10 @@
 const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const siteConfig = {
-  name: "Prono L1",
-  title: "Prono L1 — Matchs, statistiques et pronostics Ligue 1",
+  name: process.env.NEXT_PUBLIC_SITE_NAME ?? "Stat de Foot",
+  title: "Stat de Foot — Scores, statistiques et analyses football",
   description:
-    "Calendrier, scores, statistiques, confrontations et pronostics pour tous les matchs de Ligue 1.",
+    "Scores, résultats, compositions, classements, statistiques et confrontations pour suivre le football en détail.",
   locale: "fr_FR",
   language: "fr",
   url: new URL(configuredUrl),

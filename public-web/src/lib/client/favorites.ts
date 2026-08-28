@@ -1,9 +1,11 @@
 /**
- * Favorites (clubs + matches) — localStorage, no auth yet.
+ * Favorites (clubs + matches) — localStorage, no auth yet. Items carry their
+ * name + href so the /favoris page can render links without a server fetch.
  */
 import { storage } from "./storage";
 
-type Favorites = { clubs: string[]; matches: string[] };
+export type FavoriteItem = { id: string; name: string; href: string };
+type Favorites = { clubs: FavoriteItem[]; matches: FavoriteItem[] };
 
 const EMPTY: Favorites = { clubs: [], matches: [] };
 
@@ -12,27 +14,30 @@ export function getFavorites(): Favorites {
 }
 
 export function isFavoriteClub(clubId: string): boolean {
-  return getFavorites().clubs.includes(clubId);
+  return getFavorites().clubs.some((club) => club.id === clubId);
 }
 
 export function isFavoriteMatch(matchId: string): boolean {
-  return getFavorites().matches.includes(matchId);
+  return getFavorites().matches.some((match) => match.id === matchId);
 }
 
-export function toggleFavoriteClub(clubId: string): boolean {
-  const favs = getFavorites();
-  const clubs = favs.clubs.includes(clubId)
-    ? favs.clubs.filter((id) => id !== clubId)
-    : [...favs.clubs, clubId];
-  storage.set("favorites", { ...favs, clubs });
-  return clubs.includes(clubId);
+export function toggleFavoriteClub(item: FavoriteItem): boolean {
+  const favorites = getFavorites();
+  const exists = favorites.clubs.some((club) => club.id === item.id);
+  const clubs = exists
+    ? favorites.clubs.filter((club) => club.id !== item.id)
+    : [...favorites.clubs, item];
+  storage.set("favorites", { ...favorites, clubs });
+  return !exists;
 }
 
-export function toggleFavoriteMatch(matchId: string): boolean {
-  const favs = getFavorites();
-  const matches = favs.matches.includes(matchId)
-    ? favs.matches.filter((id) => id !== matchId)
-    : [...favs.matches, matchId];
-  storage.set("favorites", { ...favs, matches });
-  return matches.includes(matchId);
+export function toggleFavoriteMatch(item: FavoriteItem): boolean {
+  const favorites = getFavorites();
+  const exists = favorites.matches.some((match) => match.id === item.id);
+  const matches = exists
+    ? favorites.matches.filter((match) => match.id !== item.id)
+    : [...favorites.matches, item];
+  storage.set("favorites", { ...favorites, matches });
+  return !exists;
 }
+

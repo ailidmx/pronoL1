@@ -4,6 +4,7 @@ import { AdSlot } from "@/components/ads/ad-slot";
 import { ClubMark } from "@/components/football/club-mark";
 import { DataFreshness } from "@/components/football/data-freshness";
 import { MatchList } from "@/components/football/match-list";
+import { FavoriteButton } from "@/components/football/favorite-button";
 import { slugify } from "@/lib/slug";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/lib/seo/json-ld";
@@ -36,6 +37,9 @@ export default async function ClubPage({ params }: Props) {
       <nav className="breadcrumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span>›</span><a href="/ligue-1/2026-2027">Ligue 1</a><span>›</span><span>{data.club.name}</span></nav>
       <p className="eyebrow">Club · Ligue 1 2026–2027</p><h1>{data.club.name}</h1>
       <div className="club-summary"><ClubMark club={data.club} linked={false} />{data.standing ? <p><strong>{data.standing.rank}<sup>e</sup></strong> au classement · {data.standing.points} points · différence {data.standing.difference > 0 ? `+${data.standing.difference}` : data.standing.difference}</p> : <p>Classement à actualiser</p>}</div>
+      <div className="page-actions">
+        <FavoriteButton kind="club" item={{ id: data.club.id, name: data.club.name, href: `/club/${data.club.id}/${expectedSlug}` }} />
+      </div>
       <DataFreshness value={data.updatedAt} />
       <AdSlot name="club-top" format="leaderboard" />
       <div className="match-content-grid"><section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Forme récente</p><h2>Derniers résultats</h2></div></div><MatchList matches={latest} /></section><section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Calendrier</p><h2>Prochains matchs</h2></div></div><MatchList matches={upcoming} /></section></div>

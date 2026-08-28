@@ -40,6 +40,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <a href="/ligue-1/2026-2027/classement/general">Classement</a>
             <a href="/#offres">Offres</a>
             <a href="/pronostics">Pronostics</a>
+            <a href="/favoris">Favoris</a>
+            <a href="/historique">Historique</a>
             <InstallApp />
           </nav>
         </header>

@@ -18,31 +18,36 @@ beforeEach(() => memory.clear());
 
 describe("favorites", () => {
   it("toggles a club", () => {
+    const item = { id: "c1", name: "Club 1", href: "/club/c1/club-1" };
     expect(isFavoriteClub("c1")).toBe(false);
-    expect(toggleFavoriteClub("c1")).toBe(true);
+    expect(toggleFavoriteClub(item)).toBe(true);
     expect(isFavoriteClub("c1")).toBe(true);
-    expect(toggleFavoriteClub("c1")).toBe(false);
+    expect(toggleFavoriteClub(item)).toBe(false);
   });
 
-  it("toggles a match independently", () => {
-    toggleFavoriteClub("c1");
-    toggleFavoriteMatch("m1");
-    expect(getFavorites()).toEqual({ clubs: ["c1"], matches: ["m1"] });
+  it("stores name + href for linking", () => {
+    toggleFavoriteClub({ id: "c1", name: "Club 1", href: "/club/c1" });
+    toggleFavoriteMatch({ id: "m1", name: "A - B", href: "/match/m1" });
+    expect(getFavorites()).toEqual({
+      clubs: [{ id: "c1", name: "Club 1", href: "/club/c1" }],
+      matches: [{ id: "m1", name: "A - B", href: "/match/m1" }],
+    });
   });
 });
 
 describe("history", () => {
   it("records most-recent first and dedupes", () => {
-    recordMatchView({ matchId: "m1", title: "A - B" });
-    recordMatchView({ matchId: "m2", title: "C - D" });
-    recordMatchView({ matchId: "m1", title: "A - B" });
+    recordMatchView({ matchId: "m1", title: "A - B", href: "/match/m1" });
+    recordMatchView({ matchId: "m2", title: "C - D", href: "/match/m2" });
+    recordMatchView({ matchId: "m1", title: "A - B", href: "/match/m1" });
     const history = getHistory();
     expect(history.map((h) => h.matchId)).toEqual(["m1", "m2"]);
+    expect(history[0].href).toBe("/match/m1");
     expect(history[0].viewedAt).toBeTruthy();
   });
 
   it("clears", () => {
-    recordMatchView({ matchId: "m1", title: "A - B" });
+    recordMatchView({ matchId: "m1", title: "A - B", href: "/match/m1" });
     clearHistory();
     expect(getHistory()).toEqual([]);
   });

@@ -8,21 +8,24 @@ Les documents spécialisés restent valables :
 
 - [Plan de réarchitecture](./rearchitecture-plan.md) : migration du legacy vers Firebase ;
 - [Architecture de croissance publique](./public-growth-architecture.md) : règles SEO, monétisation et expérimentation ;
-- [Plan multi-compétitions](./public-multi-competition-plan.md) : extension des données et règles de publication.
+- [Plan multi-compétitions](./public-multi-competition-plan.md) : extension des données et règles de publication ;
+- [Audit de séparation des applications](./application-separation-audit.md) : builds, styles, back-office et monorepo cible.
 
 Ce document est la vue d'ensemble canonique. Il doit évoluer lorsqu'une frontière, un flux ou une décision structurante change.
 
 ## 1. Résumé exécutif
 
-Prono-L1 est aujourd'hui un dépôt de transition comportant trois produits :
+Prono-L1 est aujourd'hui un dépôt de transition. La cible produit comprend **trois applications livrables autonomes** :
 
-1. **l'application legacy** PHP/MySQL, encore conservée comme référence fonctionnelle et solution de repli ;
-2. **l'application privée** React/Vite, authentifiée avec Firebase Auth, pour les pronostics, bonus, quiz, profil et classements joueurs ;
-3. **l'application publique Stat de Foot** Next.js, orientée SEO, acquisition, PWA et freemium.
+1. **l'application publique Stat de Foot** Next.js, orientée présentation, SEO, acquisition, PWA et freemium ;
+2. **l'application privée Player** React/Vite, authentifiée avec Firebase Auth, pour les pronostics, bonus, quiz, profil et classements joueurs ;
+3. **l'application Admin** React/Vite, dédiée aux opérations et à l'administration de Prono-L1.
+
+Le legacy PHP/MySQL reste temporairement une quatrième surface, utilisée comme référence fonctionnelle et solution de repli. Il n'appartient pas à l'architecture produit cible.
 
 Firestore est le centre de données du nouveau système. Des Cloud Functions synchronisent les données football, appliquent les règles métier sensibles et matérialisent certains modèles de lecture. Le dossier `shared/` porte la validation et les calculs purs utilisables côté backend ou dans les tests.
 
-La direction générale est saine. Le principal risque structurel n'est plus le choix de stack, mais la croissance parallèle de deux frontends et de plusieurs formes de logique métier sans contrats de module suffisamment explicites.
+La direction retenue est un monorepo **npm workspaces**, avec trois builds et trois déploiements indépendants. Les styles de composants utilisent **SCSS Modules** et des design tokens partagés. Le principal risque structurel est désormais la croissance parallèle des frontends et de plusieurs formes de logique métier sans contrats de module suffisamment explicites.
 
 ## 2. Contexte système
 
@@ -54,8 +57,9 @@ flowchart TD
 | Zone | Responsabilité | Stack | Statut |
 |---|---|---|---|
 | `api/`, `index.php`, `app.js`, `style.css` | Produit historique complet | PHP, MySQL, JavaScript | Maintenu comme fallback |
-| `web/` | Produit privé authentifié | React 19, Vite, Firebase client | Migration active |
-| `public-web/` | Produit public indexable et installable | Next.js 16, React 19, TypeScript | Croissance active |
+| `web/` | Produit privé authentifié | React 19, Vite, Firebase client | Migration active ; futur `apps/player-web/` |
+| `public-web/` | Produit public indexable et installable | Next.js 16, React 19, TypeScript | Croissance active ; futur `apps/public-web/` |
+| futur `admin-web/` | Back-office autonome | React 19, Vite, Firebase | Absent ; à créer avant portage admin |
 | `functions/` | Commandes métier, synchronisations et tâches planifiées | Cloud Functions v2, Node 22 | Backend cible |
 | `shared/` | Domaine pur, validation, scoring, payloads et chemins | JavaScript ESM, Node test runner | Noyau partagé |
 | `scripts/` | Imports, normalisation, seeds et backfills | Node.js, Admin SDK | Opérations ponctuelles |
@@ -255,7 +259,19 @@ Créer un contrat canonique pour :
 
 Le minimum pragmatique est un package `shared/` clairement découpé par domaine, accompagné de tests et, lorsque nécessaire, de types TypeScript générés ou vérifiés.
 
-### Étape 2 — réorganiser `web/` par domaines
+### Étape 2 — installer les frontières monorepo et les styles
+
+- ajouter npm workspaces à la racine sans déplacement immédiat ;
+- fournir des commandes `dev`, `build`, `test` et `lint` par application ;
+- créer le package de design tokens SCSS ;
+- migrer un composant pilote Public et Player vers SCSS Modules ;
+- interdire la croissance des fichiers CSS globaux.
+
+### Étape 3 — créer le squelette Admin autonome
+
+Créer une application React/Vite indépendante avec AuthGuard admin, router, shell, CI et cible Firebase Hosting propres. Porter ensuite les capacités du legacy selon l'inventaire de parité, sans copier son monolithe.
+
+### Étape 4 — réorganiser `web/` par domaines
 
 Structure cible proposée :
 
@@ -278,7 +294,7 @@ web/src/
 
 Chaque domaine possède pages/composants, use-cases et adaptateurs. Aucune migration “big bang” : déplacer un domaine à la fois, en commençant par `pronostics`, qui traverse toutes les couches.
 
-### Étape 3 — rendre les fonctions idempotentes et observables
+### Étape 5 — rendre les fonctions idempotentes et observables
 
 Commencer par `scoreFinishedMatches` :
 
@@ -290,7 +306,7 @@ Commencer par `scoreFinishedMatches` :
 
 Appliquer ensuite le même patron aux synchronisations.
 
-### Étape 4 — ajouter des tests Firebase avec émulateurs
+### Étape 6 — ajouter des tests Firebase avec émulateurs
 
 Couvrir en priorité :
 
@@ -301,7 +317,7 @@ Couvrir en priorité :
 - double exécution du scoring ;
 - score final corrigé.
 
-### Étape 5 — préparer le multi-compétitions
+### Étape 7 — préparer le multi-compétitions
 
 Ne pas activer une nouvelle compétition avant :
 
@@ -312,7 +328,7 @@ Ne pas activer une nouvelle compétition avant :
 - les sitemaps segmentés ;
 - un run complet validé.
 
-### Étape 6 — matrice de parité et retrait progressif du legacy
+### Étape 8 — matrice de parité et retrait progressif du legacy
 
 Maintenir un tableau par feature : legacy, nouveau backend, nouvelle UI, données migrées, tests, production. Le legacy devient ensuite lecture seule, puis archivable lorsque toutes les lignes critiques sont vertes.
 

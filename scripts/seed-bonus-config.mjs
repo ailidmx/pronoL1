@@ -32,7 +32,7 @@ const DATE_LIMITE = "2027-01-30T23:45:00";
 
 async function main() {
   if (getApps().length === 0) {
-    initializeApp({ credential: applicationDefault() });
+    initializeApp({ projectId: "pronol1", credential: applicationDefault() });
   }
   const db = getFirestore();
   console.log(`${DRY_RUN ? "[dry-run]" : "[execute]"} Seeding ${QUESTIONS.length} bonus questions → bonus/${SEASON_ID}/questions`);

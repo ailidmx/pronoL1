@@ -6,6 +6,7 @@ import Standings from "./Standings.jsx";
 import Profile from "./Profile.jsx";
 import Matches from "./Matches.jsx";
 import Classement from "./Classement.jsx";
+import Bonus from "./Bonus.jsx";
 import "./App.css";
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Profile />
         <Matches />
         <Classement />
+        <Bonus />
         <Standings />
       </main>
     </div>

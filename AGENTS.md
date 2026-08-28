@@ -12,6 +12,8 @@ résultat / bonus), and compete on leaderboards (podium, par journée, quizz).
 ~10 players today. The product is in **French** and addresses players with
 **"tu"** (tutoiement).
 
+Architecture overview: `docs/architecture.md`.
+
 Docs: `docs/guide_prono_l1.md` (player guide), `docs/faq_prono_l1.pdf`,
 `docs/design_groupes_prives.md` (future private groups — not coded yet),
 `recap-session-*.md` (work-session notes / where the last session left off).

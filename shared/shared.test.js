@@ -11,6 +11,10 @@ import {
   validatePronostic,
   isValidPronosticScores,
   buildPronosticPayload,
+  decomposePoints,
+  computePronosticPoints,
+  DEFAULT_BAREME,
+  buildLeaderboard,
 } from "./index.js";
 
 test("collection names are the single source of truth", () => {
@@ -92,4 +96,57 @@ test("buildPronosticPayload validates and stamps", () => {
   assert.equal(payload.scoreDom, 2);
   assert.equal(payload.updatedAt, now);
   assert.throws(() => buildPronosticPayload({ scoreDom: 999, scoreExt: 0 }));
+});
+
+test("scoring: exact score", () => {
+  const d = decomposePoints(DEFAULT_BAREME, 2, 1, 2, 1);
+  assert.equal(d.total, 5);
+  assert.equal(d.resultat, "exact");
+  assert.equal(d.exact, 5);
+});
+
+test("scoring: correct result + correct goal difference", () => {
+  const d = decomposePoints(DEFAULT_BAREME, 3, 1, 2, 0);
+  assert.equal(d.resultat, "bon");
+  assert.equal(d.bonResultat, 2);
+  assert.equal(d.bonusEcart, 1);
+  assert.equal(d.total, 3);
+});
+
+test("scoring: correct result, wrong goal difference", () => {
+  const d = decomposePoints(DEFAULT_BAREME, 3, 1, 2, 1);
+  assert.equal(d.resultat, "bon");
+  assert.equal(d.bonResultat, 2);
+  assert.equal(d.bonusEcart, 0);
+  assert.equal(d.bonusButsExt, 1);
+  assert.equal(d.total, 3);
+});
+
+test("scoring: wrong result but correct home goals (independent)", () => {
+  const d = decomposePoints(DEFAULT_BAREME, 2, 1, 2, 3);
+  assert.equal(d.resultat, "mauvais");
+  assert.equal(d.bonusButsDom, 1);
+  assert.equal(d.total, 1);
+});
+
+test("scoring: wrong result but correct away goals (independent)", () => {
+  const d = decomposePoints(DEFAULT_BAREME, 1, 1, 0, 1);
+  assert.equal(d.resultat, "mauvais");
+  assert.equal(d.bonusButsExt, 1);
+  assert.equal(d.total, 1);
+});
+
+test("computePronosticPoints returns the total", () => {
+  assert.equal(computePronosticPoints(2, 1, 2, 1), 5);
+  assert.equal(computePronosticPoints(1, 1, 2, 0), 0);
+  assert.equal(computePronosticPoints(1, 1, 2, 1), 1);
+});
+
+test("leaderboard shares rank on ties", () => {
+  const rows = buildLeaderboard([
+    { userId: "a", points: 3 },
+    { userId: "b", points: 3 },
+    { userId: "c", points: 1 },
+  ]);
+  assert.deepEqual(rows.map((r) => r.rank), [1, 1, 3]);
 });

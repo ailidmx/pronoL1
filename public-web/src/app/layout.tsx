@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   publisher: siteConfig.name,
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Stat de Foot" },
-  icons: { icon: "/app-icon.svg", apple: "/app-icon.svg" },
+  icons: { icon: "/app-icon.svg", apple: "/app-icon-192.png" },
   formatDetection: { email: false, address: false, telephone: false },
 };
 

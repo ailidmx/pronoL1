@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
@@ -18,6 +18,12 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app);
+
+// Google provider — configured in Firebase console (Authentication → Sign-in
+// method → Google). "Sign up with Google" is enabled automatically once the
+// provider is on (Firebase creates an account on first sign-in).
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
 
 export const getProfile = httpsCallable(functions, "getProfile");
 export const saveProfile = httpsCallable(functions, "saveProfile");

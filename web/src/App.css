@@ -102,6 +102,64 @@ button:hover {
   color: #2d6a4f;
 }
 
+.login-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: min(100%, 360px);
+  padding: 0.6rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.login-google:hover:not(:disabled) {
+  background: #f7f7f7;
+}
+
+.login-google:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100%, 360px);
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.login-message {
+  color: #2d6a4f;
+}
+
+.login-links {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+.login-reset {
+  background: transparent;
+  color: #888;
+  font-size: 0.85rem;
+}
+
 .standings table {
   width: 100%;
   border-collapse: collapse;

@@ -53,4 +53,5 @@ export { syncFootballData, syncFixtures, syncRecentMatchDetails } from "./sync.j
 export { savePronostic } from "./pronostics.js";
 export { saveProfile } from "./profile.js";
 export { saveBonusAnswer } from "./bonus.js";
+export { saveQuizAnswer } from "./quizz.js";
 export { scoreFinishedMatches } from "./scoring.js";

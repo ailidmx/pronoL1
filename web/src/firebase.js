@@ -23,3 +23,4 @@ export const getProfile = httpsCallable(functions, "getProfile");
 export const saveProfile = httpsCallable(functions, "saveProfile");
 export const savePronostic = httpsCallable(functions, "savePronostic");
 export const saveBonusAnswer = httpsCallable(functions, "saveBonusAnswer");
+export const saveQuizAnswer = httpsCallable(functions, "saveQuizAnswer");

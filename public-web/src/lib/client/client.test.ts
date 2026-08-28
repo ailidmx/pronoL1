@@ -13,6 +13,7 @@ vi.stubGlobal("window", { localStorage: memory });
 import { getFavorites, isFavoriteClub, toggleFavoriteClub, toggleFavoriteMatch } from "./favorites";
 import { clearHistory, getHistory, recordMatchView } from "./history";
 import { canAnalyse, getAnalysisCount, incrementAnalysisCount, remainingAnalyses } from "./analysis-counter";
+import { isPremium, setPremium } from "./premium";
 
 beforeEach(() => memory.clear());
 
@@ -67,5 +68,15 @@ describe("analysis counter", () => {
     for (let i = 0; i < 5; i++) incrementAnalysisCount();
     expect(canAnalyse(5)).toBe(false);
     expect(remainingAnalyses(5)).toBe(0);
+  });
+});
+
+describe("premium flag", () => {
+  it("defaults to false and toggles", () => {
+    expect(isPremium()).toBe(false);
+    setPremium(true);
+    expect(isPremium()).toBe(true);
+    setPremium(false);
+    expect(isPremium()).toBe(false);
   });
 });

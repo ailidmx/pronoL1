@@ -7,6 +7,7 @@ import { MatchLineups } from "@/components/football/match-lineups";
 import { MatchList } from "@/components/football/match-list";
 import { MatchTimeline } from "@/components/football/match-timeline";
 import { MatchStatistics } from "@/components/football/match-statistics";
+import { AdvancedStatistics } from "@/components/football/advanced-statistics";
 import { TeamForm } from "@/components/football/team-form";
 import { FavoriteButton } from "@/components/football/favorite-button";
 import { MatchViewRecorder } from "@/components/football/match-view-recorder";
@@ -68,6 +69,7 @@ export default async function MatchPage({ params }: Props) {
         <section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Minute par minute</p><h2>Buts, cartons et changements</h2></div></div><MatchTimeline match={match} /></section>
         <section className="data-panel" id="statistiques"><div className="section-heading"><div><p className="eyebrow">Comparatif</p><h2>Statistiques du match</h2></div></div><MatchStatistics match={match} /></section>
       </div>
+      <AdvancedStatistics match={match} />
       <section className="data-panel related-block" id="compositions"><div className="section-heading"><div><p className="eyebrow">Titulaires et banc</p><h2>Compositions complètes</h2></div></div><MatchLineups match={match} /></section>
       <section className="related-block" id="forme"><div className="section-heading"><div><p className="eyebrow">Avant-match</p><h2>Forme récente : général, domicile et extérieur</h2></div></div><div className="form-team-grid"><div className="data-panel"><h3>{match.homeClub.name}</h3><h4>5 derniers matchs</h4><TeamForm club={match.homeClub} matches={overview.matches} /><h4>À domicile</h4><TeamForm club={match.homeClub} matches={overview.matches} venue="home" /></div><div className="data-panel"><h3>{match.awayClub.name}</h3><h4>5 derniers matchs</h4><TeamForm club={match.awayClub} matches={overview.matches} /><h4>À l’extérieur</h4><TeamForm club={match.awayClub} matches={overview.matches} venue="away" /></div></div></section>
       <section className="data-panel related-block" id="confrontations"><div className="section-heading"><div><p className="eyebrow">Face-à-face</p><h2>Dernières confrontations</h2></div></div><MatchList matches={headToHead} /></section>

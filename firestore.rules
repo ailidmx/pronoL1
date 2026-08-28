@@ -90,6 +90,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Push: subscriptions + sent-markers are written server-side (public-web
+    // API route + functions, both via Admin SDK). No client access.
+    match /pushSubscriptions/{subscriptionId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+    match /pushRappels/{doc} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
     // Deny everything else by default. Domain rules are added collection by
     // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {

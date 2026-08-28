@@ -4,6 +4,7 @@ import { auth } from "./firebase.js";
 import Login from "./Login.jsx";
 import Standings from "./Standings.jsx";
 import Profile from "./Profile.jsx";
+import Matches from "./Matches.jsx";
 import "./App.css";
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
       </header>
       <main className="app-main">
         <Profile />
+        <Matches />
         <Standings />
       </main>
     </div>

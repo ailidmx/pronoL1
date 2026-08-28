@@ -6,6 +6,8 @@ import { ConsentBanner, PrivacySettingsButton } from "@/components/privacy/conse
 import { DataFreshness } from "@/components/football/data-freshness";
 import { getSeasonOverview } from "@/server/football-repository";
 import { InstallApp } from "@/components/pwa/install-app";
+import { AuthProvider } from "@/lib/client/auth";
+import { AuthButton } from "@/components/auth/auth-button";
 import "./global.scss";
 
 export const metadata: Metadata = {
@@ -31,6 +33,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang={siteConfig.language}>
       <body>
+        <AuthProvider>
         <GoogleTags />
         <header className="site-header">
           <a href="/" className="brand">{siteConfig.name}</a>
@@ -42,6 +45,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <a href="/pronostics">Pronostics</a>
             <a href="/favoris">Favoris</a>
             <a href="/historique">Historique</a>
+            <AuthButton />
             <InstallApp />
           </nav>
         </header>
@@ -52,6 +56,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <div className="footer-links"><a href="/ligue-1/2026-2027/resultats">Résultats Ligue 1</a><a href="/ligue-1/2026-2027/calendrier">Calendrier</a><a href="/pronostics">Prono L1</a><PrivacySettingsButton /></div>
         </footer>
         <ConsentBanner />
+        </AuthProvider>
       </body>
     </html>
   );

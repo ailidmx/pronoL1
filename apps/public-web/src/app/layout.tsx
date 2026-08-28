@@ -6,7 +6,7 @@ import { ConsentBanner, PrivacySettingsButton } from "@/components/privacy/conse
 import { DataFreshness } from "@/components/football/data-freshness";
 import { getSeasonOverview } from "@/server/football-repository";
 import { InstallApp } from "@/components/pwa/install-app";
-import "./styles.css";
+import "./global.scss";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,

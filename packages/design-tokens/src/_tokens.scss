@@ -1,0 +1,23 @@
+$space-1: .25rem;
+$space-2: .5rem;
+$space-3: .75rem;
+$space-4: 1rem;
+$space-6: 1.5rem;
+$space-8: 2rem;
+$radius-sm: .5rem;
+$radius-md: .75rem;
+$radius-lg: 1rem;
+$shadow-panel: 0 12px 36px rgb(15 23 42 / 10%);
+$breakpoint-mobile: 48rem;
+
+@mixin theme-vars($accent, $accent-strong, $page, $surface, $text) {
+  --color-accent: #{$accent};
+  --color-accent-strong: #{$accent-strong};
+  --color-page: #{$page};
+  --color-surface: #{$surface};
+  --color-text: #{$text};
+  --color-muted: #64748b;
+  --color-border: #cbd5e1;
+  --radius-panel: #{$radius-lg};
+  --shadow-panel: #{$shadow-panel};
+}

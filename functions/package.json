@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "@prono-l1/functions",
   "version": "1.0.0",
   "description": "Prono-L1 Cloud Functions (Phase 2 backend)",
   "type": "module",
@@ -13,6 +13,7 @@
     "deploy": "firebase deploy --only functions"
   },
   "dependencies": {
+    "@prono-l1/domain": "1.0.0",
     "firebase-admin": "^14.3.0",
     "firebase-functions": "^7.3.2",
     "web-push": "^3.6.7"

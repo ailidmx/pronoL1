@@ -8,7 +8,7 @@ import Matches from "./Matches.jsx";
 import Classement from "./Classement.jsx";
 import Bonus from "./Bonus.jsx";
 import Quiz from "./Quiz.jsx";
-import "./App.css";
+import styles from "./App.module.scss";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -23,7 +23,7 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div className="app-loading">Chargement…</div>;
+    return <div className={styles.loading}>Chargement…</div>;
   }
 
   if (!user) {
@@ -31,17 +31,17 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
+    <div className={styles.app}>
+      <header className={styles.header}>
         <h1>Prono-L1</h1>
-        <div className="app-user">
-          <span className="app-email">{user.email}</span>
+        <div className={styles.user}>
+          <span className={styles.email}>{user.email}</span>
           <button type="button" onClick={() => auth.signOut()}>
             Déconnexion
           </button>
         </div>
       </header>
-      <main className="app-main">
+      <main className={styles.main}>
         <Profile />
         <Matches />
         <Classement />

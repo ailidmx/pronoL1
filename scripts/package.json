@@ -1,9 +1,10 @@
 {
-  "name": "scripts",
+  "name": "@prono-l1/scripts",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "dependencies": {
+    "@prono-l1/domain": "1.0.0",
     "firebase-admin": "^14.3.0",
     "mysql2": "^3.11.0"
   }

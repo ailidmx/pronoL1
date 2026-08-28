@@ -3,7 +3,7 @@
  */
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { collections, subcollections, validateQuizAnswer } from "../shared/index.js";
+import { collections, subcollections, validateQuizAnswer } from "@prono-l1/domain";
 
 // Save the signed-in user's answer to one quiz question.
 export const saveQuizAnswer = onCall({ cors: true }, async (request) => {

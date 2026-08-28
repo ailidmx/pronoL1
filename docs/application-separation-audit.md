@@ -16,8 +16,8 @@ Le dépôt n'atteint actuellement que deux tiers de cette cible :
 
 | Application | Code autonome | Build autonome | Déploiement autonome | Styles isolés | Verdict |
 |---|---:|---:|---:|---:|---|
-| Public | Oui — `public-web/` | Oui — Next.js | Oui — App Hosting | Non, CSS global monolithique | Séparation runtime correcte |
-| Player | Oui — `web/` | Oui — Vite | Oui — Firebase Hosting | Non, `App.css` global | Séparation runtime correcte |
+| Public | Oui — `apps/public-web/` | Oui — Next.js | Oui — App Hosting | Non, CSS global monolithique | Séparation runtime correcte |
+| Player | Oui — `apps/player-web/` | Oui — Vite | Oui — Firebase Hosting | Non, `App.css` global | Séparation runtime correcte |
 | Admin | Non | Non | Non | Non | À créer |
 | Legacy | Oui, mais monolithique | Pipeline historique | Hébergement historique | CSS global massif | Source de parité temporaire |
 
@@ -27,18 +27,18 @@ L'administration du nouveau stack n'est pas une application. Le champ `isAdmin`,
 
 ### Public
 
-- package : `public-web/package.json` ;
+- package : `apps/public-web/package.json` ;
 - runtime : Next.js App Router ;
 - build : `next build` ;
-- déploiement : Firebase App Hosting via `public-web/apphosting.yaml` ;
+- déploiement : Firebase App Hosting via `apps/apps/public-web/apphosting.yaml` ;
 - accès aux données : repository Firestore serveur ;
 - cycle de release distinct du Hosting SPA.
 
 ### Player
 
-- package : `web/package.json` ;
+- package : `apps/player-web/package.json` ;
 - runtime : React + Vite ;
-- build : `vite build` vers `web/dist` ;
+- build : `vite build` vers `apps/player-web/dist` ;
 - déploiement : cible `hosting` de `firebase.json` ;
 - accès aux données : Firebase client + fonctions callable.
 
@@ -60,7 +60,7 @@ Aucun dossier, package, entrée Vite, configuration Hosting, route ou CI propre.
 - Les composants accèdent directement à Firestore.
 - `firebase.js` mélange initialisation, fournisseurs d'authentification et catalogue de RPC.
 - Il n'existe ni couche use-case, ni repository client, ni gestion d'erreurs partagée.
-- Les domaines sont des fichiers à plat dans `web/src/`.
+- Les domaines sont des fichiers à plat dans `apps/player-apps/player-web/src/`.
 - `App.css` applique des règles globales, y compris sur `button`, ce qui rend les composants difficiles à isoler.
 - Aucun design system, token de thème ou composant UI réutilisable n'est formalisé.
 - L'application n'est pas encore au niveau de richesse fonctionnelle et visuelle du legacy.

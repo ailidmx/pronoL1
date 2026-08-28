@@ -9,7 +9,7 @@ import {
   collections,
   DEFAULT_USER_PROFILE,
   validateUserProfile,
-} from "../shared/index.js";
+} from "@prono-l1/domain";
 
 initializeApp();
 const db = getFirestore();

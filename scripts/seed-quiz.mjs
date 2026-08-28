@@ -14,7 +14,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { collections } from "../shared/index.js";
+import { collections } from "@prono-l1/domain";
 
 const SQL_PATH = process.env.SQL_PATH || fileURLToPath(new URL("../prono_l1.sql", import.meta.url));
 const DRY_RUN = !process.argv.includes("--execute");

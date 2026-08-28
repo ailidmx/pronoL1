@@ -1,4 +1,6 @@
+@use "@prono-l1/design-tokens/tokens" as tokens;
 :root {
+  @include tokens.theme-vars(#2d6a4f, #24553f, #f5f6fa, #fff, #1a1a2e);
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;

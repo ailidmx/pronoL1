@@ -16,8 +16,9 @@ node_modules/
 firebase-debug.log
 firebase-debug.*.log
 
-# Web build output
-web/dist/
+# Application build output
+apps/*/dist/
+apps/*/.next/
 
 # Functions build output
 functions/dist/

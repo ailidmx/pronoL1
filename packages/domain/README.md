@@ -1,6 +1,6 @@
 # Shared modules (Prono-L1)
 
-Pure, dependency-free modules shared between the frontend (`web/`) and backend
+Pure, dependency-free modules shared between the frontend (`apps/player-web/`) and backend
 (`functions/`). ESM (`"type": "module"` — see `package.json`).
 
 - `firestore-paths.js` — single source of truth for collection/subcollection

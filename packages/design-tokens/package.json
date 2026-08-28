@@ -1,0 +1,6 @@
+{
+  "name": "@prono-l1/design-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "exports": { "./tokens": "./src/_tokens.scss", "./mixins": "./src/_mixins.scss" }
+}

@@ -8,7 +8,7 @@ import {
   subcollections,
   decomposePoints,
   DEFAULT_BAREME,
-} from "../shared/index.js";
+} from "@prono-l1/domain";
 
 // Scores pronostics of finished matches not yet scored, then materializes the
 // per-player leaderboard (leaderboardPronostics/{seasonId}/rows/{userId}).

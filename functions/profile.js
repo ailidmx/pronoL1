@@ -8,7 +8,7 @@ import {
   validateProfileEdit,
   buildProfileEditPayload,
   initialsFromName,
-} from "../shared/index.js";
+} from "@prono-l1/domain";
 
 // Save the signed-in user's editable profile fields (pseudo, favorite team,
 // notif prefs). `avatarInitiales` is derived from the pseudo.

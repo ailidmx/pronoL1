@@ -14,7 +14,7 @@ Configure these public identifiers in the public app hosting environment:
 They are routing identifiers, not secrets. Never add service-account JSON,
 API secrets or credentials to these variables.
 
-The GA4 Measurement ID is committed in `public-web/apphosting.yaml` so Firebase
+The GA4 Measurement ID is committed in `apps/apps/public-web/apphosting.yaml` so Firebase
 App Hosting injects it at build and runtime. The Firebase browser API key shown
 when registering the web app is also a public client identifier, but it is not
 required by the direct Google tag integration. Firebase SDK configuration will

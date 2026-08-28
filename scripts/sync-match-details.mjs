@@ -6,7 +6,7 @@
  */
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { collections } from "../shared/index.js";
+import { collections } from "@prono-l1/domain";
 
 const key = process.env.API_FOOTBALL_KEY;
 if (!key) throw new Error("Missing API_FOOTBALL_KEY");

@@ -13,7 +13,7 @@ const LIGUE1_ID = 61;
 const SEASON = 2026; // Ligue 1 2026-27 → start year 2026
 
 function mapStandingRows(rows, mode) {
-  return (rows ?? []).map((s) => {
+  const mapped = (rows ?? []).map((s) => {
     const split = mode === "general" ? s.all : s[mode === "domicile" ? "home" : "away"];
     return {
       clubId: s.team.id,
@@ -28,8 +28,22 @@ function mapStandingRows(rows, mode) {
       pts: mode === "general" ? s.points : split.win * 3 + split.draw,
       forme: mode === "general" ? (s.form ?? null) : null,
     };
-  }).sort((a, b) => b.pts - a.pts || b.diff - a.diff || b.bp - a.bp)
-    .map((row, index) => ({ ...row, rang: index + 1 }));
+  });
+
+  if (mode === "general") {
+    // The API already returns the official rank (ties share the same rank).
+    return mapped.sort((a, b) => a.rang - b.rang);
+  }
+
+  // Home/away: recompute rank from home/away stats, sharing rank on ties
+  // (1, 1, 3, 3, 5…) instead of a plain counter.
+  return mapped
+    .sort((a, b) => b.pts - a.pts || b.diff - a.diff || b.bp - a.bp)
+    .map((row, index, arr) => {
+      const prev = arr[index - 1];
+      const tied = Boolean(prev) && row.pts === prev.pts && row.diff === prev.diff && row.bp === prev.bp;
+      return { ...row, rang: tied ? prev.rang : index + 1 };
+    });
 }
 
 async function apiFootball(path) {

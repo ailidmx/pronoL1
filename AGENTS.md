@@ -192,6 +192,30 @@ This repo ships Claude Code skills in `.claude/skills/`:
 - **Still deferred:** quiz resolution/scoring (`resoudre`), `leaderboardQuiz` read
   model, quiz generation (`generer_quizz` admin), and player history.
 
+## 12. Phase 2 — web push (match alerts)
+
+- **Architecture:** the public-web API route `POST /api/push-subscription`
+  (`src/app/api/push-subscription/route.ts`, server-side firebase-admin) writes a
+  device subscription + followed match into `pushSubscriptions/{deviceId}_{hash}`.
+  The Cloud Function `sendMatchAlerts` (`functions/push.js`, scheduled `*/15`)
+  reads those and sends kickoff + fulltime notifications via **web-push**.
+  `pushRappels/{deviceId}_{matchId}.sentKinds[]` prevents duplicate sends.
+- **`web-push` MUST be `--external` in the esbuild build** — it does
+  `require("crypto")` internally, which esbuild cannot bundle to ESM
+  (`Dynamic require of "crypto" is not supported`). Keep
+  `--external:web-push` in `functions/package.json` so Node resolves it from
+  `node_modules` at runtime.
+- **VAPID keys:** public key is in `functions/push.js` + `NEXT_PUBLIC_VAPID_PUBLIC_KEY`
+  (apphosting.yaml); the private key is the **secret `VAPID_PRIVATE_KEY`** (set on
+  `pronol1` via `firebase functions:secrets:set`). `sendMatchAlerts` declares it in
+  `secrets: [...]`.
+- **⚠️ The local firebase CLI defaults to the gcloud project (`boda-500805`), NOT
+  `.firebaserc` (`pronol1`).** `firebase use` / `functions:secrets:set` / any local
+  firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
+  for local firebase commands targeting this app. (The GitHub Actions deploy is
+  fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
+
+
 
 
 

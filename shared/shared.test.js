@@ -8,6 +8,9 @@ import {
   buildPayload,
   validateUserProfile,
   DEFAULT_USER_PROFILE,
+  validateProfileEdit,
+  buildProfileEditPayload,
+  initialsFromName,
   validatePronostic,
   isValidPronosticScores,
   buildPronosticPayload,
@@ -74,6 +77,37 @@ test("user profile validation", () => {
 test("default user profile is safe", () => {
   assert.equal(DEFAULT_USER_PROFILE.isAdmin, false);
   assert.equal(DEFAULT_USER_PROFILE.notifEmail, true);
+});
+
+test("profile edit validates editable fields", () => {
+  const valid = {
+    displayName: "Karla",
+    equipeCoeurId: 85,
+    notifEmail: true,
+    notifPush: false,
+    notifTelegram: false,
+  };
+  assert.equal(validateProfileEdit(valid), null);
+  assert.equal(validateProfileEdit({ ...valid, notifEmail: undefined }), "notifEmail");
+  assert.equal(validateProfileEdit({ ...valid, equipeCoeurId: "abc" }), "equipeCoeurId");
+});
+
+test("buildProfileEditPayload stamps and validates", () => {
+  const now = new Date("2026-01-01T00:00:00Z");
+  const payload = buildProfileEditPayload(
+    { displayName: "Karla", equipeCoeurId: 85, notifEmail: true, notifPush: false, notifTelegram: false },
+    { now },
+  );
+  assert.equal(payload.displayName, "Karla");
+  assert.equal(payload.updatedAt, now);
+  assert.throws(() => buildProfileEditPayload({ displayName: "Karla", equipeCoeurId: null }));
+});
+
+test("initialsFromName derives avatar initials", () => {
+  assert.equal(initialsFromName("David Aïli"), "DA");
+  assert.equal(initialsFromName("Karla"), "K");
+  assert.equal(initialsFromName(null), null);
+  assert.equal(initialsFromName("   "), null);
 });
 
 test("pronostic validation", () => {

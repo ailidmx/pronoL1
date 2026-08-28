@@ -54,6 +54,7 @@ Agreed direction (finalize each decision as it is implemented):
 - `packages/domain` is the dependency-free business package; frontends must not import one another.
 - `packages/design-tokens` contains shared SCSS decisions and `packages/ui-primitives` stays intentionally small.
 - Player and Admin deploy to distinct Firebase Hosting targets; Public remains on Firebase App Hosting.
+- Public must stay on a Firebase App Hosting supported Next.js release. Next.js 16 currently builds but fails during the Firebase adapter's standalone-manifest processing; keep `apps/public-web` on the supported 15.2.x line until Firebase promotes a newer active version.
 - Data seeds are manual operational commands and must not run as a side effect of an application deployment.
 
 ### Public growth application
@@ -223,7 +224,6 @@ This repo ships Claude Code skills in `.claude/skills/`:
   firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
   for local firebase commands targeting this app. (The GitHub Actions deploy is
   fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
-
 
 
 

@@ -106,3 +106,35 @@ This repo ships Claude Code skills in `.claude/skills/`:
 - `rearchitecture` — playbook for the Phase 2 Node/Firestore/React migration.
 
 *(Add new lessons here as you discover them.)*
+
+## 8. Phase 2 — scoring & leaderboard (new stack)
+
+- **Points barème lives in `shared/scoring.js`** — `decomposePoints` /
+  `computePronosticPoints` are a faithful port of the legacy `decomposerPoints`
+  (api/utils.php). Rules: exact score → `ptsExact` (5) alone; correct result →
+  `ptsBonResultat` (2) + `ptsBonusEcart` (1) only if the goal difference is also
+  right; correct home/away goals → `ptsBonusButsDom`/`ptsBonusButsExt` (1 each,
+  INDEPENDENT of the result — they can land even on an otherwise "mauvais" prono).
+  Defaults in `DEFAULT_BAREME`. `resultat` ∈ `exact`/`bon`/`mauvais` is just the
+  SENSE (win/draw/loss) categorization, independent of the partial bonuses.
+- **Leaderboard is a read model materialized by `scoreFinishedMatches`**
+  (`functions/scoring.js`, scheduled `*/15 * * * *`). It scores finished matches
+  (`statut == "termine"` with no `scoredAt`) — writes `points`/`resultat`/
+  `decomposition` onto each `matches/{id}/pronostics/{userId}` doc — then
+  incrementally adds each prono's decomposition to
+  `leaderboardPronostics/{seasonId}/rows/{userId}` (aggregate counts). RANK is
+  NOT stored — the client sorts by `points` and applies the shared-rank rule on
+  ties. Firestore rules allow signed-in read + admin write on
+  `leaderboardPronostics` (the function writes via Admin SDK).
+- **Leaderboard season key = `match.seasonId`** (the API-Football year, e.g.
+  `2026`), NOT the `saisons` doc id. The sync writes `seasonId: 2026` (the
+  `SEASON` constant) onto current-season matches. The UI (`web/src/Classement.jsx`)
+  resolves it by finding the season with `statut == "en_cours"` and using its
+  `anneeDebut` (== `SEASON`). Do NOT use the `saisons` DB id (1/2) as the
+  leaderboard key — it would split points from the synced matches.
+- **Known limitation:** `scoreFinishedMatches` marks a match `scoredAt` AFTER
+  scoring, and skips already-scored matches, so a corrected FT score is NOT
+  re-scored. There is no idempotent delta/transaction yet — for a ~10-player app
+  this is acceptable; fix with a Firestore transaction per match if it ever
+  matters.
+

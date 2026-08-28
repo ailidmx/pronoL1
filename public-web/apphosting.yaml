@@ -23,3 +23,8 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: NEXT_PUBLIC_PRIVATE_APP_URL
+    value: https://pronol1.web.app
+    availability:
+      - BUILD
+      - RUNTIME

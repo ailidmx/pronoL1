@@ -138,3 +138,66 @@ button:hover {
 .profile-email {
   color: #555;
 }
+
+.matches {
+  margin-bottom: 1.5rem;
+}
+
+.match-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.match-card {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.match-teams {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.match-teams .vs {
+  color: #888;
+  font-weight: 400;
+}
+
+.match-date {
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.prono-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.prono-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.prono-form input {
+  width: 3rem;
+  text-align: center;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 0.35rem;
+  font-size: 1rem;
+}
+
+.prono-sep {
+  font-weight: 700;
+}

@@ -20,3 +20,4 @@ export const db = getFirestore(app);
 export const functions = getFunctions(app);
 
 export const getProfile = httpsCallable(functions, "getProfile");
+export const savePronostic = httpsCallable(functions, "savePronostic");

@@ -60,6 +60,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Bonus: questions readable by signed-in users; answers readable by the
+    // owner (or admin), written via the saveBonusAnswer function (Admin SDK).
+    match /bonus/{seasonId}/questions/{questionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /bonus/{seasonId}/answers/{userId} {
+      allow read: if isOwnUser(userId) || isAdmin();
+      allow write: if false;
+    }
+
     // Deny everything else by default. Domain rules are added collection by
     // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {

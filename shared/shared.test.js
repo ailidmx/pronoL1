@@ -18,6 +18,9 @@ import {
   computePronosticPoints,
   DEFAULT_BAREME,
   buildLeaderboard,
+  validateBonusAnswer,
+  validateBonusAnswerForQuestion,
+  computeBonusPointsPerPick,
 } from "./index.js";
 
 test("collection names are the single source of truth", () => {
@@ -183,4 +186,30 @@ test("leaderboard shares rank on ties", () => {
     { userId: "c", points: 1 },
   ]);
   assert.deepEqual(rows.map((r) => r.rank), [1, 1, 3]);
+});
+
+test("bonus answer validates shape", () => {
+  assert.equal(validateBonusAnswer({ clubIds: [85], playerText: null }), null);
+  assert.equal(validateBonusAnswer({ clubIds: [], playerText: "Esteban Lepaul" }), null);
+  assert.equal(validateBonusAnswer({ clubIds: "85", playerText: null }), "clubIds");
+  assert.equal(validateBonusAnswer({ clubIds: [85], playerText: 7 }), "playerText");
+});
+
+test("bonus answer validates against the question type", () => {
+  const club = { type: "club", nbChoix: 1 };
+  assert.equal(validateBonusAnswerForQuestion(club, { clubIds: [85], playerText: null }), null);
+  assert.equal(validateBonusAnswerForQuestion(club, { clubIds: [85, 63], playerText: null }), "clubIds");
+
+  const multi = { type: "multi_club", nbChoix: 2 };
+  assert.equal(validateBonusAnswerForQuestion(multi, { clubIds: [85, 63], playerText: null }), null);
+  assert.equal(validateBonusAnswerForQuestion(multi, { clubIds: [85, 85], playerText: null }), "clubIds");
+
+  const joueur = { type: "joueur", nbChoix: 1 };
+  assert.equal(validateBonusAnswerForQuestion(joueur, { clubIds: [], playerText: "X" }), null);
+  assert.equal(validateBonusAnswerForQuestion(joueur, { clubIds: [], playerText: null }), "playerText");
+});
+
+test("bonus points per pick is truncated points/nbChoix", () => {
+  assert.equal(computeBonusPointsPerPick({ points: 15, nbChoix: 1 }), 15);
+  assert.equal(computeBonusPointsPerPick({ points: 15, nbChoix: 2 }), 7);
 });

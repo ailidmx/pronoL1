@@ -105,7 +105,7 @@ function zip(columns, values) {
 }
 
 async function main() {
-  if (getApps().length === 0) initializeApp({ credential: applicationDefault() });
+  if (getApps().length === 0) initializeApp({ projectId: "pronol1", credential: applicationDefault() });
   const db = getFirestore();
 
   const sql = fs.readFileSync(SQL_PATH, "utf8");

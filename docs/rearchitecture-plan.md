@@ -109,7 +109,7 @@ repositories → Firestore. No Firestore SDK calls inside React components.
 
 1. Create Firebase project(s) + enable Auth (email/password), Firestore, Cloud
    Functions, Hosting, App Check.
-2. Scaffold repo (`functions/`, `web/`, shared validation/payload modules).
+2. Scaffold repo (`functions/`, `apps/player-web/`, shared validation/payload modules).
 3. Write a one-off import script: MySQL dump (`prono_l1.sql`) → Firestore,
    mapping per §4. Dry-run first.
 4. Port the API domain by domain; keep the legacy PHP app running until parity.

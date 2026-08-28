@@ -10,7 +10,7 @@
  */
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { collections } from "../shared/index.js";
+import { collections } from "@prono-l1/domain";
 
 const API_KEY = process.env.API_FOOTBALL_KEY;
 const API_BASE = "https://v3.football.api-sports.io";

@@ -20,7 +20,7 @@
 import mysql from "mysql2/promise";
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { collections } from "../shared/firestore-paths.js";
+import { collections } from "@prono-l1/domain/firestore-paths";
 
 const DRY_RUN = !process.argv.includes("--execute");
 

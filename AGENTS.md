@@ -47,10 +47,19 @@ Agreed direction (finalize each decision as it is implemented):
   templates → pages), replacing the vanilla JS app.
 - **Auth:** Firebase Auth.
 
+### Implemented monorepo boundaries
+
+- npm workspaces are rooted at `apps/*`, `packages/*`, `functions` and `scripts`.
+- `apps/public-web`, `apps/player-web` and `apps/admin-web` have independent builds.
+- `packages/domain` is the dependency-free business package; frontends must not import one another.
+- `packages/design-tokens` contains shared SCSS decisions and `packages/ui-primitives` stays intentionally small.
+- Player and Admin deploy to distinct Firebase Hosting targets; Public remains on Firebase App Hosting.
+- Data seeds are manual operational commands and must not run as a side effect of an application deployment.
+
 ### Public growth application
 
-- `public-web/` is the independent SEO/freemium application (Next.js App
-  Router + TypeScript). Do not merge it into the private `web/` SPA.
+- `apps/public-web/` is the independent SEO/freemium application (Next.js App
+  Router + TypeScript). Do not merge it into the private `apps/player-web/` SPA.
 - Its monetization and experiment behavior must be resolved through policy
   modules, not hardcoded into pages.
 - Indexable pages must render useful HTML on the server and satisfy the SEO
@@ -111,7 +120,7 @@ This repo ships Claude Code skills in `.claude/skills/`:
 
 ## 8. Phase 2 — scoring & leaderboard (new stack)
 
-- **Points barème lives in `shared/scoring.js`** — `decomposePoints` /
+- **Points barème lives in `packages/domain/scoring.js`** — `decomposePoints` /
   `computePronosticPoints` are a faithful port of the legacy `decomposerPoints`
   (api/utils.php). Rules: exact score → `ptsExact` (5) alone; correct result →
   `ptsBonResultat` (2) + `ptsBonusEcart` (1) only if the goal difference is also
@@ -130,7 +139,7 @@ This repo ships Claude Code skills in `.claude/skills/`:
   `leaderboardPronostics` (the function writes via Admin SDK).
 - **Leaderboard season key = `match.seasonId`** (the API-Football year, e.g.
   `2026`), NOT the `saisons` doc id. The sync writes `seasonId: 2026` (the
-  `SEASON` constant) onto current-season matches. The UI (`web/src/Classement.jsx`)
+  `SEASON` constant) onto current-season matches. The UI (`apps/player-apps/player-web/src/Classement.jsx`)
   resolves it by finding the season with `statut == "en_cours"` and using its
   `anneeDebut` (== `SEASON`). Do NOT use the `saisons` DB id (1/2) as the
   leaderboard key — it would split points from the synced matches.
@@ -147,7 +156,7 @@ This repo ships Claude Code skills in `.claude/skills/`:
   from `request.data` and never spreads the raw body, so a caller can NOT write
   `isAdmin`/`email`. `avatarInitiales` is DERIVED from `displayName` via
   `initialsFromName` (server-side). Editable schema is `PROFILE_EDITABLE_FIELDS`
-  in `shared/users.js` (a subset of `USER_PROFILE_FIELDS` — no `isAdmin`/`email`).
+  in `packages/domain/users.js` (a subset of `USER_PROFILE_FIELDS` — no `isAdmin`/`email`).
 - **`equipeCoeurId` = the club's `apfId`** (the `clubs` doc id), NOT the legacy
   MySQL club id. The Profile form reads the `clubs` collection and uses `d.id`
   as the option value.
@@ -214,7 +223,6 @@ This repo ships Claude Code skills in `.claude/skills/`:
   firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
   for local firebase commands targeting this app. (The GitHub Actions deploy is
   fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
-
 
 
 

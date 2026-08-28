@@ -8,7 +8,7 @@ import { getSeasonOverview } from "@/server/football-repository";
 import { InstallApp } from "@/components/pwa/install-app";
 import { AuthProvider } from "@/lib/client/auth";
 import { AuthButton } from "@/components/auth/auth-button";
-import "./styles.css";
+import "./global.scss";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,

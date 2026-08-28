@@ -23,7 +23,7 @@ Roll out by audience value and API cost, not all at once:
 4. Premier League (39), LaLiga (140), Serie A (135), Bundesliga (78)
 5. Coupe de France and major international tournaments after data-quality review
 
-The competition registry lives in `public-web/src/config/competitions.ts`. A
+The competition registry lives in `apps/apps/public-apps/player-web/src/config/competitions.ts`. A
 competition remains `planned` and excluded from sitemaps until its Firestore
 documents pass the publication threshold.
 

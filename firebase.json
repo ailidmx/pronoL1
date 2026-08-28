@@ -17,16 +17,10 @@
       ]
     }
   ],
-  "hosting": {
-    "public": "web/dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  },
+  "hosting": [
+    { "target": "player", "public": "apps/player-web/dist", "ignore": ["firebase.json", "**/.*", "**/node_modules/**"], "rewrites": [{ "source": "**", "destination": "/index.html" }] },
+    { "target": "admin", "public": "apps/admin-web/dist", "ignore": ["firebase.json", "**/.*", "**/node_modules/**"], "rewrites": [{ "source": "**", "destination": "/index.html" }] }
+  ],
   "emulators": {
     "auth": { "port": 9099 },
     "functions": { "port": 5001 },

@@ -2,11 +2,11 @@
 
 ## Product boundary
 
-`public-web/` is an independent, SEO-first application. It shares normalized
+`apps/public-web/` is an independent, SEO-first application. It shares normalized
 football data and domain rules with the private prediction app, but has its own
 deployment, routing, analytics, monetization and release lifecycle.
 
-The existing `web/` directory remains the private React/Vite migration. The
+The existing `apps/player-web/` directory remains the private React/Vite migration. The
 legacy PHP application remains untouched during this foundation phase.
 
 ## Stack decision

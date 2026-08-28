@@ -5,7 +5,7 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { defineSecret } from "firebase-functions/params";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { collections } from "../shared/index.js";
+import { collections } from "@prono-l1/domain";
 
 const apiFootballKey = defineSecret("API_FOOTBALL_KEY");
 const API_BASE = "https://v3.football.api-sports.io";

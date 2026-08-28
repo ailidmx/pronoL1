@@ -1,0 +1,17 @@
+{
+  "name": "prono-l1",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*", "functions", "scripts"],
+  "scripts": {
+    "dev:public": "npm run dev -w @prono-l1/public-web",
+    "dev:player": "npm run dev -w @prono-l1/player-web",
+    "dev:admin": "npm run dev -w @prono-l1/admin-web",
+    "build:public": "npm run build -w @prono-l1/public-web",
+    "build:player": "npm run build -w @prono-l1/player-web",
+    "build:admin": "npm run build -w @prono-l1/admin-web",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": { "node": "22" }
+}

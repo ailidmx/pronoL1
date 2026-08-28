@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "pronol1"
+  },
+  "targets": {
+    "pronol1": {
+      "hosting": {
+        "player": ["pronol1"],
+        "admin": ["pronol1-admin"]
+      }
+    }
   }
 }

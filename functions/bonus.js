@@ -8,7 +8,7 @@ import {
   validateBonusAnswer,
   validateBonusAnswerForQuestion,
   buildBonusAnswerPayload,
-} from "../shared/index.js";
+} from "@prono-l1/domain";
 
 // Save (or update) the signed-in user's answer to one bonus question.
 export const saveBonusAnswer = onCall({ cors: true }, async (request) => {

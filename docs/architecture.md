@@ -23,7 +23,7 @@ Prono-L1 est aujourd'hui un dépôt de transition. La cible produit comprend **t
 
 Le legacy PHP/MySQL reste temporairement une quatrième surface, utilisée comme référence fonctionnelle et solution de repli. Il n'appartient pas à l'architecture produit cible.
 
-Firestore est le centre de données du nouveau système. Des Cloud Functions synchronisent les données football, appliquent les règles métier sensibles et matérialisent certains modèles de lecture. Le dossier `shared/` porte la validation et les calculs purs utilisables côté backend ou dans les tests.
+Firestore est le centre de données du nouveau système. Des Cloud Functions synchronisent les données football, appliquent les règles métier sensibles et matérialisent certains modèles de lecture. Le dossier `packages/domain/` porte la validation et les calculs purs utilisables côté backend ou dans les tests.
 
 La direction retenue est un monorepo **npm workspaces**, avec trois builds et trois déploiements indépendants. Les styles de composants utilisent **SCSS Modules** et des design tokens partagés. Le principal risque structurel est désormais la croissance parallèle des frontends et de plusieurs formes de logique métier sans contrats de module suffisamment explicites.
 
@@ -45,10 +45,10 @@ flowchart TD
 
 ### Principes de frontière
 
-- `public-web/` et `web/` sont deux applications indépendantes ; elles ne doivent pas être fusionnées.
+- `apps/public-web/` et `apps/player-web/` sont deux applications indépendantes ; elles ne doivent pas être fusionnées.
 - Le navigateur public ne doit pas accéder directement à Firestore avec des privilèges serveur.
 - Toute écriture métier sensible passe par une Cloud Function : verrouillage avant coup d'envoi, contrôle des deadlines, scoring et droits.
-- Les calculs déterministes et validations doivent vivre dans `shared/`, sans dépendance Firebase ou React.
+- Les calculs déterministes et validations doivent vivre dans `packages/domain/`, sans dépendance Firebase ou React.
 - Le legacy reste isolé ; aucun nouveau domaine ne doit y être développé sauf correctif nécessaire à la continuité.
 - Les scripts sont des opérations contrôlées, pas une API applicative.
 
@@ -57,11 +57,11 @@ flowchart TD
 | Zone | Responsabilité | Stack | Statut |
 |---|---|---|---|
 | `api/`, `index.php`, `app.js`, `style.css` | Produit historique complet | PHP, MySQL, JavaScript | Maintenu comme fallback |
-| `web/` | Produit privé authentifié | React 19, Vite, Firebase client | Migration active ; futur `apps/player-web/` |
-| `public-web/` | Produit public indexable et installable | Next.js 16, React 19, TypeScript | Croissance active ; futur `apps/public-web/` |
-| futur `admin-web/` | Back-office autonome | React 19, Vite, Firebase | Absent ; à créer avant portage admin |
+| `apps/player-web/` | Produit privé authentifié | React 19, Vite, Firebase client | Application autonome |
+| `apps/public-web/` | Produit public indexable et installable | Next.js 16, React 19, TypeScript | Application autonome |
+| `apps/admin-web/` | Back-office autonome | React 19, Vite, Firebase | Shell sécurisé autonome ; capacités métier à porter |
 | `functions/` | Commandes métier, synchronisations et tâches planifiées | Cloud Functions v2, Node 22 | Backend cible |
-| `shared/` | Domaine pur, validation, scoring, payloads et chemins | JavaScript ESM, Node test runner | Noyau partagé |
+| `packages/domain/` | Domaine pur, validation, scoring, payloads et chemins | JavaScript ESM, Node test runner | Package workspace partagé |
 | `scripts/` | Imports, normalisation, seeds et backfills | Node.js, Admin SDK | Opérations ponctuelles |
 | `firestore.rules` | Contrôle des accès clients | Firestore Rules | Deny-by-default |
 | `.github/workflows/` | Validation et déploiement | GitHub Actions | CI/CD actif |
@@ -69,7 +69,7 @@ flowchart TD
 
 ## 4. Applications et responsabilités
 
-### 4.1 Application privée — `web/`
+### 4.1 Application privée — `apps/player-web/`
 
 Responsabilités actuelles :
 
@@ -91,7 +91,7 @@ UI/pages → hooks/use-cases → services Firebase → Cloud Functions / Firesto
 
 Les composants React ne doivent pas contenir de règles de scoring, de contrôle de deadline ni de construction libre de payloads.
 
-### 4.2 Application publique — `public-web/`
+### 4.2 Application publique — `apps/public-web/`
 
 Responsabilités actuelles :
 
@@ -123,7 +123,7 @@ Fonctions actuelles :
 
 Le backend utilise l'Admin SDK. Les règles Firestore ne protègent donc pas les fonctions : chaque fonction doit vérifier explicitement authentification, autorisation, schéma, deadline et existence des références.
 
-### 4.4 Domaine partagé — `shared/`
+### 4.4 Domaine partagé — `packages/domain/`
 
 Le domaine partagé contient les règles pures :
 
@@ -170,7 +170,7 @@ Le modèle multi-compétitions prévu doit ajouter `competitionId` à toutes les
 
 ### 5.2 Saisie et scoring d'un pronostic
 
-1. L'utilisateur authentifié saisit un score dans `web/`.
+1. L'utilisateur authentifié saisit un score dans `apps/player-web/`.
 2. `savePronostic` vérifie l'identité, le schéma et le statut du match.
 3. La fonction écrit dans `matches/{matchId}/pronostics/{uid}`.
 4. Après la fin du match, `scoreFinishedMatches` calcule les points.
@@ -188,10 +188,10 @@ Les réponses passent par des fonctions callable. Les clients peuvent lire la co
 
 Sur chaque PR, la CI valide séparément :
 
-- `web/` : lint et build ;
+- `apps/player-web/` : lint et build ;
 - `functions/` : bundle ;
-- `public-web/` : lint, typecheck, tests et build ;
-- `shared/` : tests Node.
+- `apps/public-web/` : lint, typecheck, tests et build ;
+- `packages/domain/` : tests Node.
 
 Après fusion sur `main`, le workflow de déploiement construit et déploie Firestore, Functions et Firebase Hosting pour l'application privée. Le site public possède un cycle Firebase App Hosting distinct.
 
@@ -257,7 +257,7 @@ Créer un contrat canonique pour :
 - payloads et erreurs des fonctions ;
 - règles de publication du site public.
 
-Le minimum pragmatique est un package `shared/` clairement découpé par domaine, accompagné de tests et, lorsque nécessaire, de types TypeScript générés ou vérifiés.
+Le minimum pragmatique est un package `packages/domain/` clairement découpé par domaine, accompagné de tests et, lorsque nécessaire, de types TypeScript générés ou vérifiés.
 
 ### Étape 2 — installer les frontières monorepo et les styles
 
@@ -271,12 +271,12 @@ Le minimum pragmatique est un package `shared/` clairement découpé par domaine
 
 Créer une application React/Vite indépendante avec AuthGuard admin, router, shell, CI et cible Firebase Hosting propres. Porter ensuite les capacités du legacy selon l'inventaire de parité, sans copier son monolithe.
 
-### Étape 4 — réorganiser `web/` par domaines
+### Étape 4 — réorganiser `apps/player-web/` par domaines
 
 Structure cible proposée :
 
 ```
-web/src/
+apps/player-web/src/
   app/
   domains/
     auth/

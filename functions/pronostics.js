@@ -8,7 +8,7 @@ import {
   subcollections,
   validatePronostic,
   isValidPronosticScores,
-} from "../shared/index.js";
+} from "@prono-l1/domain";
 
 // Save (or clear) the signed-in user's pronostic for a match, if not started.
 export const savePronostic = onCall({ cors: true }, async (request) => {

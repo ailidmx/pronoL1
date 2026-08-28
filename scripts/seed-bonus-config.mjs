@@ -11,7 +11,7 @@
  */
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { collections } from "../shared/index.js";
+import { collections } from "@prono-l1/domain";
 
 const SEASON_ID = "2026";
 const DRY_RUN = !process.argv.includes("--execute");

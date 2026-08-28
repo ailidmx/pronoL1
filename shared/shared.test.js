@@ -8,6 +8,9 @@ import {
   buildPayload,
   validateUserProfile,
   DEFAULT_USER_PROFILE,
+  validatePronostic,
+  isValidPronosticScores,
+  buildPronosticPayload,
 } from "./index.js";
 
 test("collection names are the single source of truth", () => {
@@ -67,4 +70,26 @@ test("user profile validation", () => {
 test("default user profile is safe", () => {
   assert.equal(DEFAULT_USER_PROFILE.isAdmin, false);
   assert.equal(DEFAULT_USER_PROFILE.notifEmail, true);
+});
+
+test("pronostic validation", () => {
+  assert.equal(validatePronostic({ scoreDom: 2, scoreExt: 1 }), null);
+  assert.equal(validatePronostic({ scoreDom: null, scoreExt: null }), null);
+  assert.equal(validatePronostic({ scoreDom: -1, scoreExt: 1 }), "scoreDom");
+  assert.equal(validatePronostic({ scoreDom: 100, scoreExt: 1 }), "scoreDom");
+});
+
+test("pronostic scores must be both set or both cleared", () => {
+  assert.equal(isValidPronosticScores(2, 1), true);
+  assert.equal(isValidPronosticScores(null, null), true);
+  assert.equal(isValidPronosticScores(2, null), false);
+  assert.equal(isValidPronosticScores(null, 1), false);
+});
+
+test("buildPronosticPayload validates and stamps", () => {
+  const now = new Date("2026-01-01T00:00:00Z");
+  const payload = buildPronosticPayload({ scoreDom: 2, scoreExt: 0 }, { sourceHost: "test", now });
+  assert.equal(payload.scoreDom, 2);
+  assert.equal(payload.updatedAt, now);
+  assert.throws(() => buildPronosticPayload({ scoreDom: 999, scoreExt: 0 }));
 });

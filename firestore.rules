@@ -42,6 +42,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Pronostics: readable by signed-in users; writes go through the
+    // savePronostic Cloud Function (Admin SDK), which enforces kick-off lock.
+    match /matches/{matchId}/pronostics/{userId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
     // Deny everything else by default. Domain rules are added collection by
     // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {

@@ -138,3 +138,20 @@ This repo ships Claude Code skills in `.claude/skills/`:
   this is acceptable; fix with a Firestore transaction per match if it ever
   matters.
 
+## 9. Phase 2 — profile (new stack)
+
+- **`saveProfile` (`functions/profile.js`) explicitly picks editable fields** —
+  it destructures `{ displayName, equipeCoeurId, notifEmail, notifPush, notifTelegram }`
+  from `request.data` and never spreads the raw body, so a caller can NOT write
+  `isAdmin`/`email`. `avatarInitiales` is DERIVED from `displayName` via
+  `initialsFromName` (server-side). Editable schema is `PROFILE_EDITABLE_FIELDS`
+  in `shared/users.js` (a subset of `USER_PROFILE_FIELDS` — no `isAdmin`/`email`).
+- **`equipeCoeurId` = the club's `apfId`** (the `clubs` doc id), NOT the legacy
+  MySQL club id. The Profile form reads the `clubs` collection and uses `d.id`
+  as the option value.
+- **`getProfile` create path must return a CLEAN object** — do NOT return the
+  `FieldValue.serverTimestamp()` sentinels you just wrote to Firestore (the
+  callable serializer chokes on them). Return `{ id, ...DEFAULT_USER_PROFILE,
+  email }` after the `ref.set(profile)`. (Fixed in #28.)
+
+

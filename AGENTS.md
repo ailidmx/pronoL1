@@ -53,6 +53,11 @@ Agreed direction (finalize each decision as it is implemented):
   modules, not hardcoded into pages.
 - Indexable pages must render useful HTML on the server and satisfy the SEO
   contract in `docs/public-growth-architecture.md`.
+- Multi-competition rollout and publication thresholds are defined in
+  `docs/public-multi-competition-plan.md`. Planned competitions must never be
+  indexed before their Firestore data is complete enough for the template.
+- Public page families now include competition-season, matchday, match and club.
+  All sitemap entries must be derived from real Firestore documents.
 
 ### Phase plan
 1. **Phase 1 — stabilize + cloud-deploy as-is** (fallback): get the current

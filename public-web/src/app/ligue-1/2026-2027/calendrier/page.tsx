@@ -1,0 +1,9 @@
+import { AdSlot } from "@/components/ads/ad-slot";
+import { DataFreshness } from "@/components/football/data-freshness";
+import { MatchList } from "@/components/football/match-list";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import { getSeasonOverview, type FootballMatch } from "@/server/football-repository";
+
+export const metadata = createPageMetadata({ title: "Calendrier Ligue 1 2026-2027 par journée", description: "Naviguez dans les 34 journées du calendrier de Ligue 1 2026-2027 et consultez chaque fiche de match.", path: "/ligue-1/2026-2027/calendrier" });
+export const dynamic = "force-dynamic";
+export default async function CalendarPage() { const data = await getSeasonOverview(2026); const groups = new Map<number, FootballMatch[]>(); data.matches.forEach((match) => { if (match.journey) groups.set(match.journey, [...(groups.get(match.journey) ?? []), match]); }); return <main className="content"><p className="eyebrow">34 journées</p><h1>Calendrier Ligue 1 2026-2027</h1><p className="intro">Choisissez une journée ou ouvrez directement la fiche détaillée d’une rencontre.</p><DataFreshness value={data.updatedAt} /><nav className="journey-picker" aria-label="Journées">{Array.from({ length: 34 }, (_, index) => index + 1).map((journey) => <a key={journey} href={`#journee-${journey}`}>J{journey}</a>)}</nav><AdSlot name="calendar-top" format="leaderboard" />{[...groups.entries()].sort(([a], [b]) => a - b).map(([journey, matches], index) => <section className="data-panel journey related-block" id={`journee-${journey}`} key={journey}><div className="section-heading"><h2>{journey}e journée</h2><a href={`/ligue-1/2026-2027/journee/${journey}`}>Page SEO de la journée →</a></div><MatchList matches={matches} />{index > 0 && index % 5 === 0 ? <AdSlot name={`calendar-feed-${index}`} format="in-feed" /> : null}</section>)}</main>; }

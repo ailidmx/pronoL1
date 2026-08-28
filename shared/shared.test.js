@@ -21,6 +21,7 @@ import {
   validateBonusAnswer,
   validateBonusAnswerForQuestion,
   computeBonusPointsPerPick,
+  validateQuizAnswer,
 } from "./index.js";
 
 test("collection names are the single source of truth", () => {
@@ -212,4 +213,10 @@ test("bonus answer validates against the question type", () => {
 test("bonus points per pick is truncated points/nbChoix", () => {
   assert.equal(computeBonusPointsPerPick({ points: 15, nbChoix: 1 }), 15);
   assert.equal(computeBonusPointsPerPick({ points: 15, nbChoix: 2 }), 7);
+});
+
+test("quiz answer validates optionId", () => {
+  assert.equal(validateQuizAnswer({ optionId: "41" }), null);
+  assert.equal(validateQuizAnswer({ optionId: 41 }), "optionId");
+  assert.equal(validateQuizAnswer({ optionId: "abc" }), "optionId");
 });

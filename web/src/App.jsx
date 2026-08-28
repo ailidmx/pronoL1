@@ -7,6 +7,7 @@ import Profile from "./Profile.jsx";
 import Matches from "./Matches.jsx";
 import Classement from "./Classement.jsx";
 import Bonus from "./Bonus.jsx";
+import Quiz from "./Quiz.jsx";
 import "./App.css";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
         <Matches />
         <Classement />
         <Bonus />
+        <Quiz />
         <Standings />
       </main>
     </div>

@@ -71,6 +71,25 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Quiz: weeks + questions + options readable by signed-in users; answers
+    // readable by the owner (or admin), written via saveQuizAnswer (Admin SDK).
+    match /quizWeeks/{weekId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /quizWeeks/{weekId}/questions/{questionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /quizWeeks/{weekId}/questions/{questionId}/options/{optionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /quizWeeks/{weekId}/questions/{questionId}/answers/{userId} {
+      allow read: if isOwnUser(userId) || isAdmin();
+      allow write: if false;
+    }
+
     // Deny everything else by default. Domain rules are added collection by
     // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {

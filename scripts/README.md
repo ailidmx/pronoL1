@@ -51,3 +51,22 @@ Imports:
 
 Skips for now (needs Firebase Auth UID mapping): `users`, `pronostics`,
 `sessions`, `push_*`.
+
+## normalize-clubs.mjs
+
+Re-keys `clubs` to a stable `apfId` (API-Football team id) and remaps
+`matches`/`standings` references. Dry-run by default.
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node normalize-clubs.mjs --execute
+```
+
+## normalize-matches.mjs
+
+Re-keys `matches` to a stable `apfFixtureId` (API-Football fixture id). Legacy
+matches with a fixture id merge into `matches/{apfFixtureId}`; past-season
+matches without one stay legacy-keyed. Dry-run by default.
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node normalize-matches.mjs --execute
+```

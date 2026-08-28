@@ -45,9 +45,11 @@ export const getProfile = onCall({ cors: true }, async (request) => {
     throw new HttpsError("internal", `Invalid default profile: ${invalid}`);
   }
   await ref.set(profile);
-  return { id: uid, ...profile };
+  // Return a clean object (never the serverTimestamp() sentinels written above).
+  return { id: uid, ...DEFAULT_USER_PROFILE, email: request.auth.token.email ?? null };
 });
 
 export { syncFootballData, syncFixtures, syncRecentMatchDetails } from "./sync.js";
 export { savePronostic } from "./pronostics.js";
+export { saveProfile } from "./profile.js";
 export { scoreFinishedMatches } from "./scoring.js";

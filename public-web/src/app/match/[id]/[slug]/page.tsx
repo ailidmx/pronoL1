@@ -15,6 +15,9 @@ import { slugify } from "@/lib/slug";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/lib/seo/json-ld";
 import { getHeadToHead, getMatchById, getSeasonOverview } from "@/server/football-repository";
+import { MatchAnalysis } from "@/components/football/match-analysis";
+import { analyzeMatch } from "@/lib/analysis/match-analysis";
+import { getMonetizationPolicy } from "@/lib/monetization/policy";
 
 type Props = { params: Promise<{ id: string; slug: string }> };
 
@@ -39,6 +42,8 @@ export default async function MatchPage({ params }: Props) {
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
     .slice(0, 5);
   const overview = await getSeasonOverview(2026);
+  const analysis = analyzeMatch(match, overview);
+  const analysisLimit = getMonetizationPolicy().anonymousDailyAnalysisLimit ?? 5;
 
   return (
     <article className="content match-page">
@@ -54,6 +59,7 @@ export default async function MatchPage({ params }: Props) {
         <FavoriteButton kind="match" item={{ id: match.id, name: `${match.homeClub.name} - ${match.awayClub.name}`, href: `/match/${match.id}/${expectedSlug}` }} />
       </div>
       <MatchViewRecorder matchId={match.id} title={`${match.homeClub.name} - ${match.awayClub.name}`} href={`/match/${match.id}/${expectedSlug}`} />
+      <MatchAnalysis analysis={analysis} limit={analysisLimit} />
       <nav className="section-nav" aria-label="Détails du match"><a href="#resume">Résumé</a><a href="#statistiques">Statistiques</a><a href="#compositions">Compositions</a><a href="#forme">Forme</a><a href="#confrontations">Confrontations</a></nav>
       <AdSlot name="match-top" format="leaderboard" />
       <div className="match-content-grid" id="resume">

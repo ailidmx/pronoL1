@@ -173,5 +173,23 @@ This repo ships Claude Code skills in `.claude/skills/`:
   `dateLimite`, and the per-type shape. Writes via Admin SDK — the rules only
   grant signed-in read of questions + own-answer read.
 
+## 11. Phase 2 — quizz (new stack)
+
+- **Quiz model:** `quizWeeks/{weekId}/questions/{questionId}/options/{optionId}`
+  (+ `answers/{userId}` at runtime). `weekId` is the legacy `quizz_semaine.id`
+  (globally unique), the week doc carries `saisonId` (API-Football year).
+- **`seed-quiz.mjs` reads the gitignored `prono_l1.sql`** (contains user PII, so
+  it is NOT committed). It is therefore a MANUAL one-time migration like
+  `import-sql-to-firestore.mjs` — do NOT add it to `deploy.yml` (the CI checkout
+  has no SQL dump, it fails with ENOENT). Run it locally with the SQL dump +
+  `GOOGLE_APPLICATION_CREDENTIALS`. (If we want it automated, extract the quiz
+  tables — trivia only, no PII — into a committed data file.)
+- **`saveQuizAnswer` (`functions/quizz.js`)** checks the week is `publie`, the
+  deadline hasn't passed, and the option doc exists under that question. `optionId`
+  is a numeric STRING (the option doc id), validated by `/^\d{1,10}$/`.
+- **Still deferred:** quiz resolution/scoring (`resoudre`), `leaderboardQuiz` read
+  model, quiz generation (`generer_quizz` admin), and player history.
+
+
 
 

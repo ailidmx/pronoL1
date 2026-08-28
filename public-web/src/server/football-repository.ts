@@ -22,6 +22,10 @@ export type FootballMatch = {
   updatedAt: string | null;
   events: MatchEvent[];
   lineups: MatchLineup[];
+  statistics: MatchTeamStatistics[];
+  venue: string | null;
+  city: string | null;
+  referee: string | null;
 };
 
 export type MatchEvent = {
@@ -38,9 +42,13 @@ export type MatchLineup = {
   teamId: string;
   formation: string | null;
   coach: string | null;
-  starters: string[];
-  substitutes: string[];
+  starters: MatchPlayer[];
+  substitutes: MatchPlayer[];
 };
+
+export type MatchPlayer = { id: string | null; name: string; number: number | null; position: string | null; grid: string | null };
+export type MatchTeamStatistics = { teamId: string; values: Record<string, string | number | null> };
+export type StandingMode = "general" | "domicile" | "exterieur";
 
 export type StandingRow = {
   rank: number;
@@ -61,6 +69,7 @@ export type SeasonOverview = {
   clubs: Club[];
   matches: FootballMatch[];
   standings: StandingRow[];
+  standingsByMode: Record<StandingMode, StandingRow[]>;
   updatedAt: string | null;
 };
 
@@ -114,17 +123,35 @@ function mapLineups(value: unknown): MatchLineup[] {
       teamId: String(lineup.teamId ?? "inconnu"),
       formation: asText(lineup.formation),
       coach: asText(lineup.coach),
-      starters: Array.isArray(lineup.starters) ? lineup.starters.filter((name): name is string => typeof name === "string") : [],
-      substitutes: Array.isArray(lineup.substitutes) ? lineup.substitutes.filter((name): name is string => typeof name === "string") : [],
+      starters: mapPlayers(lineup.starters),
+      substitutes: mapPlayers(lineup.substitutes),
     };
   });
 }
 
+function mapPlayers(value: unknown): MatchPlayer[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => {
+    if (typeof item === "string") return { id: null, name: item, number: null, position: null, grid: null };
+    const player = item as Record<string, unknown>;
+    return { id: player.id == null ? null : String(player.id), name: asText(player.name) ?? "Joueur", number: asNullableNumber(player.number), position: asText(player.position), grid: asText(player.grid) };
+  });
+}
+
+function mapStatistics(value: unknown): MatchTeamStatistics[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => {
+    const stat = item as Record<string, unknown>;
+    const values = stat.values && typeof stat.values === "object" ? stat.values as Record<string, string | number | null> : {};
+    return { teamId: String(stat.teamId ?? "inconnu"), values };
+  });
+}
+
 async function loadSeasonOverview(seasonId: number): Promise<SeasonOverview> {
-  const [clubsSnapshot, matchesSnapshot, standingsSnapshot] = await Promise.all([
+  const [clubsSnapshot, matchesSnapshot, ...standingSnapshots] = await Promise.all([
     firestore.collection("clubs").get(),
     firestore.collection("matches").where("seasonId", "==", seasonId).get(),
-    firestore.collection("standings").doc(`${seasonId}_general`).get(),
+    ...(["general", "domicile", "exterieur"] as StandingMode[]).map((mode) => firestore.collection("standings").doc(`${seasonId}_${mode}`).get()),
   ]);
 
   const clubs = clubsSnapshot.docs.map((document) => {
@@ -157,12 +184,14 @@ async function loadSeasonOverview(seasonId: number): Promise<SeasonOverview> {
       updatedAt: asIsoDate(data.updatedAt),
       events: mapEvents(data.events),
       lineups: mapLineups(data.lineups),
+      statistics: mapStatistics(data.statistics),
+      venue: asText(data.venue),
+      city: asText(data.city),
+      referee: asText(data.referee),
     } satisfies FootballMatch;
   }).sort((a, b) => (a.date ?? "9999").localeCompare(b.date ?? "9999"));
 
-  const standingData = standingsSnapshot.data();
-  const rawRows = Array.isArray(standingData?.rows) ? standingData.rows : [];
-  const standings = rawRows.map((row: Record<string, unknown>) => ({
+  const mapStandingDocument = (standingData: FirebaseFirestore.DocumentData | undefined) => (Array.isArray(standingData?.rows) ? standingData.rows : []).map((row: Record<string, unknown>) => ({
     rank: asNumber(row.rang),
     club: findClub(row.clubId),
     played: asNumber(row.j),
@@ -175,12 +204,16 @@ async function loadSeasonOverview(seasonId: number): Promise<SeasonOverview> {
     points: asNumber(row.pts),
     form: typeof row.forme === "string" ? row.forme : null,
   })).sort((a: StandingRow, b: StandingRow) => a.rank - b.rank) as StandingRow[];
+  const standingsByMode = Object.fromEntries((["general", "domicile", "exterieur"] as StandingMode[]).map((mode, index) => [mode, mapStandingDocument(standingSnapshots[index].data())])) as Record<StandingMode, StandingRow[]>;
+  const standingData = standingSnapshots[0].data();
+  const standings = standingsByMode.general;
 
   return {
     seasonId,
     clubs,
     matches,
     standings,
+    standingsByMode,
     updatedAt: [asIsoDate(standingData?.updatedAt), ...matches.map((match) => match.updatedAt)]
       .filter((value): value is string => Boolean(value))
       .sort()

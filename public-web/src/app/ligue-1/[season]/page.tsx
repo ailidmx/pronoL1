@@ -46,6 +46,7 @@ export default async function SeasonPage({ params }: Props) {
       <p className="eyebrow">Championnat de France</p>
       <h1>Ligue 1 {season}</h1>
       <p className="intro">Calendrier, résultats et classement alimentés par les données synchronisées de Prono L1.</p>
+      <nav className="section-nav"><a href="/ligue-1/2026-2027/resultats">Derniers résultats</a><a href="/ligue-1/2026-2027/calendrier">Calendrier complet</a><a href="/ligue-1/2026-2027/classement/general">Classement général</a><a href="/ligue-1/2026-2027/classement/domicile">Classement domicile</a><a href="/ligue-1/2026-2027/classement/exterieur">Classement extérieur</a></nav>
       <DataFreshness value={data?.updatedAt ?? null} />
       <AdSlot name="season-top" format="leaderboard" />
       <section className="season-layout">

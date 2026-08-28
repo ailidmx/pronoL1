@@ -48,4 +48,4 @@ export const getProfile = onCall({ cors: true }, async (request) => {
   return { id: uid, ...profile };
 });
 
-export { syncFootballData, syncFixtures } from "./sync.js";
+export { syncFootballData, syncFixtures, syncRecentMatchDetails } from "./sync.js";

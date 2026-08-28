@@ -6,11 +6,13 @@ import { DataFreshness } from "@/components/football/data-freshness";
 import { MatchLineups } from "@/components/football/match-lineups";
 import { MatchList } from "@/components/football/match-list";
 import { MatchTimeline } from "@/components/football/match-timeline";
+import { MatchStatistics } from "@/components/football/match-statistics";
+import { TeamForm } from "@/components/football/team-form";
 import { formatMatchDate, matchScore, matchStatusLabel } from "@/lib/football-format";
 import { slugify } from "@/lib/slug";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/lib/seo/json-ld";
-import { getHeadToHead, getMatchById } from "@/server/football-repository";
+import { getHeadToHead, getMatchById, getSeasonOverview } from "@/server/football-repository";
 
 type Props = { params: Promise<{ id: string; slug: string }> };
 
@@ -34,6 +36,7 @@ export default async function MatchPage({ params }: Props) {
     .filter((candidate) => candidate.id !== match.id)
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
     .slice(0, 5);
+  const overview = await getSeasonOverview(2026);
 
   return (
     <article className="content match-page">
@@ -43,13 +46,17 @@ export default async function MatchPage({ params }: Props) {
       <h1>{match.homeClub.name} - {match.awayClub.name}</h1>
       <div className="match-score-hero"><ClubMark club={match.homeClub} /><strong>{matchScore(match)}</strong><ClubMark club={match.awayClub} /></div>
       <p className="match-date"><time dateTime={match.date ?? undefined}>{formatMatchDate(match.date)}</time></p>
+      {match.venue || match.referee ? <p className="match-context">{[match.venue, match.city, match.referee ? `Arbitre : ${match.referee}` : null].filter(Boolean).join(" · ")}</p> : null}
       <DataFreshness value={match.updatedAt} />
+      <nav className="section-nav" aria-label="Détails du match"><a href="#resume">Résumé</a><a href="#statistiques">Statistiques</a><a href="#compositions">Compositions</a><a href="#forme">Forme</a><a href="#confrontations">Confrontations</a></nav>
       <AdSlot name="match-top" format="leaderboard" />
-      <div className="match-content-grid">
-        <section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Minute par minute</p><h2>Faits de jeu</h2></div></div><MatchTimeline match={match} /></section>
-        <section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Onze de départ</p><h2>Compositions</h2></div></div><MatchLineups match={match} /></section>
+      <div className="match-content-grid" id="resume">
+        <section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Minute par minute</p><h2>Buts, cartons et changements</h2></div></div><MatchTimeline match={match} /></section>
+        <section className="data-panel" id="statistiques"><div className="section-heading"><div><p className="eyebrow">Comparatif</p><h2>Statistiques du match</h2></div></div><MatchStatistics match={match} /></section>
       </div>
-      <section className="data-panel related-block"><div className="section-heading"><div><p className="eyebrow">Face-à-face</p><h2>Dernières confrontations</h2></div></div><MatchList matches={headToHead} /></section>
+      <section className="data-panel related-block" id="compositions"><div className="section-heading"><div><p className="eyebrow">Titulaires et banc</p><h2>Compositions complètes</h2></div></div><MatchLineups match={match} /></section>
+      <section className="related-block" id="forme"><div className="section-heading"><div><p className="eyebrow">Avant-match</p><h2>Forme récente : général, domicile et extérieur</h2></div></div><div className="form-team-grid"><div className="data-panel"><h3>{match.homeClub.name}</h3><h4>5 derniers matchs</h4><TeamForm club={match.homeClub} matches={overview.matches} /><h4>À domicile</h4><TeamForm club={match.homeClub} matches={overview.matches} venue="home" /></div><div className="data-panel"><h3>{match.awayClub.name}</h3><h4>5 derniers matchs</h4><TeamForm club={match.awayClub} matches={overview.matches} /><h4>À l’extérieur</h4><TeamForm club={match.awayClub} matches={overview.matches} venue="away" /></div></div></section>
+      <section className="data-panel related-block" id="confrontations"><div className="section-heading"><div><p className="eyebrow">Face-à-face</p><h2>Dernières confrontations</h2></div></div><MatchList matches={headToHead} /></section>
       <AdSlot name="match-bottom" format="in-feed" />
     </article>
   );

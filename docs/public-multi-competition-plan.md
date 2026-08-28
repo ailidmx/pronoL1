@@ -52,6 +52,7 @@ fixture every hour:
 2. `syncFixtures` hourly for active competitions
 3. `syncLiveMatchDetails` every 5 minutes only for live fixtures
 4. `syncRecentMatchDetails` hourly for fixtures completed in the last 48 hours
+5. `scripts/sync-match-details.mjs` for controlled historical backfills (limited batches)
 5. `backfillMatchDetails` manually in bounded batches
 
 Every run writes `syncRuns/{job}_{competitionId}` with start time, completion
@@ -100,4 +101,3 @@ Firestore snapshot used by the pages.
 - activate leagues one at a time;
 - measure indexation, crawl budget, API cost and ad revenue per competition;
 - pause expansion when content quality or freshness falls below target.
-

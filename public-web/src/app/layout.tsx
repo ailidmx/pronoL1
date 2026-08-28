@@ -29,7 +29,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <header className="site-header">
           <a href="/" className="brand">{siteConfig.name}</a>
           <nav aria-label="Navigation principale">
-            <a href="/ligue-1/2026-2027">Ligue 1</a>
+            <a href="/ligue-1/2026-2027/resultats">Résultats</a>
+            <a href="/ligue-1/2026-2027/calendrier">Calendrier</a>
+            <a href="/ligue-1/2026-2027/classement/general">Classement</a>
             <a href="/#offres">Offres</a>
             <a href="/pronostics">Pronostics</a>
           </nav>
@@ -38,7 +40,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <footer>
           <div><strong>{siteConfig.name}</strong><span>Site indépendant, non affilié aux compétitions citées.</span></div>
           <DataFreshness value={updatedAt} compact />
-          <div className="footer-links"><a href="/ligue-1/2026-2027">Ligue 1</a><a href="/pronostics">Prono L1</a><PrivacySettingsButton /></div>
+          <div className="footer-links"><a href="/ligue-1/2026-2027/resultats">Résultats Ligue 1</a><a href="/ligue-1/2026-2027/calendrier">Calendrier</a><a href="/pronostics">Prono L1</a><PrivacySettingsButton /></div>
         </footer>
         <ConsentBanner />
       </body>

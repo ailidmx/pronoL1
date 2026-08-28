@@ -12,6 +12,26 @@ const API_BASE = "https://v3.football.api-sports.io";
 const LIGUE1_ID = 61;
 const SEASON = 2026; // Ligue 1 2026-27 → start year 2026
 
+function mapStandingRows(rows, mode) {
+  return (rows ?? []).map((s) => {
+    const split = mode === "general" ? s.all : s[mode === "domicile" ? "home" : "away"];
+    return {
+      clubId: s.team.id,
+      rang: s.rank,
+      j: split.played,
+      g: split.win,
+      n: split.draw,
+      p: split.lose,
+      bp: split.goals.for,
+      bc: split.goals.against,
+      diff: split.goals.for - split.goals.against,
+      pts: mode === "general" ? s.points : split.win * 3 + split.draw,
+      forme: mode === "general" ? (s.form ?? null) : null,
+    };
+  }).sort((a, b) => b.pts - a.pts || b.diff - a.diff || b.bp - a.bp)
+    .map((row, index) => ({ ...row, rang: index + 1 }));
+}
+
 async function apiFootball(path) {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: { "x-apisports-key": apiFootballKey.value() },
@@ -47,27 +67,79 @@ export const syncFootballData = onSchedule(
     // 2. Standings → standings/{seasonId}_general
     const standings = await apiFootball(`/standings?league=${LIGUE1_ID}&season=${SEASON}`);
     const league = standings.response?.[0]?.league;
-    const rows = (league?.standings?.[0] ?? []).map((s) => ({
-      clubId: s.team.id,
-      rang: s.rank,
-      j: s.all.played,
-      g: s.all.win,
-      n: s.all.draw,
-      p: s.all.lose,
-      bp: s.all.goals.for,
-      bc: s.all.goals.against,
-      diff: s.goalsDiff,
-      pts: s.points,
-      forme: s.forme ?? null,
-    }));
-    await db.collection(collections.standings).doc(`${SEASON}_general`).set({
-      seasonId: SEASON,
-      mode: "general",
-      rows,
-      updatedAt: FieldValue.serverTimestamp(),
-    });
+    const rawRows = league?.standings?.[0] ?? [];
+    const rows = mapStandingRows(rawRows, "general");
+    for (const mode of ["general", "domicile", "exterieur"]) {
+      await db.collection(collections.standings).doc(`${SEASON}_${mode}`).set({
+        seasonId: SEASON,
+        mode,
+        rows: mapStandingRows(rawRows, mode),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    }
 
     return { clubs: (teams.response ?? []).length, standings: rows.length };
+  },
+);
+
+function mapFixtureDetails(item) {
+  return {
+    venue: item.fixture?.venue?.name ?? null,
+    city: item.fixture?.venue?.city ?? null,
+    referee: item.fixture?.referee ?? null,
+    events: (item.events ?? []).map((event) => ({
+      minute: event.time?.elapsed ?? null,
+      extraMinute: event.time?.extra ?? null,
+      teamId: event.team?.id ?? null,
+      type: event.type ?? "Événement",
+      detail: event.detail ?? null,
+      comments: event.comments ?? null,
+      player: event.player?.name ?? null,
+      playerId: event.player?.id ?? null,
+      assist: event.assist?.name ?? null,
+      assistId: event.assist?.id ?? null,
+    })),
+    lineups: (item.lineups ?? []).map((lineup) => ({
+      teamId: lineup.team?.id,
+      formation: lineup.formation ?? null,
+      coach: lineup.coach?.name ?? null,
+      starters: (lineup.startXI ?? []).map(({ player }) => ({
+        id: player.id ?? null, name: player.name, number: player.number ?? null,
+        position: player.pos ?? null, grid: player.grid ?? null,
+      })),
+      substitutes: (lineup.substitutes ?? []).map(({ player }) => ({
+        id: player.id ?? null, name: player.name, number: player.number ?? null,
+        position: player.pos ?? null,
+      })),
+    })),
+    statistics: (item.statistics ?? []).map((team) => ({
+      teamId: team.team?.id,
+      values: Object.fromEntries((team.statistics ?? []).map((stat) => [stat.type, stat.value ?? null])),
+    })),
+    detailsUpdatedAt: FieldValue.serverTimestamp(),
+  };
+}
+
+// Refresh detailed data around kick-off and after the final whistle. Historical
+// backfill uses scripts/sync-match-details.mjs to avoid burning the hourly quota.
+export const syncRecentMatchDetails = onSchedule(
+  { schedule: "15 * * * *", timeoutSeconds: 300, secrets: [apiFootballKey] },
+  async () => {
+    const db = getFirestore();
+    const now = Date.now();
+    const from = new Date(now - 48 * 60 * 60 * 1000).toISOString();
+    const to = new Date(now + 8 * 60 * 60 * 1000).toISOString();
+    const snapshot = await db.collection(collections.matches)
+      .where("date", ">=", from).where("date", "<=", to).get();
+    let count = 0;
+    for (const document of snapshot.docs) {
+      const fixture = await apiFootball(`/fixtures?id=${document.id}`);
+      const item = fixture.response?.[0];
+      if (!item) continue;
+      await document.ref.set(mapFixtureDetails(item), { merge: true });
+      count++;
+    }
+    return { detailedMatches: count };
   },
 );
 

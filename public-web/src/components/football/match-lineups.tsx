@@ -12,8 +12,8 @@ export function MatchLineups({ match }: { match: FootballMatch }) {
           <section key={lineup.teamId}>
             <h3>{club.name}</h3>
             <p>{lineup.formation ?? "Système à confirmer"}{lineup.coach ? ` · ${lineup.coach}` : ""}</p>
-            <ol>{lineup.starters.map((player) => <li key={player}>{player}</li>)}</ol>
-            {lineup.substitutes.length ? <details><summary>Remplaçants</summary><p>{lineup.substitutes.join(", ")}</p></details> : null}
+            <ol className="player-list">{lineup.starters.map((player) => <li key={player.id ?? player.name}><span>{player.number ?? "—"}</span><strong>{player.name}</strong><small>{player.position ?? ""}</small></li>)}</ol>
+            {lineup.substitutes.length ? <details><summary>Remplaçants ({lineup.substitutes.length})</summary><ul className="substitute-list">{lineup.substitutes.map((player) => <li key={player.id ?? player.name}>{player.number ? `${player.number}. ` : ""}{player.name}{player.position ? ` · ${player.position}` : ""}</li>)}</ul></details> : null}
           </section>
         );
       })}

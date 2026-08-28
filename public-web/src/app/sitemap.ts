@@ -10,6 +10,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paths: Array<{ path: string; changeFrequency: "daily" | "hourly" | "weekly"; priority: number; lastModified?: string }> = [
     { path: "/", changeFrequency: "daily", priority: 1 },
     { path: "/ligue-1/2026-2027", changeFrequency: "hourly", priority: 0.9, lastModified: data?.updatedAt ?? undefined },
+    { path: "/ligue-1/2026-2027/resultats", changeFrequency: "hourly", priority: 0.9, lastModified: data?.updatedAt ?? undefined },
+    { path: "/ligue-1/2026-2027/calendrier", changeFrequency: "daily", priority: 0.85, lastModified: data?.updatedAt ?? undefined },
+    { path: "/ligue-1/2026-2027/classement/general", changeFrequency: "hourly", priority: 0.85, lastModified: data?.updatedAt ?? undefined },
+    { path: "/ligue-1/2026-2027/classement/domicile", changeFrequency: "hourly", priority: 0.75, lastModified: data?.updatedAt ?? undefined },
+    { path: "/ligue-1/2026-2027/classement/exterieur", changeFrequency: "hourly", priority: 0.75, lastModified: data?.updatedAt ?? undefined },
     { path: "/pronostics", changeFrequency: "weekly", priority: 0.6 },
   ];
   for (const club of data?.clubs ?? []) paths.push({ path: `/club/${club.id}/${slugify(club.name)}`, changeFrequency: "daily", priority: 0.75, lastModified: data?.updatedAt ?? undefined });

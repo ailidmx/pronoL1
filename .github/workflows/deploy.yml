@@ -44,9 +44,5 @@ jobs:
           npm ci
           node seed-bonus-config.mjs --execute
 
-      - name: Seed quiz
-        working-directory: scripts
-        run: node seed-quiz.mjs --execute
-
       - name: Deploy Firestore + Functions + Hosting
         run: firebase deploy --only firestore,functions,hosting --non-interactive --force

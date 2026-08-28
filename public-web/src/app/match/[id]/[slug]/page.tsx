@@ -10,6 +10,7 @@ import { MatchStatistics } from "@/components/football/match-statistics";
 import { TeamForm } from "@/components/football/team-form";
 import { FavoriteButton } from "@/components/football/favorite-button";
 import { MatchViewRecorder } from "@/components/football/match-view-recorder";
+import { FollowMatchButton } from "@/components/football/follow-match-button";
 import { formatMatchDate, matchScore, matchStatusLabel } from "@/lib/football-format";
 import { slugify } from "@/lib/slug";
 import { createPageMetadata } from "@/lib/seo/metadata";
@@ -57,6 +58,7 @@ export default async function MatchPage({ params }: Props) {
       <DataFreshness value={match.updatedAt} />
       <div className="page-actions">
         <FavoriteButton kind="match" item={{ id: match.id, name: `${match.homeClub.name} - ${match.awayClub.name}`, href: `/match/${match.id}/${expectedSlug}` }} />
+        <FollowMatchButton matchId={match.id} />
       </div>
       <MatchViewRecorder matchId={match.id} title={`${match.homeClub.name} - ${match.awayClub.name}`} href={`/match/${match.id}/${expectedSlug}`} />
       <MatchAnalysis analysis={analysis} limit={analysisLimit} />

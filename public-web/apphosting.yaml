@@ -28,3 +28,8 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: NEXT_PUBLIC_VAPID_PUBLIC_KEY
+    value: BO3rO2tkbCVPTgCa-wRgEMBDbLnTpC9lupFIW594liQae2NUxfyxT9P_zjrKG_C_8FTQSRYMdhKITKVFoETPu9Q
+    availability:
+      - BUILD
+      - RUNTIME

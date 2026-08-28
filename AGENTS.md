@@ -154,4 +154,24 @@ This repo ships Claude Code skills in `.claude/skills/`:
   callable serializer chokes on them). Return `{ id, ...DEFAULT_USER_PROFILE,
   email }` after the `ref.set(profile)`. (Fixed in #28.)
 
+## 10. Phase 2 — bonus (new stack)
+
+- **Bonus model:** `bonus/{seasonId}/questions/{questionId}` (config, seeded from
+  `bonus_config`) + `bonus/{seasonId}/answers/{userId}` (one doc per user, a map
+  `questionId → { clubIds: number[], playerText: string|null }`). `seasonId` here
+  is again the API-Football year (`anneeDebut`, e.g. `2026`), NOT the legacy
+  `saison_id`.
+- **Bonus answer types:** `club` (1 pick → `clubIds.length == 1`), `multi_club`
+  (`nbChoix` distinct picks), `joueur` (free text in `playerText`, empty
+  `clubIds`). `validateBonusAnswerForQuestion` enforces this; scoring is
+  `points/nbChoix` per correct pick (truncated, `computeBonusPointsPerPick`).
+- **Bonus questions are seeded in `deploy.yml`** (idempotent, `merge: true`) so
+  they are always present — the seed script uses the CI service-account ADC
+  (`applicationDefault()`), same as the other `scripts/` migration scripts.
+- **`saveBonusAnswer` (`functions/bonus.js`)** normalizes `undefined → null/[]`
+  before validating (Firestore rejects `undefined`), then checks `actif`,
+  `dateLimite`, and the per-type shape. Writes via Admin SDK — the rules only
+  grant signed-in read of questions + own-answer read.
+
+
 

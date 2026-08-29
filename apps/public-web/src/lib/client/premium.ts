@@ -1,33 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getProfile } from "./firebase";
 import { useAuth } from "./auth";
 
-// Premium entitlement: reads users/{uid}.isPremium via getProfile (which also
-// creates the profile on first login). Replaces the old localStorage flag.
-export function usePremium(): boolean {
-  const { user } = useAuth();
-  const [premium, setPremium] = useState(false);
+export type PremiumState = {
+  isPremium: boolean;
+  loading: boolean;
+  error: string | null;
+};
 
-  useEffect(() => {
-    if (!user) {
-      setPremium(false);
-      return;
-    }
-    let cancelled = false;
-    getProfile()
-      .then((res) => {
-        if (!cancelled) setPremium((res.data as { isPremium?: boolean })?.isPremium === true);
-      })
-      .catch(() => {
-        if (!cancelled) setPremium(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
-
-  return premium;
+export function usePremium(): PremiumState {
+  const { user, profile, profileLoading, profileError } = useAuth();
+  return {
+    isPremium: Boolean(user && profile?.isPremium === true),
+    loading: Boolean(user && profileLoading),
+    error: profileError,
+  };
 }
-

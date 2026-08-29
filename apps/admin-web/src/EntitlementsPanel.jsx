@@ -11,8 +11,16 @@ const FEATURE_LABELS = {
   history: "Historique",
   matchAlerts: "Alertes matchs",
   advancedStatistics: "Statistiques avancées",
+  officialOdds: "Cotes officielles",
+  communityOdds: "Cotes de la communauté",
+  communities: "Communautés de pronostics",
   adFree: "Sans publicité",
   pronoAdvantages: "Avantages Prono L1",
+};
+
+const LIMIT_LABELS = {
+  maxCommunities: "Communautés maximum",
+  maxCompetitions: "Compétitions maximum",
 };
 
 function moneyFromCents(cents) {
@@ -50,6 +58,11 @@ function EntitlementsPanel() {
     return [...new Set([...Object.keys(FEATURE_LABELS), ...dynamic])];
   }, [plans]);
 
+  const limitKeys = useMemo(() => {
+    const dynamic = plans.flatMap((plan) => Object.keys(plan.limits ?? {}));
+    return [...new Set([...Object.keys(LIMIT_LABELS), ...dynamic])];
+  }, [plans]);
+
   async function save(collectionName, id, patch) {
     const key = `${collectionName}:${id}`;
     setPending((current) => ({ ...current, [key]: true }));
@@ -77,6 +90,7 @@ function EntitlementsPanel() {
       isPaid: false,
       sortOrder: plans.length * 10 + 10,
       analysisDailyLimit: 10,
+      limits: Object.fromEntries(limitKeys.map((key) => [key, 0])),
       features: Object.fromEntries(featureKeys.map((key) => [key, false])),
     });
   }
@@ -101,7 +115,7 @@ function EntitlementsPanel() {
   return (
     <section>
       <h2>Accès & tarifs</h2>
-      <p>Source de vérité Firestore pour les droits produit et les offres commerciales.</p>
+      <p>Source de vérité Firestore pour les droits produit, les quotas et les offres commerciales.</p>
       {error ? <p role="alert">{error}</p> : null}
 
       <div className="admin-section-heading"><h3>Plans d'accès</h3><button onClick={addPlan}>Nouveau plan</button></div>
@@ -114,6 +128,9 @@ function EntitlementsPanel() {
               <label>Identifiant<input value={plan.id} disabled /></label>
               <label>Nom<input value={plan.name ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { name: e.target.value })} /></label>
               <label>Limite analyses / jour<input type="number" min="0" value={plan.analysisDailyLimit ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { analysisDailyLimit: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+              {limitKeys.map((key) => (
+                <label key={key}>{LIMIT_LABELS[key] ?? key}<input type="number" min="0" placeholder="Illimité" value={plan.limits?.[key] ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { limits: { ...(plan.limits ?? {}), [key]: e.target.value === "" ? null : Number(e.target.value) } })} /></label>
+              ))}
               <label><input type="checkbox" checked={plan.enabled === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { enabled: e.target.checked })} /> Actif</label>
               <label><input type="checkbox" checked={plan.isPaid === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { isPaid: e.target.checked })} /> Payant</label>
             </div>

@@ -45,13 +45,17 @@ function Classement() {
 
   return (
     <section className="classement">
-      <h2>Classement joueurs</h2>
-      <table>
+      <div className="section-title-row"><div><p className="section-kicker">Tous les joueurs</p><h2>Podium des pronostiqueurs</h2></div></div>
+      <div className="podium">{rows.slice(0, 3).map((row) => <article key={row.userId} className={`podium-rank podium-rank-${row.rank}`}><span>{row.rank === 1 ? "🥇" : row.rank === 2 ? "🥈" : "🥉"}</span><strong>{row.displayName}</strong><b>{row.points} pts</b></article>)}</div>
+      <div className="table-scroll"><table>
         <thead>
           <tr>
             <th>#</th>
             <th>Joueur</th>
             <th>Pts</th>
+            <th>🎯</th>
+            <th>✅</th>
+            <th>↔️</th>
           </tr>
         </thead>
         <tbody>
@@ -60,10 +64,13 @@ function Classement() {
               <td>{r.rank}</td>
               <td>{r.displayName}</td>
               <td>{r.points}</td>
+              <td>{r.exact ?? 0}</td>
+              <td>{r.bonResultat ?? 0}</td>
+              <td>{r.bonusEcart ?? 0}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </section>
   );
 }

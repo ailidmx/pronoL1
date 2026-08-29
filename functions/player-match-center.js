@@ -1,0 +1,96 @@
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { getFirestore } from "firebase-admin/firestore";
+import { collections, subcollections } from "@prono-l1/domain";
+
+const db = getFirestore();
+
+function cleanMatch(document) {
+  const data = document.data();
+  return {
+    id: document.id,
+    seasonId: data.seasonId ?? null,
+    journey: data.journee ?? null,
+    date: data.date ?? null,
+    homeClubId: String(data.clubDomId ?? ""),
+    awayClubId: String(data.clubExtId ?? ""),
+    homeScore: data.scoreDom ?? null,
+    awayScore: data.scoreExt ?? null,
+    status: data.statut ?? "a_venir",
+    venue: data.venue ?? null,
+    city: data.city ?? null,
+    referee: data.referee ?? null,
+  };
+}
+
+function cleanPrediction(document) {
+  const data = document.data();
+  return {
+    userId: document.id,
+    homeScore: data.scoreDom ?? null,
+    awayScore: data.scoreExt ?? null,
+    points: data.points ?? null,
+    result: data.resultat ?? null,
+    breakdown: data.decomposition ?? null,
+  };
+}
+
+export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "Authentication required.");
+  const uid = request.auth.uid;
+  const seasonId = Number(request.data?.seasonId);
+  const scope = request.data?.scope === "history" ? "history" : "journey";
+  const requestedJourney = Number(request.data?.journey);
+  if (!Number.isInteger(seasonId) || seasonId < 2000 || seasonId > 2100) {
+    throw new HttpsError("invalid-argument", "Invalid seasonId.");
+  }
+
+  const snapshot = await db.collection(collections.matches).where("seasonId", "==", seasonId).get();
+  const allMatchDocs = snapshot.docs.sort((a, b) => String(a.data().date ?? "").localeCompare(String(b.data().date ?? "")));
+  const journeys = [...new Set(allMatchDocs.map((match) => match.data().journee).filter(Number.isInteger))].sort((a, b) => a - b);
+
+  let selectedJourney = requestedJourney;
+  if (!journeys.includes(selectedJourney)) {
+    selectedJourney = journeys.find((journey) => allMatchDocs.some((match) => match.data().journee === journey && match.data().statut === "a_venir")) ?? journeys.at(-1) ?? null;
+  }
+
+  const candidateDocs = scope === "history" ? allMatchDocs : allMatchDocs.filter((match) => match.data().journee === selectedJourney);
+  const ownRefs = candidateDocs.map((match) => match.ref.collection(subcollections.pronostics).doc(uid));
+  const ownSnapshots = ownRefs.length ? await db.getAll(...ownRefs) : [];
+  const ownByMatch = new Map();
+  ownSnapshots.forEach((prediction, index) => {
+    if (prediction.exists) ownByMatch.set(candidateDocs[index].id, cleanPrediction(prediction));
+  });
+
+  const visibleDocs = scope === "history"
+    ? candidateDocs.filter((match) => ownByMatch.has(match.id)).sort((a, b) => String(b.data().date ?? "").localeCompare(String(a.data().date ?? "")))
+    : candidateDocs;
+
+  const publicPredictions = new Map();
+  await Promise.all(visibleDocs.map(async (match) => {
+    if (scope === "history" || match.data().statut === "a_venir") return;
+    const predictions = await match.ref.collection(subcollections.pronostics).get();
+    publicPredictions.set(match.id, predictions.docs.map(cleanPrediction));
+  }));
+
+  const clubIds = [...new Set(visibleDocs.flatMap((match) => [String(match.data().clubDomId ?? ""), String(match.data().clubExtId ?? "")]).filter(Boolean))];
+  const clubSnapshots = clubIds.length ? await db.getAll(...clubIds.map((id) => db.collection(collections.clubs).doc(id))) : [];
+  const clubs = Object.fromEntries(clubSnapshots.map((club) => [club.id, { id: club.id, name: club.data()?.nom ?? club.id, logoUrl: club.data()?.logoUrl ?? null }]));
+
+  const playerIds = [...new Set([...publicPredictions.values()].flat().map((prediction) => prediction.userId))];
+  const playerSnapshots = playerIds.length ? await db.getAll(...playerIds.map((id) => db.collection(collections.users).doc(id))) : [];
+  const playerNames = new Map(playerSnapshots.map((player) => [player.id, player.data()?.displayName || "Joueur"]));
+
+  return {
+    seasonId,
+    scope,
+    journeys,
+    selectedJourney,
+    clubs,
+    matches: visibleDocs.map((document) => ({
+      ...cleanMatch(document),
+      myPrediction: ownByMatch.get(document.id) ?? null,
+      predictionsVisible: scope === "journey" && document.data().statut !== "a_venir",
+      predictions: (publicPredictions.get(document.id) ?? []).map((prediction) => ({ ...prediction, displayName: playerNames.get(prediction.userId) ?? "Joueur" })),
+    })),
+  };
+});

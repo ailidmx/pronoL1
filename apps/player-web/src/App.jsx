@@ -52,8 +52,8 @@ function App() {
       </nav>
       <main className={styles.main}>
         {page === "pronostics" ? <>
-          <nav className={styles.subnav} aria-label="Pronostics"><button type="button" className={pronoTab === "journee" ? styles.active : ""} onClick={() => setPronoTab("journee")}>Journée</button><button type="button" className={pronoTab === "bonus" ? styles.active : ""} onClick={() => setPronoTab("bonus")}>Bonus</button></nav>
-          {pronoTab === "journee" ? <Matches /> : <Bonus />}
+          <nav className={styles.subnav} aria-label="Pronostics"><button type="button" className={pronoTab === "journee" ? styles.active : ""} onClick={() => setPronoTab("journee")}>Journée</button><button type="button" className={pronoTab === "historique" ? styles.active : ""} onClick={() => setPronoTab("historique")}>Mes pronos</button><button type="button" className={pronoTab === "bonus" ? styles.active : ""} onClick={() => setPronoTab("bonus")}>Bonus</button></nav>
+          {pronoTab === "journee" ? <Matches /> : pronoTab === "historique" ? <Matches mode="history" /> : <Bonus />}
         </> : null}
         {page === "podium" ? <Classement /> : null}
         {page === "quiz" ? <Quiz /> : null}

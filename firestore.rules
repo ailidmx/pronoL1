@@ -17,14 +17,22 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    // Profiles behave like a SQL-backed resource: the owner may read their
-    // row, while all mutations go through validated callable functions.
     match /users/{uid} {
       allow read: if isOwnUser(uid) || isAdmin();
       allow write: if isAdmin();
     }
 
-    // Signed-in users can read the reference data; only admins can write.
+    // Product entitlement configuration. Signed-in clients may read access
+    // plans so their UI reacts to admin changes; only admins may mutate them.
+    match /accessPlans/{planId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /subscriptionOffers/{offerId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /standings/{doc} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
@@ -42,15 +50,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Pronostics: readable by signed-in users; writes go through the
-    // savePronostic Cloud Function (Admin SDK), which enforces kick-off lock.
     match /matches/{matchId}/pronostics/{userId} {
       allow read: if isSignedIn();
       allow write: if false;
     }
 
-    // Leaderboard (read model) — written by the scoreFinishedMatches Cloud
-    // Function (Admin SDK); signed-in users can read it.
     match /leaderboardPronostics/{seasonId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
@@ -60,8 +64,6 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Bonus: questions readable by signed-in users; answers readable by the
-    // owner (or admin), written via the saveBonusAnswer function (Admin SDK).
     match /bonus/{seasonId}/questions/{questionId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
@@ -71,8 +73,6 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Quiz: weeks + questions + options readable by signed-in users; answers
-    // readable by the owner (or admin), written via saveQuizAnswer (Admin SDK).
     match /quizWeeks/{weekId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
@@ -90,8 +90,6 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Push: subscriptions + sent-markers are written server-side (public-web
-    // API route + functions, both via Admin SDK). No client access.
     match /pushSubscriptions/{subscriptionId} {
       allow read: if isAdmin();
       allow write: if isAdmin();
@@ -101,8 +99,6 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Deny everything else by default. Domain rules are added collection by
-    // collection as the Phase 2 rearchitecture proceeds.
     match /{document=**} {
       allow read, write: if false;
     }

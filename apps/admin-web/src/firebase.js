@@ -14,4 +14,6 @@ const app = initializeApp({
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
-export const getProfile = httpsCallable(getFunctions(app), "getProfile");
+const functions = getFunctions(app);
+export const getProfile = httpsCallable(functions, "getProfile");
+export const getExperimentDashboard = httpsCallable(functions, "getExperimentDashboard");

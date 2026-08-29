@@ -1,6 +1,6 @@
 import type { Metadata, Route } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import { AdSlot } from "@/components/ads/ad-slot";
+import { AdSlot, DesktopAdRail } from "@/components/ads/ad-slot";
 import { ClubMark } from "@/components/football/club-mark";
 import { DataFreshness } from "@/components/football/data-freshness";
 import { MatchList } from "@/components/football/match-list";
@@ -33,6 +33,8 @@ export default async function ClubPage({ params }: Props) {
 
   return (
     <article className="content club-page">
+      <AdSlot name={`club-${data.club.id}-masthead`} format="billboard" />
+      <DesktopAdRail name={`club-${data.club.id}-desktop-rail`} />
       <JsonLd data={{ "@context": "https://schema.org", "@type": "SportsTeam", name: data.club.name, sport: "Football", logo: data.club.logoUrl ?? undefined }} />
       <nav className="breadcrumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span>›</span><a href="/ligue-1/2026-2027">Ligue 1</a><span>›</span><span>{data.club.name}</span></nav>
       <p className="eyebrow">Club · Ligue 1 2026–2027</p><h1>{data.club.name}</h1>
@@ -41,8 +43,10 @@ export default async function ClubPage({ params }: Props) {
         <FavoriteButton kind="club" item={{ id: data.club.id, name: data.club.name, href: `/club/${data.club.id}/${expectedSlug}` }} />
       </div>
       <DataFreshness value={data.updatedAt} />
-      <AdSlot name="club-top" format="leaderboard" />
       <div className="match-content-grid"><section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Forme récente</p><h2>Derniers résultats</h2></div></div><MatchList matches={latest} /></section><section className="data-panel"><div className="section-heading"><div><p className="eyebrow">Calendrier</p><h2>Prochains matchs</h2></div></div><MatchList matches={upcoming} /></section></div>
+      <AdSlot name={`club-${data.club.id}-in-feed`} format="in-feed" />
+      <section className="seo-copy"><h2>Résultats, calendrier et classement de {data.club.name}</h2><p>Suis la saison 2026-2027 de {data.club.name} en Ligue 1 : derniers scores, prochains matchs, position au classement et différence de buts. Chaque rencontre possède une fiche détaillée avec les données disponibles avant, pendant et après le match.</p><p>Compare la forme de {data.club.name} avec le <a href="/ligue-1/2026-2027/classement/general">classement général de Ligue 1</a> et retrouve toutes les affiches dans le <a href="/ligue-1/2026-2027/calendrier">calendrier de la saison</a>.</p></section>
+      <AdSlot name={`club-${data.club.id}-bottom`} format="leaderboard" />
     </article>
   );
 }

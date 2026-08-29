@@ -8,6 +8,7 @@ import { getSeasonOverview } from "@/server/football-repository";
 import { InstallApp } from "@/components/pwa/install-app";
 import { AuthProvider } from "@/lib/client/auth";
 import { AuthButton } from "@/components/auth/auth-button";
+import { CompetitionSelector } from "@/components/navigation/competition-selector";
 import "./global.scss";
 
 export const metadata: Metadata = {
@@ -36,8 +37,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <AuthProvider>
         <GoogleTags />
         <header className="site-header">
-          <a href="/" className="brand">{siteConfig.name}</a>
-          <nav aria-label="Navigation principale">
+          <div className="header-primary">
+            <a href="/" className="brand">{siteConfig.name}</a>
+            <CompetitionSelector />
+          </div>
+          <nav className="header-nav" aria-label="Navigation principale">
             <a href="/ligue-1/2026-2027/resultats">Résultats</a>
             <a href="/ligue-1/2026-2027/calendrier">Calendrier</a>
             <a href="/ligue-1/2026-2027/classement/general">Classement</a>

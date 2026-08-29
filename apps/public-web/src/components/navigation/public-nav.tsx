@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -44,7 +45,7 @@ export function PublicNav() {
       {items.slice(0, 3).map((item) => {
         const active = item.isActive(pathname);
         return (
-          <Link key={item.href} href={item.href} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
+          <Link key={item.href} href={item.href as Route} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
             {item.label}
           </Link>
         );
@@ -53,7 +54,7 @@ export function PublicNav() {
       {items.slice(3).map((item) => {
         const active = item.isActive(pathname);
         return (
-          <Link key={item.href} href={item.href} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
+          <Link key={item.href} href={item.href as Route} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
             {item.label}
           </Link>
         );

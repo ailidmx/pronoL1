@@ -25,16 +25,6 @@ const items: Array<{ href: string; label: string; isActive: (pathname: string) =
     label: "Pronostics",
     isActive: (pathname) => pathname === "/pronostics",
   },
-  {
-    href: "/favoris",
-    label: "Favoris",
-    isActive: (pathname) => pathname === "/favoris",
-  },
-  {
-    href: "/historique",
-    label: "Historique",
-    isActive: (pathname) => pathname === "/historique",
-  },
 ];
 
 export function PublicNav() {

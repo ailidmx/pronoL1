@@ -1,0 +1,110 @@
+name: Firebase Control Plane
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: read
+  id-token: write
+
+concurrency:
+  group: firebase-control-plane
+  cancel-in-progress: false
+
+jobs:
+  firebase:
+    if: >-
+      github.event.issue.pull_request == null &&
+      github.event.issue.title == 'Firebase Control Plane' &&
+      github.event.comment.user.login == github.repository_owner &&
+      startsWith(github.event.comment.body, '/firebase ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FIREBASE_PROJECT_ID: pronol1
+      COMMAND: ${{ github.event.comment.body }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools
+
+      - name: Route approved command
+        id: route
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$COMMAND" in
+            "/firebase status")
+              echo "action=status" >> "$GITHUB_OUTPUT"
+              ;;
+            "/firebase deploy backend")
+              echo "action=deploy-backend" >> "$GITHUB_OUTPUT"
+              ;;
+            "/firebase sync-secret posthog")
+              echo "action=sync-posthog" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported Firebase control-plane command." >&2
+              exit 64
+              ;;
+          esac
+
+      - name: Show Firebase status
+        if: steps.route.outputs.action == 'status'
+        shell: bash
+        run: |
+          set -euo pipefail
+          firebase projects:list --json
+          firebase functions:list --project "$FIREBASE_PROJECT_ID"
+
+      - name: Build and deploy backend
+        if: steps.route.outputs.action == 'deploy-backend'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build -w @prono-l1/functions
+          firebase deploy \
+            --project "$FIREBASE_PROJECT_ID" \
+            --only firestore,functions \
+            --non-interactive \
+            --force
+
+      - name: Sync PostHog secret to Firebase Secret Manager
+        if: steps.route.outputs.action == 'sync-posthog'
+        shell: bash
+        env:
+          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${POSTHOG_PERSONAL_API_KEY:-}" ]; then
+            echo "GitHub Actions secret POSTHOG_PERSONAL_API_KEY is not configured." >&2
+            exit 78
+          fi
+          secret_file="$RUNNER_TEMP/posthog-personal-api-key"
+          printf '%s' "$POSTHOG_PERSONAL_API_KEY" > "$secret_file"
+          firebase functions:secrets:set POSTHOG_PERSONAL_API_KEY \
+            --project "$FIREBASE_PROJECT_ID" \
+            --data-file "$secret_file"
+          rm -f "$secret_file"
+          npm ci
+          npm run build -w @prono-l1/functions
+          firebase deploy \
+            --project "$FIREBASE_PROJECT_ID" \
+            --only functions \
+            --non-interactive \
+            --force

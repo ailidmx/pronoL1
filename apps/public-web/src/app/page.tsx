@@ -7,8 +7,22 @@ import { siteConfig } from "@/config/site";
 import { publicContent } from "@/content/public-content";
 import { JsonLd } from "@/lib/seo/json-ld";
 import { getSeasonOverview } from "@/server/football-repository";
+import { formatOfferPrice, getPublicEntitlementCatalog, offerIntervalLabel } from "@/server/entitlements-repository";
 
 export const dynamic = "force-dynamic";
+
+const FEATURE_LABELS: Record<string, string> = {
+  scores: "Scores et résultats",
+  calendar: "Calendrier",
+  standings: "Classements",
+  analyses: "Analyses de match",
+  favorites: "Favoris",
+  history: "Historique",
+  matchAlerts: "Alertes matchs",
+  advancedStatistics: "Statistiques avancées",
+  adFree: "Sans publicité",
+  pronoAdvantages: "Avantages Prono L1",
+};
 
 async function loadData() {
   try { return await getSeasonOverview(2026); }
@@ -16,7 +30,7 @@ async function loadData() {
 }
 
 export default async function HomePage() {
-  const data = await loadData();
+  const [data, catalog] = await Promise.all([loadData(), getPublicEntitlementCatalog()]);
   const now = Date.now();
   const finished = data?.matches
     .filter((match) => match.status === "termine" || (match.date && new Date(match.date).valueOf() < now))
@@ -25,6 +39,9 @@ export default async function HomePage() {
   const upcoming = data?.matches
     .filter((match) => !match.date || new Date(match.date).valueOf() >= now)
     .slice(0, 6) ?? [];
+  const planById = new Map(catalog.plans.map((plan) => [plan.id, plan]));
+  const freePlans = catalog.plans.filter((plan) => plan.isPaid !== true);
+
   return (
     <>
       <JsonLd data={{
@@ -76,7 +93,13 @@ export default async function HomePage() {
 
       <section className="section-shell" id="offres">
         <div className="section-intro"><p className="eyebrow">Simple et transparent</p><h2>Commence gratuitement.</h2><p>Les informations essentielles restent accessibles. Les fonctions avancées et le confort sans publicité financent la plateforme.</p></div>
-        <div className="pricing-grid">{publicContent.tiers.map((tier) => <article className={tier.featured ? "featured" : ""} key={tier.name}>{tier.featured ? <span className="popular">Recommandé</span> : null}<h3>{tier.name}</h3><strong>{tier.price}</strong><ul>{tier.features.map((feature) => <li key={feature}>{feature}</li>)}</ul><a href={tier.name === "Premium" ? "/pronostics" : "/ligue-1/2026-2027"}>{tier.name === "Premium" ? "Découvrir la suite" : "Commencer"}</a></article>)}</div>
+        <div className="pricing-grid">
+          {freePlans.map((plan) => <article key={plan.id}><h3>{plan.name}</h3><strong>0 €</strong><ul>{Object.entries(plan.features ?? {}).filter(([, enabled]) => enabled).slice(0, 5).map(([key]) => <li key={key}>{FEATURE_LABELS[key] ?? key}</li>)}</ul><a href={plan.id === "public" ? "/ligue-1/2026-2027" : "/connexion"}>Commencer</a></article>)}
+          {catalog.offers.map((offer) => {
+            const plan = planById.get(offer.accessPlanId);
+            return <article className={offer.featured ? "featured" : ""} key={offer.id}>{offer.badge ? <span className="popular">{offer.badge}</span> : null}<h3>{offer.name}</h3><strong>{formatOfferPrice(offer)} <small>{offerIntervalLabel(offer)}</small></strong><ul>{Object.entries(plan?.features ?? {}).filter(([, enabled]) => enabled).slice(0, 6).map(([key]) => <li key={key}>{FEATURE_LABELS[key] ?? key}</li>)}</ul><a href="/pronostics">Choisir cette offre</a></article>;
+          })}
+        </div>
       </section>
 
       <section className="section-shell prono-cta">

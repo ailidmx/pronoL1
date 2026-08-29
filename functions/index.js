@@ -59,3 +59,4 @@ export { getPronosticsLeaderboard } from "./leaderboard.js";
 export { getPlayerMatchCenter } from "./player-match-center.js";
 export { getPremiumMatchStatistics } from "./premium-statistics.js";
 export { sendMatchAlerts } from "./push.js";
+export { getExperimentDashboard } from "./experiments.js";

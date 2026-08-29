@@ -47,6 +47,7 @@ export const getProfile = onCall({ cors: true }, async (request) => {
 });
 
 export { syncFootballData, syncFixtures, syncRecentMatchDetails } from "./sync.js";
+export { syncOdds } from "./odds.js";
 export { savePronostic } from "./pronostics.js";
 export { saveProfile } from "./profile.js";
 export { saveBonusAnswer } from "./bonus.js";

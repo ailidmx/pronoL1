@@ -103,7 +103,7 @@ export const DEFAULT_SUBSCRIPTION_OFFERS = [
     priceCents: 4999,
     billingInterval: "year",
     intervalCount: 1,
-    badge: "2 mois offerts",
+    badge: "Près de 2 mois offerts",
     sortOrder: 20,
   },
 ];

@@ -60,3 +60,5 @@ export { getPlayerMatchCenter } from "./player-match-center.js";
 export { getPremiumMatchStatistics } from "./premium-statistics.js";
 export { sendMatchAlerts } from "./push.js";
 export { getExperimentDashboard } from "./experiments.js";
+export { getMatchOdds } from "./odds.js";
+export { createCommunity, joinCommunity, listMyCommunities, leaveCommunity } from "./communities.js";

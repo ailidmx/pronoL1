@@ -46,7 +46,11 @@ export function AuthButton() {
         aria-label="Ouvrir le menu du compte"
         onClick={() => setOpen((value) => !value)}
       >
-        {user.photoURL ? <img src={user.photoURL} alt="" className="account-avatar-image" /> : <span className="account-avatar-fallback">{avatarLabel}</span>}
+        {user.photoURL ? (
+          <span className="account-avatar-image" aria-hidden="true" style={{ backgroundImage: `url(${user.photoURL})` }} />
+        ) : (
+          <span className="account-avatar-fallback" aria-hidden="true">{avatarLabel}</span>
+        )}
         <span className="account-caret" aria-hidden="true">⌄</span>
       </button>
       {open ? (

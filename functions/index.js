@@ -2,8 +2,8 @@
  * Prono-L1 Cloud Functions (Phase 2 backend).
  * See docs/rearchitecture-plan.md.
  */
+import "./bootstrap.js";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { initializeApp } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import {
   collections,
@@ -11,7 +11,6 @@ import {
   validateUserProfile,
 } from "@prono-l1/domain";
 
-initializeApp();
 const db = getFirestore();
 
 export const health = onCall({ cors: true }, () => ({

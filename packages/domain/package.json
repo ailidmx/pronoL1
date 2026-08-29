@@ -8,5 +8,5 @@
     ".": "./index.js",
     "./*": "./*.js"
   },
-  "scripts": { "test": "node --test shared.test.js" }
+  "scripts": { "test": "node --test *.test.js" }
 }

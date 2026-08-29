@@ -14,14 +14,12 @@ import {
 initializeApp();
 const db = getFirestore();
 
-// RPC: ping the backend.
 export const health = onCall({ cors: true }, () => ({
   ok: true,
   service: "prono-l1",
   time: new Date().toISOString(),
 }));
 
-// Returns the signed-in user's profile, creating it with defaults if missing.
 export const getProfile = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Authentication required.");
@@ -49,6 +47,7 @@ export const getProfile = onCall({ cors: true }, async (request) => {
 });
 
 export { syncFootballData, syncFixtures, syncRecentMatchDetails } from "./sync.js";
+export { syncOdds } from "./odds.js";
 export { savePronostic } from "./pronostics.js";
 export { saveProfile } from "./profile.js";
 export { saveBonusAnswer } from "./bonus.js";
@@ -58,5 +57,6 @@ export { scoreFinishedMatches } from "./scoring.js";
 export { getPronosticsLeaderboard } from "./leaderboard.js";
 export { getPlayerMatchCenter } from "./player-match-center.js";
 export { getPremiumMatchStatistics } from "./premium-statistics.js";
+export { getCommunities, createCommunity, joinCommunity, leaveCommunity } from "./communities.js";
 export { sendMatchAlerts } from "./push.js";
 export { getExperimentDashboard } from "./experiments.js";

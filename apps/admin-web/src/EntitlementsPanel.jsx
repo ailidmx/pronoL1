@@ -11,6 +11,10 @@ const FEATURE_LABELS = {
   history: "Historique",
   matchAlerts: "Alertes matchs",
   advancedStatistics: "Statistiques avancées",
+  officialOdds: "Cotes officielles",
+  communityOdds: "Cotes communauté",
+  communities: "Communautés",
+  multiCompetition: "Multi-compétitions",
   adFree: "Sans publicité",
   pronoAdvantages: "Avantages Prono L1",
 };
@@ -26,22 +30,14 @@ function EntitlementsPanel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const stopPlans = onSnapshot(
-      collection(db, "accessPlans"),
-      (snap) => {
-        setPlans(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)));
-        setError(null);
-      },
-      (reason) => setError(reason.message || "Impossible de charger les plans."),
-    );
-    const stopOffers = onSnapshot(
-      collection(db, "subscriptionOffers"),
-      (snap) => {
-        setOffers(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)));
-        setError(null);
-      },
-      (reason) => setError(reason.message || "Impossible de charger les offres."),
-    );
+    const stopPlans = onSnapshot(collection(db, "accessPlans"), (snap) => {
+      setPlans(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)));
+      setError(null);
+    }, (reason) => setError(reason.message || "Impossible de charger les plans."));
+    const stopOffers = onSnapshot(collection(db, "subscriptionOffers"), (snap) => {
+      setOffers(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)));
+      setError(null);
+    }, (reason) => setError(reason.message || "Impossible de charger les offres."));
     return () => { stopPlans(); stopOffers(); };
   }, []);
 
@@ -54,16 +50,10 @@ function EntitlementsPanel() {
     const key = `${collectionName}:${id}`;
     setPending((current) => ({ ...current, [key]: true }));
     setError(null);
-    try {
-      await setDoc(doc(db, collectionName, id), patch, { merge: true });
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "La modification n'a pas pu être enregistrée.");
-    } finally {
-      setPending((current) => {
-        const next = { ...current };
-        delete next[key];
-        return next;
-      });
+    try { await setDoc(doc(db, collectionName, id), patch, { merge: true }); }
+    catch (reason) { setError(reason instanceof Error ? reason.message : "La modification n'a pas pu être enregistrée."); }
+    finally {
+      setPending((current) => { const next = { ...current }; delete next[key]; return next; });
     }
   }
 
@@ -77,6 +67,8 @@ function EntitlementsPanel() {
       isPaid: false,
       sortOrder: plans.length * 10 + 10,
       analysisDailyLimit: 10,
+      maxCommunities: 1,
+      maxCompetitions: 1,
       features: Object.fromEntries(featureKeys.map((key) => [key, false])),
     });
   }
@@ -98,55 +90,47 @@ function EntitlementsPanel() {
     });
   }
 
-  return (
-    <section>
-      <h2>Accès & tarifs</h2>
-      <p>Source de vérité Firestore pour les droits produit et les offres commerciales.</p>
-      {error ? <p role="alert">{error}</p> : null}
+  return <section>
+    <h2>Accès & tarifs</h2>
+    <p>Source de vérité Firestore pour les droits produit, les limites et les offres commerciales.</p>
+    {error ? <p role="alert">{error}</p> : null}
 
-      <div className="admin-section-heading"><h3>Plans d'accès</h3><button onClick={addPlan}>Nouveau plan</button></div>
-      {plans.length === 0 ? <p>Aucun plan. Exécute le seed du catalogue ou crée un plan ici.</p> : null}
-      {plans.map((plan) => {
-        const busy = pending[`accessPlans:${plan.id}`] === true;
-        return (
-          <article className="admin-card" key={plan.id}>
-            <div className="admin-grid">
-              <label>Identifiant<input value={plan.id} disabled /></label>
-              <label>Nom<input value={plan.name ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { name: e.target.value })} /></label>
-              <label>Limite analyses / jour<input type="number" min="0" value={plan.analysisDailyLimit ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { analysisDailyLimit: e.target.value === "" ? null : Number(e.target.value) })} /></label>
-              <label><input type="checkbox" checked={plan.enabled === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { enabled: e.target.checked })} /> Actif</label>
-              <label><input type="checkbox" checked={plan.isPaid === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { isPaid: e.target.checked })} /> Payant</label>
-            </div>
-            <div className="feature-matrix">
-              {featureKeys.map((key) => (
-                <label key={key}><input type="checkbox" checked={plan.features?.[key] === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { features: { ...(plan.features ?? {}), [key]: e.target.checked } })} /> {FEATURE_LABELS[key] ?? key}</label>
-              ))}
-            </div>
-          </article>
-        );
-      })}
+    <div className="admin-section-heading"><h3>Plans d'accès</h3><button onClick={addPlan}>Nouveau plan</button></div>
+    {plans.length === 0 ? <p>Aucun plan. Exécute le seed du catalogue ou crée un plan ici.</p> : null}
+    {plans.map((plan) => {
+      const busy = pending[`accessPlans:${plan.id}`] === true;
+      return <article className="admin-card" key={plan.id}>
+        <div className="admin-grid">
+          <label>Identifiant<input value={plan.id} disabled /></label>
+          <label>Nom<input value={plan.name ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { name: e.target.value })} /></label>
+          <label>Limite analyses / jour<input type="number" min="0" value={plan.analysisDailyLimit ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { analysisDailyLimit: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+          <label>Communautés max <small>(vide = illimité)</small><input type="number" min="0" value={plan.maxCommunities ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { maxCommunities: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+          <label>Compétitions max <small>(vide = illimité)</small><input type="number" min="0" value={plan.maxCompetitions ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { maxCompetitions: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+          <label><input type="checkbox" checked={plan.enabled === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { enabled: e.target.checked })} /> Actif</label>
+          <label><input type="checkbox" checked={plan.isPaid === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { isPaid: e.target.checked })} /> Payant</label>
+        </div>
+        <div className="feature-matrix">
+          {featureKeys.map((key) => <label key={key}><input type="checkbox" checked={plan.features?.[key] === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { features: { ...(plan.features ?? {}), [key]: e.target.checked } })} /> {FEATURE_LABELS[key] ?? key}</label>)}
+        </div>
+      </article>;
+    })}
 
-      <div className="admin-section-heading"><h3>Offres commerciales</h3><button onClick={addOffer}>Nouvelle offre</button></div>
-      {offers.length === 0 ? <p>Aucune offre commerciale.</p> : null}
-      {offers.map((offer) => {
-        const busy = pending[`subscriptionOffers:${offer.id}`] === true;
-        return (
-          <article className="admin-card" key={offer.id}>
-            <div className="admin-grid">
-              <label>Nom<input value={offer.name ?? ""} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { name: e.target.value })} /></label>
-              <label>Plan<select value={offer.accessPlanId ?? ""} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { accessPlanId: e.target.value })}>{plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.name ?? plan.id}</option>)}</select></label>
-              <label>Prix<input type="number" min="0" step="0.01" value={moneyFromCents(offer.priceCents)} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { priceCents: Math.round(Number(e.target.value || 0) * 100) })} /></label>
-              <label>Devise<input value={offer.currency ?? "EUR"} maxLength="3" disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { currency: e.target.value.toUpperCase() })} /></label>
-              <label>Période<select value={offer.billingInterval ?? "month"} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { billingInterval: e.target.value })}><option value="month">Mensuelle</option><option value="year">Annuelle</option></select></label>
-              <label>Badge<input value={offer.badge ?? ""} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { badge: e.target.value || null })} /></label>
-              <label><input type="checkbox" checked={offer.enabled === true} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { enabled: e.target.checked })} /> Active</label>
-              <label><input type="checkbox" checked={offer.featured === true} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { featured: e.target.checked })} /> Mise en avant</label>
-            </div>
-          </article>
-        );
-      })}
-    </section>
-  );
+    <div className="admin-section-heading"><h3>Offres commerciales</h3><button onClick={addOffer}>Nouvelle offre</button></div>
+    {offers.length === 0 ? <p>Aucune offre commerciale.</p> : null}
+    {offers.map((offer) => {
+      const busy = pending[`subscriptionOffers:${offer.id}`] === true;
+      return <article className="admin-card" key={offer.id}><div className="admin-grid">
+        <label>Nom<input value={offer.name ?? ""} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { name: e.target.value })} /></label>
+        <label>Plan<select value={offer.accessPlanId ?? ""} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { accessPlanId: e.target.value })}>{plans.map((plan) => <option key={plan.id} value={plan.id}>{plan.name ?? plan.id}</option>)}</select></label>
+        <label>Prix<input type="number" min="0" step="0.01" value={moneyFromCents(offer.priceCents)} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { priceCents: Math.round(Number(e.target.value || 0) * 100) })} /></label>
+        <label>Devise<input value={offer.currency ?? "EUR"} maxLength="3" disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { currency: e.target.value.toUpperCase() })} /></label>
+        <label>Période<select value={offer.billingInterval ?? "month"} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { billingInterval: e.target.value })}><option value="month">Mensuelle</option><option value="year">Annuelle</option></select></label>
+        <label>Badge<input value={offer.badge ?? ""} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { badge: e.target.value || null })} /></label>
+        <label><input type="checkbox" checked={offer.enabled === true} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { enabled: e.target.checked })} /> Active</label>
+        <label><input type="checkbox" checked={offer.featured === true} disabled={busy} onChange={(e) => save("subscriptionOffers", offer.id, { featured: e.target.checked })} /> Mise en avant</label>
+      </div></article>;
+    })}
+  </section>;
 }
 
 export default EntitlementsPanel;

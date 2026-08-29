@@ -11,9 +11,11 @@ import { AuthButton } from "@/components/auth/auth-button";
 import { CompetitionSelector } from "@/components/navigation/competition-selector";
 import { PublicNav } from "@/components/navigation/public-nav";
 import { ExperimentBootstrap } from "@/components/experiments/experiment-bootstrap";
+import { BrowserTimezone } from "@/components/system/browser-timezone";
 import "./global.scss";
 import "./navigation.scss";
 import "./experiment-themes.scss";
+import "./pwa-menu.scss";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,
@@ -35,10 +37,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   let updatedAt: string | null = null;
   try { updatedAt = (await getSeasonOverview(2026)).updatedAt; }
   catch (error) { console.error("Data freshness unavailable", error); }
+  const buildVersion = process.env.NEXT_PUBLIC_BUILD_VERSION ?? "dev";
   return (
     <html lang={siteConfig.language} suppressHydrationWarning>
       <body>
         <ExperimentBootstrap />
+        <BrowserTimezone />
         <AuthProvider>
         <GoogleTags />
         <header className="site-header">
@@ -52,15 +56,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <AuthButton />
             </div>
           </div>
-          <nav className="header-nav" aria-label="Navigation principale">
-            <PublicNav />
-          </nav>
+          <nav className="header-nav" aria-label="Navigation principale"><PublicNav /></nav>
         </header>
         <main>{children}</main>
         <footer>
           <div><strong>{siteConfig.name}</strong><span>Site indépendant, non affilié aux compétitions citées.</span></div>
           <DataFreshness value={updatedAt} compact />
           <div className="footer-links"><a href="/ligue-1/2026-2027/resultats">Résultats Ligue 1</a><a href="/ligue-1/2026-2027/calendrier">Calendrier</a><a href="/pronostics">Prono L1</a><PrivacySettingsButton /></div>
+          <div className="app-build-version" title="Version de build UTC">v{buildVersion}</div>
         </footer>
         <ConsentBanner />
         </AuthProvider>

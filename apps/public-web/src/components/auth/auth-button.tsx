@@ -4,6 +4,10 @@ import { signOut } from "firebase/auth";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { auth } from "@/lib/client/firebase";
 import { useAuth } from "@/lib/client/auth";
+import { InstallApp } from "@/components/pwa/install-app";
+
+const PLAYER_APP_URL = process.env.NEXT_PUBLIC_PRIVATE_APP_URL ?? "https://pronol1.web.app";
+const ADMIN_APP_URL = process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://pronol1-admin.web.app";
 
 function initials(name?: string | null, email?: string | null) {
   const source = name?.trim() || email?.split("@")[0] || "?";
@@ -12,7 +16,7 @@ function initials(name?: string | null, email?: string | null) {
 }
 
 export function AuthButton() {
-  const { user, loading } = useAuth();
+  const { user, loading, profile } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -36,16 +40,12 @@ export function AuthButton() {
   if (loading) return null;
   if (!user) return <a href="/connexion" className="auth-link">Se connecter</a>;
 
+  const isAdmin = profile?.isAdmin === true;
+  const canUsePlayer = isAdmin || profile?.isAllowed === true;
+
   return (
     <div className="account-menu" ref={menuRef}>
-      <button
-        className="account-trigger"
-        type="button"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-label="Ouvrir le menu du compte"
-        onClick={() => setOpen((value) => !value)}
-      >
+      <button className="account-trigger" type="button" aria-haspopup="menu" aria-expanded={open} aria-label="Ouvrir le menu du compte" onClick={() => setOpen((value) => !value)}>
         {user.photoURL ? (
           <span className="account-avatar-image" aria-hidden="true" style={{ backgroundImage: `url(${user.photoURL})` }} />
         ) : (
@@ -60,6 +60,12 @@ export function AuthButton() {
             {user.email ? <span>{user.email}</span> : null}
           </div>
           <a href="/pronostics" role="menuitem" onClick={() => setOpen(false)}>Mes pronostics</a>
+          <div className="account-apps" aria-label="Applications">
+            <span>Applications</span>
+            <InstallApp variant="menu" />
+            {canUsePlayer ? <a href={`${PLAYER_APP_URL}/?install=1`} role="menuitem">Installer Prono L1</a> : null}
+            {isAdmin ? <a href={`${ADMIN_APP_URL}/?install=1`} role="menuitem">Installer Prono L1 Admin</a> : null}
+          </div>
           <button type="button" role="menuitem" onClick={() => signOut(auth)}>Déconnexion</button>
         </div>
       ) : null}

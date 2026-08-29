@@ -3,7 +3,6 @@ import type { FootballMatch } from "@/server/football-repository";
 const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   dateStyle: "medium",
   timeStyle: "short",
-  timeZone: "Europe/Paris",
 });
 
 export function formatMatchDate(value: string | null) {

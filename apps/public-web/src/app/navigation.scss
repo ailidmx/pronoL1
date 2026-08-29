@@ -21,6 +21,136 @@
   background: var(--accent);
 }
 
+.header-primary {
+  position: relative;
+}
+
+.header-branding,
+.header-account {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.header-branding {
+  gap: 1rem;
+}
+
+.header-account {
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.account-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: #151a22;
+  cursor: pointer;
+}
+
+.account-trigger:hover,
+.account-trigger[aria-expanded="true"] {
+  border-color: var(--accent);
+}
+
+.account-avatar-image,
+.account-avatar-fallback {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+}
+
+.account-avatar-image {
+  display: block;
+  background-position: center;
+  background-size: cover;
+}
+
+.account-avatar-fallback {
+  display: grid;
+  place-items: center;
+  color: #0b0e13;
+  background: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.account-caret {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.account-dropdown {
+  position: absolute;
+  z-index: 140;
+  top: calc(100% + 0.55rem);
+  right: 0;
+  width: min(280px, calc(100vw - 2rem));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 24px 70px #000b;
+}
+
+.account-identity {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.account-identity strong,
+.account-identity span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-identity strong {
+  font-size: 0.88rem;
+}
+
+.account-identity span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.account-dropdown > a,
+.account-dropdown > button {
+  display: flex;
+  width: 100%;
+  padding: 0.78rem 1rem;
+  border: 0;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.account-dropdown > a:hover,
+.account-dropdown > button:hover {
+  background: #202631;
+}
+
 .journey-picker {
   display: flex;
   gap: 0.45rem;
@@ -41,4 +171,62 @@
   border-color: var(--accent);
   background: var(--accent);
   font-weight: 900;
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    gap: 0.55rem;
+    padding-top: max(0.6rem, env(safe-area-inset-top));
+  }
+
+  .header-primary {
+    gap: 0.55rem;
+  }
+
+  .header-branding {
+    flex: 1 1 auto;
+    gap: 0.55rem;
+    overflow: hidden;
+  }
+
+  .header-branding .brand {
+    flex: 0 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-branding .competition-selector {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .header-branding .competition-selector select {
+    max-width: min(145px, 34vw);
+  }
+
+  .header-account {
+    gap: 0.35rem;
+  }
+
+  .header-account .install-app > button {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.72rem;
+  }
+
+  .account-avatar-image,
+  .account-avatar-fallback {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .header-nav {
+    width: calc(100% + 2rem);
+    margin-inline: -1rem;
+    padding: 0.15rem 1rem 0.35rem;
+    scroll-padding-inline: 1rem;
+  }
 }

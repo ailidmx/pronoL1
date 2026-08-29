@@ -7,7 +7,9 @@ interface InstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-export function InstallApp() {
+type Props = { variant?: "header" | "menu" };
+
+export function InstallApp({ variant = "header" }: Props) {
   const [prompt, setPrompt] = useState<InstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [platform, setPlatform] = useState<"ios" | "android" | null>(null);
@@ -22,8 +24,7 @@ export function InstallApp() {
 
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
-      ("standalone" in navigator &&
-        Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
+      ("standalone" in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
     setInstalled(standalone);
 
     const userAgent = navigator.userAgent;
@@ -60,26 +61,16 @@ export function InstallApp() {
     setShowHelp(true);
   }
 
-  const help =
-    platform === "ios"
-      ? "Dans Safari, ouvrez le menu Partager puis choisissez « Sur l’écran d’accueil »."
-      : "Ouvrez le menu du navigateur puis choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ».";
+  const help = platform === "ios"
+    ? "Dans Safari, ouvre le menu Partager puis choisis « Sur l’écran d’accueil »."
+    : "Ouvre le menu du navigateur puis choisis « Installer l’application » ou « Ajouter à l’écran d’accueil ».";
 
   return (
-    <div className="install-app">
-      <button type="button" onClick={install}>
-        Installer l’application
-      </button>
+    <div className={`install-app install-app-${variant}`}>
+      <button type="button" onClick={install}>Installer Stat de Foot</button>
       {showHelp ? (
         <div className="install-help" role="dialog" aria-modal="true" aria-label="Installer Stat de Foot">
-          <button
-            type="button"
-            className="install-close"
-            onClick={() => setShowHelp(false)}
-            aria-label="Fermer"
-          >
-            ×
-          </button>
+          <button type="button" className="install-close" onClick={() => setShowHelp(false)} aria-label="Fermer">×</button>
           <strong>Installer Stat de Foot</strong>
           <p>{help}</p>
         </div>

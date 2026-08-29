@@ -1,0 +1,12 @@
+{
+  "name": "Prono L1 Admin",
+  "short_name": "Prono Admin",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#7f1d1d",
+  "description": "Back-office Prono L1.",
+  "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

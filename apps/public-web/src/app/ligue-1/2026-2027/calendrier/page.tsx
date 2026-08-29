@@ -1,9 +1,12 @@
-import { AdSlot, DesktopAdRail } from "@/components/ads/ad-slot";
-import { DataFreshness } from "@/components/football/data-freshness";
-import { MatchList } from "@/components/football/match-list";
-import { createPageMetadata } from "@/lib/seo/metadata";
-import { getSeasonOverview, type FootballMatch } from "@/server/football-repository";
+import { notFound, redirect } from "next/navigation";
+import { resolveDefaultJourney } from "@/lib/journey-navigation";
+import { getSeasonOverview } from "@/server/football-repository";
 
-export const metadata = createPageMetadata({ title: "Calendrier Ligue 1 2026-2027 par journée", description: "Naviguez dans les 34 journées du calendrier de Ligue 1 2026-2027 et consultez chaque fiche de match.", path: "/ligue-1/2026-2027/calendrier" });
 export const dynamic = "force-dynamic";
-export default async function CalendarPage() { const data = await getSeasonOverview(2026); const groups = new Map<number, FootballMatch[]>(); data.matches.forEach((match) => { if (match.journey) groups.set(match.journey, [...(groups.get(match.journey) ?? []), match]); }); return <main className="content"><AdSlot name="calendar-masthead" format="billboard" /><DesktopAdRail name="calendar-desktop-rail" /><p className="eyebrow">34 journées</p><h1>Calendrier Ligue 1 2026-2027</h1><p className="intro">Toutes les dates, horaires, affiches et résultats des 34 journées de Ligue 1. Choisis une journée ou ouvre directement la fiche détaillée d’une rencontre.</p><DataFreshness value={data.updatedAt} /><nav className="journey-picker" aria-label="Journées">{Array.from({ length: 34 }, (_, index) => index + 1).map((journey) => <a key={journey} href={`#journee-${journey}`}>J{journey}</a>)}</nav>{[...groups.entries()].sort(([a], [b]) => a - b).map(([journey, matches], index) => <section className="data-panel journey related-block" id={`journee-${journey}`} key={journey}><div className="section-heading"><h2>{journey}e journée</h2><a href={`/ligue-1/2026-2027/journee/${journey}`}>Matchs et résultats de la journée →</a></div><MatchList matches={matches} />{index > 0 && index % 5 === 0 ? <AdSlot name={`calendar-feed-${index}`} format="in-feed" /> : null}</section>)}<section className="seo-copy"><h2>Dates et matchs de Ligue 1 2026-2027</h2><p>Le calendrier est organisé par journée pour retrouver rapidement chaque rencontre. Les fiches match affichent le score et les informations disponibles, tandis que les pages de journée regroupent toutes les affiches dans l’ordre chronologique.</p><p>Consulte aussi les <a href="/ligue-1/2026-2027/resultats">derniers résultats</a> et le <a href="/ligue-1/2026-2027/classement/general">classement de Ligue 1</a>.</p></section><AdSlot name="calendar-bottom" format="leaderboard" /></main>; }
+
+export default async function CalendarPage() {
+  const data = await getSeasonOverview(2026);
+  const journey = resolveDefaultJourney(data.matches);
+  if (!journey) notFound();
+  redirect(`/ligue-1/2026-2027/journee/${journey}`);
+}

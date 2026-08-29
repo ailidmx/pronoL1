@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase.js";
+import { auth, getProfile } from "./firebase.js";
 import Login from "./Login.jsx";
 import Standings from "./Standings.jsx";
 import Profile from "./Profile.jsx";
@@ -15,21 +15,45 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState("pronostics");
   const [pronoTab, setPronoTab] = useState("journee");
+  const [access, setAccess] = useState({ checking: true, allowed: false });
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (!u) {
+        setUser(null);
+        setAccess({ checking: false, allowed: false });
+        setLoading(false);
+        return;
+      }
       setUser(u);
+      setAccess({ checking: true, allowed: false });
+      try {
+        const { data } = await getProfile();
+        setAccess({ checking: false, allowed: data.isAdmin === true || data.isAllowed === true });
+      } catch {
+        setAccess({ checking: false, allowed: false });
+      }
       setLoading(false);
     });
     return unsub;
   }, []);
 
-  if (loading) {
+  if (loading || access.checking) {
     return <div className={styles.loading}>Chargement…</div>;
   }
 
   if (!user) {
     return <Login />;
+  }
+
+  if (!access.allowed) {
+    return (
+      <div className={styles.denied}>
+        <h1>Accès refusé</h1>
+        <p>Ton compte n’est pas encore autorisé à rejoindre Prono-L1. Contacte David ou Aydé pour être ajouté.</p>
+        <button type="button" onClick={() => auth.signOut()}>Changer de compte</button>
+      </div>
+    );
   }
 
   return (

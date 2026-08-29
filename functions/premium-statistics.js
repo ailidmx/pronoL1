@@ -1,6 +1,11 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore } from "firebase-admin/firestore";
-import { collections } from "@prono-l1/domain";
+import {
+  collections,
+  getDefaultAccessPlan,
+  hasEntitlementFeature,
+  resolveProfileAccessPlanId,
+} from "@prono-l1/domain";
 
 const PREMIUM_STAT_KEYS = new Set([
   "expected_goals",
@@ -47,9 +52,18 @@ export const getPremiumMatchStatistics = onCall({ cors: true }, async (request) 
   }
 
   const db = getFirestore();
-  const profile = await db.collection(collections.users).doc(request.auth.uid).get();
-  if (!profile.exists || profile.data()?.isPremium !== true) {
-    throw new HttpsError("permission-denied", "Premium entitlement required.");
+  const profileSnap = await db.collection(collections.users).doc(request.auth.uid).get();
+  if (!profileSnap.exists) {
+    throw new HttpsError("permission-denied", "Access plan required.");
+  }
+
+  const profile = profileSnap.data() ?? {};
+  const planId = resolveProfileAccessPlanId(profile);
+  const planSnap = await db.collection(collections.accessPlans).doc(planId).get();
+  const plan = planSnap.exists ? { id: planId, ...planSnap.data() } : getDefaultAccessPlan(planId);
+
+  if (!hasEntitlementFeature(plan, "advancedStatistics")) {
+    throw new HttpsError("permission-denied", "Advanced statistics entitlement required.");
   }
 
   const match = await db.collection(collections.matches).doc(matchId).get();

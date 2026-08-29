@@ -7,6 +7,8 @@
 
 export const collections = {
   users: "users",
+  accessPlans: "accessPlans",
+  subscriptionOffers: "subscriptionOffers",
   seasons: "seasons",
   clubs: "clubs",
   players: "players",
@@ -31,9 +33,10 @@ export const subcollections = {
   options: "options",
 };
 
-// Path builders — return Firestore document paths as strings.
 export const paths = {
   user: (userId) => `${collections.users}/${userId}`,
+  accessPlan: (planId) => `${collections.accessPlans}/${planId}`,
+  subscriptionOffer: (offerId) => `${collections.subscriptionOffers}/${offerId}`,
   season: (seasonId) => `${collections.seasons}/${seasonId}`,
   club: (clubId) => `${collections.clubs}/${clubId}`,
   match: (matchId) => `${collections.matches}/${matchId}`,

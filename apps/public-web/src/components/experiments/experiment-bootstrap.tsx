@@ -66,7 +66,15 @@ async function captureExposure() {
     method: "POST",
     headers: { "content-type": "application/json" },
     keepalive: true,
-    body: JSON.stringify({ event: "experiment_exposure", distinctId: visitorId, properties: { experiment: experimentKey, variant } }),
+    body: JSON.stringify({
+      event: "experiment_exposure",
+      distinctId: visitorId,
+      properties: {
+        experiment: experimentKey,
+        variant,
+        [`$feature/${experimentKey}`]: variant,
+      },
+    }),
   }).catch(() => undefined);
 }
 

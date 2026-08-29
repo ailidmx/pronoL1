@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./hero-title-rotator.module.scss";
 
 const ROTATION_MS = 2600;
 
@@ -20,16 +21,16 @@ export function HeroTitleRotator({ fullTitle, messages }: { fullTitle: string; m
   }, [messages]);
 
   return (
-    <h1 className="hero-rotating-title">
-      <span className="sr-only">{fullTitle}</span>
-      <span className="hero-title-stage" aria-hidden="true">
+    <h1 className={styles.title}>
+      <span className={styles.srOnly}>{fullTitle}</span>
+      <span className={styles.stage} aria-hidden="true">
         {messages.map((message, messageIndex) => (
           <span
-            className={`hero-title-message${messageIndex === index ? " is-active" : ""}`}
+            className={`${styles.message} ${messageIndex === index ? styles.active : ""}`}
             key={message}
           >
-            <span className="hero-title-trail" aria-hidden="true">{message}</span>
-            <span className="hero-title-copy">{message}</span>
+            <span className={styles.trail} aria-hidden="true">{message}</span>
+            <span className={styles.copy}>{message}</span>
           </span>
         ))}
       </span>

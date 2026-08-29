@@ -32,7 +32,7 @@ const fallbackPlans: PublicAccessPlan[] = [
 
 const fallbackOffers: PublicSubscriptionOffer[] = [
   { id: "premium-monthly", name: "Premium mensuel", accessPlanId: "premium", enabled: true, featured: false, currency: "EUR", priceCents: 499, billingInterval: "month", badge: null, sortOrder: 10 },
-  { id: "premium-annual", name: "Premium annuel", accessPlanId: "premium", enabled: true, featured: true, currency: "EUR", priceCents: 4999, billingInterval: "year", badge: "2 mois offerts", sortOrder: 20 },
+  { id: "premium-annual", name: "Premium annuel", accessPlanId: "premium", enabled: true, featured: true, currency: "EUR", priceCents: 4999, billingInterval: "year", badge: "Près de 2 mois offerts", sortOrder: 20 },
 ];
 
 export async function getPublicEntitlementCatalog() {

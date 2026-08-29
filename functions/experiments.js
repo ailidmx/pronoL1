@@ -1,7 +1,9 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 import { getFirestore } from "firebase-admin/firestore";
 import { collections } from "@prono-l1/domain";
 
+const posthogPersonalApiKey = defineSecret("POSTHOG_PERSONAL_API_KEY");
 const posthogHost = "https://eu.posthog.com";
 const posthogProjectId = 260945;
 const experimentKey = "public-theme-v1";
@@ -14,22 +16,11 @@ async function assertAdmin(request) {
   }
 }
 
-function posthogPersonalApiKey() {
-  const value = process.env.POSTHOG_PERSONAL_API_KEY?.trim();
-  if (!value) {
-    throw new HttpsError(
-      "failed-precondition",
-      "PostHog admin analytics is not configured yet. Configure POSTHOG_PERSONAL_API_KEY before using this dashboard.",
-    );
-  }
-  return value;
-}
-
 function queryPostHog(sql, name) {
   return fetch(`${posthogHost}/api/projects/${posthogProjectId}/query/`, {
     method: "POST",
     headers: {
-      authorization: `Bearer ${posthogPersonalApiKey()}`,
+      authorization: `Bearer ${posthogPersonalApiKey.value()}`,
       "content-type": "application/json",
     },
     body: JSON.stringify({ query: { kind: "HogQLQuery", query: sql }, name }),
@@ -37,7 +28,7 @@ function queryPostHog(sql, name) {
 }
 
 export const getExperimentDashboard = onCall(
-  { cors: true },
+  { cors: true, secrets: [posthogPersonalApiKey] },
   async (request) => {
     await assertAdmin(request);
 

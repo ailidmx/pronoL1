@@ -1,10 +1,9 @@
 "use client";
 
-import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const items: Array<{ href: Route; label: string; isActive: (pathname: string) => boolean }> = [
+const items: Array<{ href: string; label: string; isActive: (pathname: string) => boolean }> = [
   {
     href: "/ligue-1/2026-2027/resultats",
     label: "Résultats",

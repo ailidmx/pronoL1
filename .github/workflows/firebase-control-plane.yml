@@ -54,6 +54,9 @@ jobs:
             "/firebase deploy backend")
               echo "action=deploy-backend" >> "$GITHUB_OUTPUT"
               ;;
+            "/firebase seed entitlements")
+              echo "action=seed-entitlements" >> "$GITHUB_OUTPUT"
+              ;;
             "/firebase sync-secret posthog")
               echo "action=sync-posthog" >> "$GITHUB_OUTPUT"
               ;;
@@ -73,6 +76,14 @@ jobs:
           set -euo pipefail
           firebase projects:list --json
           firebase functions:list --project "$FIREBASE_PROJECT_ID"
+
+      - name: Seed entitlement catalog
+        if: steps.route.outputs.action == 'seed-entitlements'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          node scripts/seed-entitlements.mjs --execute
 
       - name: Promote the only Firestore user to admin
         if: steps.route.outputs.action == 'promote-single-user-admin'

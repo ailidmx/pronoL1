@@ -19,7 +19,19 @@ function cleanMatch(document) {
     venue: data.venue ?? null,
     city: data.city ?? null,
     referee: data.referee ?? null,
+    events: Array.isArray(data.events) ? data.events : [],
+    lineups: Array.isArray(data.lineups) ? data.lineups : [],
+    statistics: Array.isArray(data.statistics) ? data.statistics : [],
   };
+}
+
+function resultForClub(match, clubId) {
+  const data = match.data();
+  if (data.statut !== "termine" || data.scoreDom == null || data.scoreExt == null) return null;
+  const home = String(data.clubDomId) === clubId;
+  const scored = home ? data.scoreDom : data.scoreExt;
+  const conceded = home ? data.scoreExt : data.scoreDom;
+  return scored === conceded ? "N" : scored > conceded ? "V" : "D";
 }
 
 function cleanPrediction(document) {
@@ -88,6 +100,14 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
     clubs,
     matches: visibleDocs.map((document) => ({
       ...cleanMatch(document),
+      form: Object.fromEntries([String(document.data().clubDomId), String(document.data().clubExtId)].map((clubId) => [clubId, allMatchDocs
+        .filter((candidate) => candidate.id !== document.id && [String(candidate.data().clubDomId), String(candidate.data().clubExtId)].includes(clubId) && String(candidate.data().date ?? "") < String(document.data().date ?? ""))
+        .slice(-5).map((candidate) => resultForClub(candidate, clubId)).filter(Boolean)])),
+      headToHead: allMatchDocs.filter((candidate) => candidate.id !== document.id
+        && candidate.data().statut === "termine"
+        && [String(candidate.data().clubDomId), String(candidate.data().clubExtId)].includes(String(document.data().clubDomId))
+        && [String(candidate.data().clubDomId), String(candidate.data().clubExtId)].includes(String(document.data().clubExtId)))
+        .slice(-5).reverse().map(cleanMatch),
       myPrediction: ownByMatch.get(document.id) ?? null,
       predictionsVisible: scope === "journey" && document.data().statut !== "a_venir",
       predictions: (publicPredictions.get(document.id) ?? []).map((prediction) => ({ ...prediction, displayName: playerNames.get(prediction.userId) ?? "Joueur" })),

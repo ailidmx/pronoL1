@@ -49,8 +49,29 @@ function MatchCard({ match, clubs, onSaved }) {
     <div className="match-scoreline"><Club club={home} align="right" /><strong className="match-score">{match.homeScore != null || match.awayScore != null ? `${match.homeScore ?? "–"} : ${match.awayScore ?? "–"}` : "– : –"}</strong><Club club={away} /></div>
     {match.venue ? <p className="match-venue">{match.venue}{match.city ? ` · ${match.city}` : ""}</p> : null}
     {match.status === "a_venir" ? <PronosticForm key={`${match.id}-${match.myPrediction?.homeScore}-${match.myPrediction?.awayScore}`} matchId={match.id} initial={match.myPrediction} onSaved={onSaved} /> : match.myPrediction ? <div className="my-result"><span>Mon prono <strong>{match.myPrediction.homeScore} : {match.myPrediction.awayScore}</strong></span>{finished && match.myPrediction.points != null ? <span className={`points points-${match.myPrediction.result ?? ""}`}>+{match.myPrediction.points} pt{match.myPrediction.points > 1 ? "s" : ""}</span> : null}</div> : <p className="no-prediction">Aucun pronostic enregistré</p>}
-    {match.predictionsVisible ? <><button type="button" className="details-toggle" onClick={() => setDetailsOpen((open) => !open)}>{detailsOpen ? "Masquer" : "Voir"} les pronostics ({match.predictions.length})</button>{detailsOpen ? <div className="predictions-grid">{match.predictions.length ? match.predictions.map((prediction) => <div key={prediction.userId}><span>{prediction.displayName}</span><strong>{prediction.homeScore} : {prediction.awayScore}</strong>{prediction.points != null ? <small>{prediction.points} pt{prediction.points > 1 ? "s" : ""}</small> : null}</div>) : <p>Aucun pronostic pour ce match.</p>}</div> : null}</> : null}
+    <div className="form-row"><FormDots values={match.form?.[match.homeClubId]} /><span>Forme</span><FormDots values={match.form?.[match.awayClubId]} /></div>
+    <button type="button" className="details-toggle" onClick={() => setDetailsOpen((open) => !open)}>{detailsOpen ? "Masquer la fiche" : "Ouvrir la fiche du match"}</button>
+    {detailsOpen ? <MatchDetails match={match} clubs={clubs} /> : null}
+    {match.predictionsVisible ? <Predictions predictions={match.predictions} /> : null}
   </article>;
+}
+
+function FormDots({ values = [] }) { return <span className="form-dots">{values.length ? values.map((value, index) => <i key={`${value}-${index}`} className={`form-${value.toLowerCase()}`}>{value}</i>) : <small>—</small>}</span>; }
+
+function Predictions({ predictions }) { return <details className="predictions"><summary>Pronostics des joueurs ({predictions.length})</summary><div className="predictions-grid">{predictions.length ? predictions.map((prediction) => <div key={prediction.userId}><span>{prediction.displayName}</span><strong>{prediction.homeScore} : {prediction.awayScore}</strong>{prediction.points != null ? <small>{prediction.points} pt{prediction.points > 1 ? "s" : ""}</small> : null}</div>) : <p>Aucun pronostic pour ce match.</p>}</div></details>; }
+
+function MatchDetails({ match, clubs }) {
+  const homeStats = match.statistics?.find((item) => String(item.teamId) === match.homeClubId)?.values ?? {};
+  const awayStats = match.statistics?.find((item) => String(item.teamId) === match.awayClubId)?.values ?? {};
+  const statNames = [...new Set([...Object.keys(homeStats), ...Object.keys(awayStats)])];
+  return <div className="match-details">
+    {match.referee ? <p className="match-official">Arbitre : {match.referee}</p> : null}
+    {match.headToHead?.length ? <section><h3>Confrontations directes</h3>{match.headToHead.map((item) => <div className="h2h-row" key={item.id}><small>{formatDate(item.date)}</small><span>{clubs[item.homeClubId]?.name}</span><strong>{item.homeScore} : {item.awayScore}</strong><span>{clubs[item.awayClubId]?.name}</span></div>)}</section> : null}
+    {match.events?.length ? <section><h3>Faits de jeu</h3><ol className="timeline">{match.events.map((event, index) => <li key={`${event.minute}-${index}`}><time>{event.minute ?? "?"}{event.extraMinute ? `+${event.extraMinute}` : ""}&apos;</time><span>{event.type === "Goal" ? "⚽" : event.type === "Card" ? "🟨" : "↔️"} {event.player ?? event.detail}{event.assist ? ` (${event.assist})` : ""}</span></li>)}</ol></section> : null}
+    {match.lineups?.length ? <section><h3>Compositions</h3><div className="lineups">{match.lineups.map((lineup) => <article key={lineup.teamId}><h4>{clubs[String(lineup.teamId)]?.name} · {lineup.formation ?? "Formation NC"}</h4>{lineup.coach ? <small>Coach : {lineup.coach}</small> : null}<ol>{lineup.starters?.map((player) => <li key={player.id ?? player.name}><b>{player.number ?? "–"}</b> {player.name}</li>)}</ol><details><summary>Remplaçants ({lineup.substitutes?.length ?? 0})</summary><ul>{lineup.substitutes?.map((player) => <li key={player.id ?? player.name}>{player.number ?? "–"} · {player.name}</li>)}</ul></details></article>)}</div></section> : null}
+    {statNames.length ? <section><h3>Statistiques</h3><div className="stats-grid">{statNames.map((name) => <div key={name}><strong>{homeStats[name] ?? "–"}</strong><span>{name}</span><strong>{awayStats[name] ?? "–"}</strong></div>)}</div></section> : null}
+    {!match.headToHead?.length && !match.events?.length && !match.lineups?.length && !statNames.length ? <p className="empty-detail">Les données détaillées seront disponibles dès leur publication.</p> : null}
+  </div>;
 }
 
 export default function Matches({ mode = "journey" }) {

@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 const app = initializeApp({
@@ -11,5 +12,6 @@ const app = initializeApp({
   messagingSenderId: "224479040937",
 });
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
 export const getProfile = httpsCallable(getFunctions(app), "getProfile");

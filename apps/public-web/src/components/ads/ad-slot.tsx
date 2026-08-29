@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { isPremium } from "@/lib/client/premium";
+import { usePremium } from "@/lib/client/premium";
 
 type AdSlotProps = {
   name: string;
@@ -9,13 +8,9 @@ type AdSlotProps = {
   className?: string;
 };
 
-// "Sans publicité" premium benefit: hides the slot for premium users.
 export function AdSlot({ name, format = "in-feed", className = "" }: AdSlotProps) {
-  const [premium, setPremium] = useState(false);
-  useEffect(() => {
-    setPremium(isPremium());
-  }, []);
-  if (premium) return null;
+  const { adFree, loading } = usePremium();
+  if (loading || adFree) return null;
   return (
     <aside
       className={`ad-slot ad-slot-${format} ${className}`.trim()}
@@ -29,7 +24,6 @@ export function AdSlot({ name, format = "in-feed", className = "" }: AdSlotProps
   );
 }
 
-/** Desktop-only inventory outside the reading column. Hidden before 1480px. */
 export function DesktopAdRail({ name }: { name: string }) {
   return (
     <div className="desktop-ad-rail" aria-hidden="true">

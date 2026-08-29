@@ -2,18 +2,124 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { auth } from "./firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { auth, db, getProfile } from "./firebase";
 
-type AuthState = { user: User | null; loading: boolean };
+type UserProfile = {
+  isPremium?: boolean;
+  isAllowed?: boolean;
+  isAdmin?: boolean;
+  accessPlanId?: string | null;
+  [key: string]: unknown;
+};
 
-const AuthContext = createContext<AuthState>({ user: null, loading: true });
+type AccessPlan = {
+  id: string;
+  enabled?: boolean;
+  isPaid?: boolean;
+  analysisDailyLimit?: number | null;
+  features?: Record<string, boolean>;
+  [key: string]: unknown;
+};
+
+type AuthState = {
+  user: User | null;
+  loading: boolean;
+  profile: UserProfile | null;
+  accessPlan: AccessPlan | null;
+  profileLoading: boolean;
+  profileError: string | null;
+};
+
+const INITIAL_STATE: AuthState = {
+  user: null,
+  loading: true,
+  profile: null,
+  accessPlan: null,
+  profileLoading: false,
+  profileError: null,
+};
+
+const FALLBACK_PLANS: Record<string, AccessPlan> = {
+  registered: { id: "registered", enabled: true, isPaid: false, analysisDailyLimit: 10, features: { favorites: true, history: true, matchAlerts: true, advancedStatistics: false, adFree: false } },
+  premium: { id: "premium", enabled: true, isPaid: true, analysisDailyLimit: null, features: { favorites: true, history: true, matchAlerts: true, advancedStatistics: true, adFree: true, pronoAdvantages: true } },
+};
+
+const AuthContext = createContext<AuthState>(INITIAL_STATE);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({ user: null, loading: true });
+  const [state, setState] = useState<AuthState>(INITIAL_STATE);
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setState({ user, loading: false }));
-    return unsubscribe;
+    let profileUnsubscribe = () => {};
+    let planUnsubscribe = () => {};
+    let generation = 0;
+
+    const authUnsubscribe = onAuthStateChanged(auth, (user) => {
+      generation += 1;
+      const currentGeneration = generation;
+      profileUnsubscribe();
+      planUnsubscribe();
+      profileUnsubscribe = () => {};
+      planUnsubscribe = () => {};
+
+      if (!user) {
+        setState({ user: null, loading: false, profile: null, accessPlan: null, profileLoading: false, profileError: null });
+        return;
+      }
+
+      setState({ user, loading: false, profile: null, accessPlan: null, profileLoading: true, profileError: null });
+
+      getProfile()
+        .then(() => {
+          if (currentGeneration !== generation) return;
+          profileUnsubscribe = onSnapshot(
+            doc(db, "users", user.uid),
+            (snapshot) => {
+              if (currentGeneration !== generation) return;
+              const profile = snapshot.exists() ? (snapshot.data() as UserProfile) : null;
+              const planId = profile?.accessPlanId || (profile?.isPremium === true ? "premium" : "registered");
+              planUnsubscribe();
+              planUnsubscribe = onSnapshot(
+                doc(db, "accessPlans", planId),
+                (planSnapshot) => {
+                  if (currentGeneration !== generation) return;
+                  setState({
+                    user,
+                    loading: false,
+                    profile,
+                    accessPlan: planSnapshot.exists() ? { id: planSnapshot.id, ...(planSnapshot.data() as Omit<AccessPlan, "id">) } : (FALLBACK_PLANS[planId] ?? null),
+                    profileLoading: false,
+                    profileError: null,
+                  });
+                },
+                (error) => {
+                  if (currentGeneration !== generation) return;
+                  setState({ user, loading: false, profile, accessPlan: FALLBACK_PLANS[planId] ?? null, profileLoading: false, profileError: error.message });
+                },
+              );
+            },
+            (error) => {
+              if (currentGeneration !== generation) return;
+              setState({ user, loading: false, profile: null, accessPlan: null, profileLoading: false, profileError: error.message });
+            },
+          );
+        })
+        .catch((error: unknown) => {
+          if (currentGeneration !== generation) return;
+          const message = error instanceof Error ? error.message : "Profil indisponible";
+          setState({ user, loading: false, profile: null, accessPlan: null, profileLoading: false, profileError: message });
+        });
+    });
+
+    return () => {
+      generation += 1;
+      planUnsubscribe();
+      profileUnsubscribe();
+      authUnsubscribe();
+    };
   }, []);
+
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
 

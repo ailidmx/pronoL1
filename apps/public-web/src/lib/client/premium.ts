@@ -1,16 +1,24 @@
-/**
- * Temporary premium flag (client-side, localStorage) until auth/premium lands.
- * Replace isPremium() with a real auth/entitlement check later.
- * To test the premium experience: localStorage.setItem("prono:premium", "true").
- */
-import { storage } from "./storage";
+"use client";
 
-const KEY = "premium";
+import { useAuth } from "./auth";
 
-export function isPremium(): boolean {
-  return storage.get<boolean>(KEY, false);
-}
+export type PremiumState = {
+  isPremium: boolean;
+  adFree: boolean;
+  advancedStatistics: boolean;
+  loading: boolean;
+  error: string | null;
+};
 
-export function setPremium(value: boolean): void {
-  storage.set(KEY, value);
+export function usePremium(): PremiumState {
+  const { user, accessPlan, profileLoading, profileError } = useAuth();
+  const enabled = accessPlan?.enabled === true;
+  const features = accessPlan?.features ?? {};
+  return {
+    isPremium: Boolean(user && enabled && accessPlan?.isPaid === true),
+    adFree: Boolean(user && enabled && features.adFree === true),
+    advancedStatistics: Boolean(user && enabled && features.advancedStatistics === true),
+    loading: Boolean(user && profileLoading),
+    error: profileError,
+  };
 }

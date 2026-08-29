@@ -45,7 +45,6 @@ export const getProfile = onCall({ cors: true }, async (request) => {
     throw new HttpsError("internal", `Invalid default profile: ${invalid}`);
   }
   await ref.set(profile);
-  // Return a clean object (never the serverTimestamp() sentinels written above).
   return { id: uid, ...DEFAULT_USER_PROFILE, email: request.auth.token.email ?? null };
 });
 
@@ -58,4 +57,5 @@ export { getQuizCenter } from "./quizz.js";
 export { scoreFinishedMatches } from "./scoring.js";
 export { getPronosticsLeaderboard } from "./leaderboard.js";
 export { getPlayerMatchCenter } from "./player-match-center.js";
+export { getPremiumMatchStatistics } from "./premium-statistics.js";
 export { sendMatchAlerts } from "./push.js";

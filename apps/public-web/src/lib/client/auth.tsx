@@ -40,6 +40,11 @@ const INITIAL_STATE: AuthState = {
   profileError: null,
 };
 
+const FALLBACK_PLANS: Record<string, AccessPlan> = {
+  registered: { id: "registered", enabled: true, isPaid: false, analysisDailyLimit: 10, features: { favorites: true, history: true, matchAlerts: true, advancedStatistics: false, adFree: false } },
+  premium: { id: "premium", enabled: true, isPaid: true, analysisDailyLimit: null, features: { favorites: true, history: true, matchAlerts: true, advancedStatistics: true, adFree: true, pronoAdvantages: true } },
+};
+
 const AuthContext = createContext<AuthState>(INITIAL_STATE);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -83,14 +88,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     user,
                     loading: false,
                     profile,
-                    accessPlan: planSnapshot.exists() ? { id: planSnapshot.id, ...(planSnapshot.data() as Omit<AccessPlan, "id">) } : null,
+                    accessPlan: planSnapshot.exists() ? { id: planSnapshot.id, ...(planSnapshot.data() as Omit<AccessPlan, "id">) } : (FALLBACK_PLANS[planId] ?? null),
                     profileLoading: false,
                     profileError: null,
                   });
                 },
                 (error) => {
                   if (currentGeneration !== generation) return;
-                  setState({ user, loading: false, profile, accessPlan: null, profileLoading: false, profileError: error.message });
+                  setState({ user, loading: false, profile, accessPlan: FALLBACK_PLANS[planId] ?? null, profileLoading: false, profileError: error.message });
                 },
               );
             },

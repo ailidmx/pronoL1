@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase.js";
+import { getPronosticsLeaderboard } from "./callables.js";
 
 function Classement() {
   const [rows, setRows] = useState([]);
-  const [userNames, setUserNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -24,20 +24,9 @@ function Classement() {
           return;
         }
 
-        const [rowsSnap, usersSnap] = await Promise.all([
-          getDocs(collection(db, "leaderboardPronostics", seasonKey, "rows")),
-          getDocs(collection(db, "users")),
-        ]);
+        const leaderboard = await getPronosticsLeaderboard({ seasonId: seasonKey });
         if (!mounted) return;
-
-        const names = {};
-        usersSnap.forEach((d) => {
-          names[d.id] = d.data().displayName ?? d.data().email ?? d.id;
-        });
-
-        const raw = rowsSnap.docs.map((d) => ({ userId: d.id, ...d.data() }));
-        setUserNames(names);
-        setRows(rank(raw));
+        setRows(leaderboard.data.rows ?? []);
       } catch (err) {
         if (mounted) setError(err.message);
       } finally {
@@ -56,40 +45,34 @@ function Classement() {
 
   return (
     <section className="classement">
-      <h2>Classement joueurs</h2>
-      <table>
+      <div className="section-title-row"><div><p className="section-kicker">Tous les joueurs</p><h2>Podium des pronostiqueurs</h2></div></div>
+      <div className="podium">{rows.slice(0, 3).map((row) => <article key={row.userId} className={`podium-rank podium-rank-${row.rank}`}><span>{row.rank === 1 ? "🥇" : row.rank === 2 ? "🥈" : "🥉"}</span><strong>{row.displayName}</strong><b>{row.points} pts</b></article>)}</div>
+      <div className="table-scroll"><table>
         <thead>
           <tr>
             <th>#</th>
             <th>Joueur</th>
             <th>Pts</th>
+            <th>🎯</th>
+            <th>✅</th>
+            <th>↔️</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
             <tr key={r.userId}>
               <td>{r.rank}</td>
-              <td>{userNames[r.userId] ?? r.userId}</td>
+              <td>{r.displayName}</td>
               <td>{r.points}</td>
+              <td>{r.exact ?? 0}</td>
+              <td>{r.bonResultat ?? 0}</td>
+              <td>{r.bonusEcart ?? 0}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </section>
   );
-}
-
-// Shared rank on ties (1, 1, 3, 3, 5…).
-function rank(rows) {
-  const sorted = [...rows].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
-  let prev = null;
-  let prevRank = 0;
-  return sorted.map((r, i) => {
-    const rk = (r.points ?? 0) === prev ? prevRank : i + 1;
-    prev = r.points ?? 0;
-    prevRank = rk;
-    return { ...r, rank: rk };
-  });
 }
 
 export default Classement;

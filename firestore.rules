@@ -8,20 +8,20 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+        && (request.auth.token.admin == true
+          || (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true));
     }
 
     function isOwnUser(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    // A user may read/write their own profile, but may never self-grant admin.
+    // Profiles behave like a SQL-backed resource: the owner may read their
+    // row, while all mutations go through validated callable functions.
     match /users/{uid} {
       allow read: if isOwnUser(uid) || isAdmin();
-      allow create: if isOwnUser(uid) && request.resource.data.isAdmin != true;
-      allow update: if (isOwnUser(uid) && request.resource.data.isAdmin != true) || isAdmin();
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // Signed-in users can read the reference data; only admins can write.

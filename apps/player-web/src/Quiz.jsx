@@ -1,116 +1,43 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
-import { auth, db, saveQuizAnswer } from "./firebase.js";
+import { saveQuizAnswer } from "./firebase.js";
+import { getQuizCenter } from "./callables.js";
 
-function Quiz() {
-  const [week, setWeek] = useState(null);
-  const [questions, setQuestions] = useState([]);
-  const [optionsByQuestion, setOptionsByQuestion] = useState({});
-  const [myAnswers, setMyAnswers] = useState({});
+export default function Quiz() {
+  const [data, setData] = useState(null);
+  const [view, setView] = useState("current");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [savingId, setSavingId] = useState(null);
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const weeksSnap = await getDocs(query(collection(db, "quizWeeks"), where("statut", "==", "publie")));
-        const weeks = weeksSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        if (weeks.length === 0) {
-          if (mounted) { setWeek(null); setQuestions([]); }
-          return;
-        }
-        weeks.sort((a, b) => (b.dateLimite ?? "").localeCompare(a.dateLimite ?? ""));
-        const currentWeek = weeks[0];
-        currentWeek.closed = !!currentWeek.dateLimite && new Date(currentWeek.dateLimite).valueOf() <= Date.now();
-        if (mounted) setWeek(currentWeek);
+  async function load() {
+    try { const response = await getQuizCenter(); setData(response.data); }
+    catch (loadError) { setError(loadError.message); }
+    finally { setLoading(false); }
+  }
+  // oxlint-disable-next-line react/set-state-in-effect
+  useEffect(() => { load(); }, []); // oxlint-disable-line react-hooks/exhaustive-deps
 
-        const qSnap = await getDocs(collection(db, "quizWeeks", currentWeek.id, "questions"));
-        const qs = qSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => Number(a.ordre) - Number(b.ordre));
-        if (mounted) setQuestions(qs);
-
-        const uid = auth.currentUser?.uid;
-        const opts = {};
-        const ans = {};
-        for (const q of qs) {
-          const oSnap = await getDocs(collection(db, "quizWeeks", currentWeek.id, "questions", q.id, "options"));
-          opts[q.id] = oSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-          if (uid) {
-            const aSnap = await getDoc(doc(db, "quizWeeks", currentWeek.id, "questions", q.id, "answers", uid));
-            if (aSnap.exists()) ans[q.id] = aSnap.data().optionId;
-          }
-        }
-        if (mounted) { setOptionsByQuestion(opts); setMyAnswers(ans); }
-      } catch (err) {
-        if (mounted) setError(err.message);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  async function pick(q, optionId) {
-    setSavingId(q.id);
-    setError("");
-    try {
-      await saveQuizAnswer({ weekId: week.id, questionId: q.id, optionId });
-      setMyAnswers((prev) => ({ ...prev, [q.id]: optionId }));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSavingId(null);
-    }
+  async function pick(week, question, optionId) {
+    setSavingId(question.id); setError("");
+    try { await saveQuizAnswer({ weekId: week.id, questionId: question.id, optionId }); await load(); }
+    catch (saveError) { setError(saveError.message); }
+    finally { setSavingId(null); }
   }
 
-  if (loading) return <p>Chargement du quizz…</p>;
-  if (error && !week) return <p className="error">Erreur : {error}</p>;
-  if (!week) return <p>Aucun quizz publié pour le moment.</p>;
-
-  const closed = week.closed;
-
-  return (
-    <section className="quiz">
-      <h2>Quizz de la semaine</h2>
-      {week.journee != null && <p className="quiz-journee">Journée {week.journee}</p>}
-      <p className="quiz-meta">Date limite : {formatDate(week.dateLimite)}</p>
-      <ul className="quiz-list">
-        {questions.map((q) => (
-          <li key={q.id} className="quiz-question">
-            <p className="quiz-enonce">{q.enonce}</p>
-            <ul className="quiz-options">
-              {(optionsByQuestion[q.id] ?? []).map((o) => (
-                <li key={o.id}>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`q-${q.id}`}
-                      checked={myAnswers[q.id] === o.id}
-                      onChange={() => pick(q, o.id)}
-                      disabled={closed || savingId === q.id}
-                    />
-                    {o.texte}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-      {error && <p className="error">{error}</p>}
-    </section>
-  );
+  if (loading) return <p>Chargement du quiz…</p>;
+  const current = data?.current;
+  return <section className="quiz">
+    <div className="section-title-row"><div><p className="section-kicker">Questions football</p><h2>Quiz de la semaine</h2></div></div>
+    <div className="view-switcher"><button type="button" className={view === "current" ? "active" : ""} onClick={() => setView("current")}>Quiz actuel</button><button type="button" className={view === "history" ? "active" : ""} onClick={() => setView("history")}>Historique ({data?.history?.length ?? 0})</button></div>
+    {error ? <p className="error">{error}</p> : null}
+    {view === "current" ? current ? <QuizWeek week={current} savingId={savingId} onPick={pick} /> : <p className="empty-state">Aucun quiz publié pour le moment.</p> : <div className="quiz-history">{data?.history?.length ? data.history.map((week) => <QuizWeek key={week.id} week={week} readOnly />) : <p className="empty-state">Aucun historique disponible.</p>}</div>}
+  </section>;
 }
 
-function formatDate(value) {
-  if (!value) return "—";
-  const d = new Date(value);
-  if (Number.isNaN(d.valueOf())) return String(value);
-  return d.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" });
+function QuizWeek({ week, savingId, onPick, readOnly = false }) {
+  return <article className="quiz-week"><header><strong>{week.journey != null ? `Journée ${week.journey}` : "Quiz"}</strong><span>{week.closed ? `${week.points} point${week.points > 1 ? "s" : ""}` : `Limite : ${formatDate(week.deadline)}`}</span></header>
+    <ol className="quiz-list">{week.questions.map((question) => <li key={question.id} className="quiz-question"><p className="quiz-enonce">{question.wording}</p><div className="quiz-options">{question.options.map((option) => { const selected = question.answer?.optionId === option.id; return <button type="button" key={option.id} className={selected ? "selected" : ""} disabled={readOnly || week.closed || savingId === question.id} onClick={() => onPick?.(week, question, option.id)}><span>{option.text}</span>{selected ? <b>{question.answer?.points != null ? `+${question.answer.points}` : "✓"}</b> : null}</button>; })}</div></li>)}</ol>
+  </article>;
 }
 
-export default Quiz;
+function formatDate(value) { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.valueOf()) ? String(value) : date.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" }); }

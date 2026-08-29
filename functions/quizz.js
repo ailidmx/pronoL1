@@ -40,3 +40,31 @@ export const saveQuizAnswer = onCall({ cors: true }, async (request) => {
   );
   return { ok: true, questionId, optionId };
 });
+
+export const getQuizCenter = onCall({ cors: true }, async (request) => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "Authentication required.");
+  const db = getFirestore();
+  const weeksSnapshot = await db.collection(collections.quizWeeks).where("statut", "==", "publie").get();
+  const weeks = weeksSnapshot.docs.sort((a, b) => String(b.data().dateLimite ?? "").localeCompare(String(a.data().dateLimite ?? "")));
+  const result = [];
+  for (const weekDocument of weeks.slice(0, 12)) {
+    const week = weekDocument.data();
+    const questionsSnapshot = await weekDocument.ref.collection(subcollections.questions).get();
+    const questions = await Promise.all(questionsSnapshot.docs
+      .sort((a, b) => Number(a.data().ordre ?? 0) - Number(b.data().ordre ?? 0))
+      .map(async (questionDocument) => {
+        const [optionsSnapshot, answerSnapshot] = await Promise.all([
+          questionDocument.ref.collection(subcollections.options).get(),
+          questionDocument.ref.collection(subcollections.answers).doc(request.auth.uid).get(),
+        ]);
+        const answer = answerSnapshot.data() ?? null;
+        return { id: questionDocument.id, wording: questionDocument.data().enonce ?? "Question", order: questionDocument.data().ordre ?? 0,
+          options: optionsSnapshot.docs.map((option) => ({ id: option.id, text: option.data().texte ?? option.id })),
+          answer: answer ? { optionId: answer.optionId ?? null, points: answer.points ?? null, correct: answer.correct ?? null } : null };
+      }));
+    result.push({ id: weekDocument.id, journey: week.journee ?? null, deadline: week.dateLimite ?? null,
+      closed: Boolean(week.dateLimite && new Date(week.dateLimite).valueOf() <= Date.now()), questions,
+      points: questions.reduce((total, question) => total + (question.answer?.points ?? 0), 0) });
+  }
+  return { current: result.find((week) => !week.closed) ?? result[0] ?? null, history: result.filter((week) => week.closed) };
+});

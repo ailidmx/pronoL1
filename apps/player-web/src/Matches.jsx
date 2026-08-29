@@ -1,152 +1,119 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
-import { auth, db, savePronostic } from "./firebase.js";
-
-const UPCOMING_LIMIT = 10;
+import { useCallback, useEffect, useState } from "react";
+import { savePronostic } from "./firebase.js";
+import { getPlayerMatchCenter } from "./callables.js";
 
 function PronosticForm({ matchId, initial, onSaved }) {
-  const [dom, setDom] = useState(initial?.scoreDom ?? "");
-  const [ext, setExt] = useState(initial?.scoreExt ?? "");
+  const [home, setHome] = useState(initial?.homeScore ?? "");
+  const [away, setAway] = useState(initial?.awayScore ?? "");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [feedback, setFeedback] = useState("");
 
   async function submit() {
-    setError("");
-    const domVal = dom === "" ? null : Number(dom);
-    const extVal = ext === "" ? null : Number(ext);
-    const bothEmpty = domVal == null && extVal == null;
-    const bothSet = domVal != null && extVal != null;
-    if (!bothEmpty && !bothSet) {
-      setError("Rellena los dos marcadores o deja ambos vacíos.");
+    const homeScore = home === "" ? null : Number(home);
+    const awayScore = away === "" ? null : Number(away);
+    if ((homeScore == null) !== (awayScore == null)) {
+      setFeedback("Renseigne les deux scores, ou laisse les deux vides.");
       return;
     }
     setSaving(true);
+    setFeedback("");
     try {
-      const res = await savePronostic({ matchId, scoreDom: domVal, scoreExt: extVal });
-      onSaved(matchId, res.data.scoreDom, res.data.scoreExt);
-    } catch (err) {
-      setError(err.message);
+      const response = await savePronostic({ matchId, scoreDom: homeScore, scoreExt: awayScore });
+      onSaved(matchId, { homeScore: response.data.scoreDom, awayScore: response.data.scoreExt });
+      setFeedback("Pronostic enregistré ✓");
+    } catch (error) {
+      setFeedback(error.message);
     } finally {
       setSaving(false);
     }
   }
 
-  return (
-    <div className="prono-form">
-      <div className="prono-inputs">
-        <input
-          type="number"
-          min="0"
-          max="99"
-          value={dom}
-          onChange={(e) => setDom(e.target.value)}
-          placeholder="-"
-          aria-label="Goles local"
-        />
-        <span className="prono-sep">:</span>
-        <input
-          type="number"
-          min="0"
-          max="99"
-          value={ext}
-          onChange={(e) => setExt(e.target.value)}
-          placeholder="-"
-          aria-label="Goles visitante"
-        />
-      </div>
-      <button type="button" onClick={submit} disabled={saving}>
-        {saving ? "Guardando…" : "Guardar"}
-      </button>
-      {error && <p className="error">{error}</p>}
-    </div>
-  );
+  return <div className="prono-form">
+    <div className="prono-inputs"><input type="number" min="0" max="99" inputMode="numeric" value={home} onChange={(event) => setHome(event.target.value)} aria-label="Buts équipe à domicile" /><span className="prono-sep">:</span><input type="number" min="0" max="99" inputMode="numeric" value={away} onChange={(event) => setAway(event.target.value)} aria-label="Buts équipe à l’extérieur" /></div>
+    <button type="button" onClick={submit} disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer"}</button>
+    {feedback ? <small className="form-feedback">{feedback}</small> : null}
+  </div>;
 }
 
-function Matches() {
-  const [matches, setMatches] = useState([]);
-  const [clubNames, setClubNames] = useState({});
-  const [myPronostics, setMyPronostics] = useState({});
+function Club({ club, align = "left" }) {
+  return <span className={`match-club match-club-${align}`}>{club?.logoUrl ? <img src={club.logoUrl} alt="" /> : null}<strong>{club?.name ?? "Club"}</strong></span>;
+}
+
+function MatchCard({ match, clubs, onSaved }) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const home = clubs[match.homeClubId];
+  const away = clubs[match.awayClubId];
+  const finished = match.status === "termine";
+  return <article className={`match-card match-status-${match.status}`}>
+    <div className="match-card-meta"><span>{formatDate(match.date)}</span><span className="status-badge">{statusLabel(match.status)}</span></div>
+    <div className="match-scoreline"><Club club={home} align="right" /><strong className="match-score">{match.homeScore != null || match.awayScore != null ? `${match.homeScore ?? "–"} : ${match.awayScore ?? "–"}` : "– : –"}</strong><Club club={away} /></div>
+    {match.venue ? <p className="match-venue">{match.venue}{match.city ? ` · ${match.city}` : ""}</p> : null}
+    {match.status === "a_venir" ? <PronosticForm key={`${match.id}-${match.myPrediction?.homeScore}-${match.myPrediction?.awayScore}`} matchId={match.id} initial={match.myPrediction} onSaved={onSaved} /> : match.myPrediction ? <div className="my-result"><span>Mon prono <strong>{match.myPrediction.homeScore} : {match.myPrediction.awayScore}</strong></span>{finished && match.myPrediction.points != null ? <span className={`points points-${match.myPrediction.result ?? ""}`}>+{match.myPrediction.points} pt{match.myPrediction.points > 1 ? "s" : ""}</span> : null}</div> : <p className="no-prediction">Aucun pronostic enregistré</p>}
+    <div className="form-row"><FormDots values={match.form?.[match.homeClubId]} /><span>Forme</span><FormDots values={match.form?.[match.awayClubId]} /></div>
+    <button type="button" className="details-toggle" onClick={() => setDetailsOpen((open) => !open)}>{detailsOpen ? "Masquer la fiche" : "Ouvrir la fiche du match"}</button>
+    {detailsOpen ? <MatchDetails match={match} clubs={clubs} /> : null}
+    {match.predictionsVisible ? <Predictions predictions={match.predictions} /> : null}
+  </article>;
+}
+
+function FormDots({ values = [] }) { return <span className="form-dots">{values.length ? values.map((value, index) => <i key={`${value}-${index}`} className={`form-${value.toLowerCase()}`}>{value}</i>) : <small>—</small>}</span>; }
+
+function Predictions({ predictions }) { return <details className="predictions"><summary>Pronostics des joueurs ({predictions.length})</summary><div className="predictions-grid">{predictions.length ? predictions.map((prediction) => <div key={prediction.userId}><span>{prediction.displayName}</span><strong>{prediction.homeScore} : {prediction.awayScore}</strong>{prediction.points != null ? <small>{prediction.points} pt{prediction.points > 1 ? "s" : ""}</small> : null}</div>) : <p>Aucun pronostic pour ce match.</p>}</div></details>; }
+
+function MatchDetails({ match, clubs }) {
+  const homeStats = match.statistics?.find((item) => String(item.teamId) === match.homeClubId)?.values ?? {};
+  const awayStats = match.statistics?.find((item) => String(item.teamId) === match.awayClubId)?.values ?? {};
+  const statNames = [...new Set([...Object.keys(homeStats), ...Object.keys(awayStats)])];
+  return <div className="match-details">
+    {match.referee ? <p className="match-official">Arbitre : {match.referee}</p> : null}
+    {match.headToHead?.length ? <section><h3>Confrontations directes</h3>{match.headToHead.map((item) => <div className="h2h-row" key={item.id}><small>{formatDate(item.date)}</small><span>{clubs[item.homeClubId]?.name}</span><strong>{item.homeScore} : {item.awayScore}</strong><span>{clubs[item.awayClubId]?.name}</span></div>)}</section> : null}
+    {match.events?.length ? <section><h3>Faits de jeu</h3><ol className="timeline">{match.events.map((event, index) => <li key={`${event.minute}-${index}`}><time>{event.minute ?? "?"}{event.extraMinute ? `+${event.extraMinute}` : ""}&apos;</time><span>{event.type === "Goal" ? "⚽" : event.type === "Card" ? "🟨" : "↔️"} {event.player ?? event.detail}{event.assist ? ` (${event.assist})` : ""}</span></li>)}</ol></section> : null}
+    {match.lineups?.length ? <section><h3>Compositions</h3><div className="lineups">{match.lineups.map((lineup) => <article key={lineup.teamId}><h4>{clubs[String(lineup.teamId)]?.name} · {lineup.formation ?? "Formation NC"}</h4>{lineup.coach ? <small>Coach : {lineup.coach}</small> : null}<ol>{lineup.starters?.map((player) => <li key={player.id ?? player.name}><b>{player.number ?? "–"}</b> {player.name}</li>)}</ol><details><summary>Remplaçants ({lineup.substitutes?.length ?? 0})</summary><ul>{lineup.substitutes?.map((player) => <li key={player.id ?? player.name}>{player.number ?? "–"} · {player.name}</li>)}</ul></details></article>)}</div></section> : null}
+    {statNames.length ? <section><h3>Statistiques</h3><div className="stats-grid">{statNames.map((name) => <div key={name}><strong>{homeStats[name] ?? "–"}</strong><span>{name}</span><strong>{awayStats[name] ?? "–"}</strong></div>)}</div></section> : null}
+    {!match.headToHead?.length && !match.events?.length && !match.lineups?.length && !statNames.length ? <p className="empty-detail">Les données détaillées seront disponibles dès leur publication.</p> : null}
+  </div>;
+}
+
+export default function Matches({ mode = "journey" }) {
+  const [data, setData] = useState(null);
+  const [journey, setJourney] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const clubsSnap = await getDocs(collection(db, "clubs"));
-        const names = {};
-        clubsSnap.forEach((d) => {
-          names[d.id] = d.data().nom ?? d.id;
-        });
-
-        const matchesSnap = await getDocs(
-          query(collection(db, "matches"), where("statut", "==", "a_venir")),
-        );
-        const upcoming = matchesSnap.docs
-          .map((d) => ({ id: d.id, ...d.data() }))
-          .sort((a, b) => (a.date ?? "").localeCompare(b.date ?? ""))
-          .slice(0, UPCOMING_LIMIT);
-
-        const uid = auth.currentUser?.uid;
-        const pronos = {};
-        if (uid) {
-          for (const m of upcoming) {
-            const p = await getDoc(doc(db, "matches", m.id, "pronostics", uid));
-            if (p.exists()) {
-              pronos[m.id] = { scoreDom: p.data().scoreDom, scoreExt: p.data().scoreExt };
-            }
-          }
-        }
-
-        if (!mounted) return;
-        setClubNames(names);
-        setMatches(upcoming);
-        setMyPronostics(pronos);
-      } catch (err) {
-        if (mounted) setError(err.message);
-      } finally {
-        if (mounted) setLoading(false);
-      }
+  const load = useCallback(async (nextJourney = journey) => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await getPlayerMatchCenter({ seasonId: 2026, scope: mode, journey: nextJourney });
+      setData(response.data);
+      setJourney(response.data.selectedJourney);
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
     }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  }, [journey, mode]);
 
-  function handleSaved(matchId, scoreDom, scoreExt) {
-    setMyPronostics((p) => ({ ...p, [matchId]: { scoreDom, scoreExt } }));
+  useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
+    load(null);
+  }, [mode]); // oxlint-disable-line react-hooks/exhaustive-deps
+
+  function handleSaved(matchId, prediction) {
+    setData((current) => ({ ...current, matches: current.matches.map((match) => match.id === matchId ? { ...match, myPrediction: prediction } : match) }));
   }
 
-  if (loading) return <p>Chargement des matchs…</p>;
-  if (error) return <p className="error">Erreur : {error}</p>;
-  if (matches.length === 0) return <p>Aucun match à venir pour le moment.</p>;
-
-  return (
-    <section className="matches">
-      <h2>Prochains matchs</h2>
-      <ul className="match-list">
-        {matches.map((m) => (
-          <li key={m.id} className="match-card">
-            <div className="match-teams">
-              <span className="team">{clubNames[m.clubDomId] ?? m.clubDomId}</span>
-              <span className="vs">vs</span>
-              <span className="team">{clubNames[m.clubExtId] ?? m.clubExtId}</span>
-            </div>
-            <div className="match-date">{formatDate(m.date)}</div>
-            <PronosticForm matchId={m.id} initial={myPronostics[m.id]} onSaved={handleSaved} />
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
+  if (loading && !data) return <div className="app-loading">Chargement des matchs…</div>;
+  if (error && !data) return <p className="error">Erreur : {error}</p>;
+  const journeys = data?.journeys ?? [];
+  const index = journeys.indexOf(journey);
+  return <section className="matches">
+    <div className="section-title-row"><div><p className="section-kicker">{mode === "history" ? "Mes résultats" : "Saison 2026-2027"}</p><h2>{mode === "history" ? "Historique de mes pronostics" : `Journée ${journey ?? "–"}`}</h2></div>{loading ? <span className="refreshing">Actualisation…</span> : null}</div>
+    {mode === "journey" ? <div className="journey-nav"><button type="button" onClick={() => load(journeys[0])} disabled={index <= 0} aria-label="Première journée">⏮</button><button type="button" onClick={() => load(journeys[index - 1])} disabled={index <= 0} aria-label="Journée précédente">◀</button><select value={journey ?? ""} onChange={(event) => load(Number(event.target.value))} aria-label="Choisir une journée">{journeys.map((number) => <option key={number} value={number}>Journée {number}</option>)}</select><button type="button" onClick={() => load(journeys[index + 1])} disabled={index < 0 || index >= journeys.length - 1} aria-label="Journée suivante">▶</button><button type="button" onClick={() => load(journeys.at(-1))} disabled={index < 0 || index >= journeys.length - 1} aria-label="Dernière journée">⏭</button></div> : null}
+    {error ? <p className="error">{error}</p> : null}
+    <div className="match-list">{data?.matches?.length ? data.matches.map((match) => <MatchCard key={match.id} match={match} clubs={data.clubs} onSaved={handleSaved} />) : <p className="empty-state">Aucun match à afficher.</p>}</div>
+  </section>;
 }
 
-function formatDate(value) {
-  if (!value) return "";
-  const d = new Date(value);
-  if (Number.isNaN(d.valueOf())) return String(value);
-  return d.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
-}
-
-export default Matches;
+function statusLabel(status) { return { a_venir: "À venir", en_cours: "En direct", termine: "Terminé", reporte: "Reporté" }[status] ?? status; }
+function formatDate(value) { if (!value) return "Date à confirmer"; const date = new Date(value); return Number.isNaN(date.valueOf()) ? String(value) : date.toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }); }

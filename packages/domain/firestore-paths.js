@@ -18,6 +18,8 @@ export const collections = {
   leaderboardQuiz: "leaderboardQuiz",
   quizWeeks: "quizWeeks",
   bonus: "bonus",
+  communities: "communities",
+  communityMemberships: "communityMemberships",
   pushSubscriptions: "pushSubscriptions",
   pushRappels: "pushRappels",
   annonces: "annonces",
@@ -31,6 +33,7 @@ export const subcollections = {
   questions: "questions",
   answers: "answers",
   options: "options",
+  members: "members",
 };
 
 export const paths = {
@@ -42,6 +45,11 @@ export const paths = {
   match: (matchId) => `${collections.matches}/${matchId}`,
   pronostic: (matchId, userId) =>
     `${collections.matches}/${matchId}/${subcollections.pronostics}/${userId}`,
+  community: (communityId) => `${collections.communities}/${communityId}`,
+  communityMember: (communityId, userId) =>
+    `${collections.communities}/${communityId}/${subcollections.members}/${userId}`,
+  communityMembership: (communityId, userId) =>
+    `${collections.communityMemberships}/${communityId}_${userId}`,
   quizWeek: (weekId) => `${collections.quizWeeks}/${weekId}`,
   quizQuestion: (weekId, questionId) =>
     `${collections.quizWeeks}/${weekId}/${subcollections.questions}/${questionId}`,

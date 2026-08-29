@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { isPremium } from "@/lib/client/premium";
+import { usePremium } from "@/lib/client/premium";
 
 type AdSlotProps = {
   name: string;
@@ -11,10 +10,7 @@ type AdSlotProps = {
 
 // "Sans publicité" premium benefit: hides the slot for premium users.
 export function AdSlot({ name, format = "in-feed", className = "" }: AdSlotProps) {
-  const [premium, setPremium] = useState(false);
-  useEffect(() => {
-    setPremium(isPremium());
-  }, []);
+  const premium = usePremium();
   if (premium) return null;
   return (
     <aside

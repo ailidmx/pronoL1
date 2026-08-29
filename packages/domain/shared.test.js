@@ -69,6 +69,7 @@ test("user profile validation", () => {
     equipeCoeurId: null,
     isAdmin: false,
     isAllowed: false,
+    isPremium: false,
     notifEmail: true,
     notifPush: false,
     notifTelegram: false,
@@ -78,11 +79,13 @@ test("user profile validation", () => {
   assert.equal(validateUserProfile({ ...valid, email: "" }), "email");
   assert.equal(validateUserProfile({ ...valid, isAdmin: "yes" }), "isAdmin");
   assert.equal(validateUserProfile({ ...valid, isAllowed: "yes" }), "isAllowed");
+  assert.equal(validateUserProfile({ ...valid, isPremium: "yes" }), "isPremium");
 });
 
 test("default user profile is safe", () => {
   assert.equal(DEFAULT_USER_PROFILE.isAdmin, false);
   assert.equal(DEFAULT_USER_PROFILE.isAllowed, false);
+  assert.equal(DEFAULT_USER_PROFILE.isPremium, false);
   assert.equal(DEFAULT_USER_PROFILE.notifEmail, true);
 });
 

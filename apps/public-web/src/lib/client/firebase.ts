@@ -13,7 +13,12 @@ const firebaseConfig = {
   messagingSenderId: "224479040937",
 };
 
+import { getFunctions, httpsCallable } from "firebase/functions";
+
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const functions = getFunctions(app);
+
+export const getProfile = httpsCallable(functions, "getProfile");

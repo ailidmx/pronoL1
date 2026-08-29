@@ -9,8 +9,8 @@ type AdSlotProps = {
 };
 
 export function AdSlot({ name, format = "in-feed", className = "" }: AdSlotProps) {
-  const { isPremium, loading } = usePremium();
-  if (loading || isPremium) return null;
+  const { adFree, loading } = usePremium();
+  if (loading || adFree) return null;
   return (
     <aside
       className={`ad-slot ad-slot-${format} ${className}`.trim()}

@@ -8,10 +8,9 @@ type AdSlotProps = {
   className?: string;
 };
 
-// "Sans publicité" premium benefit: hides the slot for premium users.
 export function AdSlot({ name, format = "in-feed", className = "" }: AdSlotProps) {
-  const premium = usePremium();
-  if (premium) return null;
+  const { isPremium, loading } = usePremium();
+  if (loading || isPremium) return null;
   return (
     <aside
       className={`ad-slot ad-slot-${format} ${className}`.trim()}
@@ -25,7 +24,6 @@ export function AdSlot({ name, format = "in-feed", className = "" }: AdSlotProps
   );
 }
 
-/** Desktop-only inventory outside the reading column. Hidden before 1480px. */
 export function DesktopAdRail({ name }: { name: string }) {
   return (
     <div className="desktop-ad-rail" aria-hidden="true">

@@ -7,8 +7,16 @@ export const ENTITLEMENT_FEATURES = [
   { key: "history", label: "Historique" },
   { key: "matchAlerts", label: "Alertes matchs" },
   { key: "advancedStatistics", label: "Statistiques avancées" },
+  { key: "officialOdds", label: "Cotes officielles" },
+  { key: "communityOdds", label: "Cotes de la communauté" },
+  { key: "communities", label: "Communautés de pronostics" },
   { key: "adFree", label: "Sans publicité" },
   { key: "pronoAdvantages", label: "Avantages Prono L1" },
+];
+
+export const ENTITLEMENT_LIMITS = [
+  { key: "maxCommunities", label: "Communautés maximum" },
+  { key: "maxCompetitions", label: "Compétitions maximum" },
 ];
 
 export const DEFAULT_ACCESS_PLAN_ID = "registered";
@@ -22,6 +30,10 @@ export const DEFAULT_ACCESS_PLANS = [
     isPaid: false,
     sortOrder: 10,
     analysisDailyLimit: 5,
+    limits: {
+      maxCommunities: 0,
+      maxCompetitions: 0,
+    },
     features: {
       scores: true,
       calendar: true,
@@ -31,6 +43,9 @@ export const DEFAULT_ACCESS_PLANS = [
       history: false,
       matchAlerts: false,
       advancedStatistics: false,
+      officialOdds: false,
+      communityOdds: false,
+      communities: false,
       adFree: false,
       pronoAdvantages: false,
     },
@@ -43,6 +58,10 @@ export const DEFAULT_ACCESS_PLANS = [
     isPaid: false,
     sortOrder: 20,
     analysisDailyLimit: 10,
+    limits: {
+      maxCommunities: 1,
+      maxCompetitions: 1,
+    },
     features: {
       scores: true,
       calendar: true,
@@ -52,6 +71,9 @@ export const DEFAULT_ACCESS_PLANS = [
       history: true,
       matchAlerts: true,
       advancedStatistics: false,
+      officialOdds: false,
+      communityOdds: false,
+      communities: true,
       adFree: false,
       pronoAdvantages: false,
     },
@@ -64,6 +86,10 @@ export const DEFAULT_ACCESS_PLANS = [
     isPaid: true,
     sortOrder: 30,
     analysisDailyLimit: null,
+    limits: {
+      maxCommunities: null,
+      maxCompetitions: null,
+    },
     features: {
       scores: true,
       calendar: true,
@@ -73,6 +99,9 @@ export const DEFAULT_ACCESS_PLANS = [
       history: true,
       matchAlerts: true,
       advancedStatistics: true,
+      officialOdds: true,
+      communityOdds: true,
+      communities: true,
       adFree: true,
       pronoAdvantages: true,
     },
@@ -121,4 +150,17 @@ export function resolveProfileAccessPlanId(profile) {
 
 export function hasEntitlementFeature(plan, featureKey) {
   return plan?.enabled === true && plan?.features?.[featureKey] === true;
+}
+
+export function getEntitlementLimit(plan, limitKey) {
+  if (plan?.enabled !== true) return 0;
+  const value = plan?.limits?.[limitKey];
+  if (value === null) return null;
+  return Number.isInteger(value) && value >= 0 ? value : 0;
+}
+
+export function isWithinEntitlementLimit(plan, limitKey, currentCount, increment = 1) {
+  const limit = getEntitlementLimit(plan, limitKey);
+  if (limit === null) return true;
+  return Math.max(0, Number(currentCount) || 0) + Math.max(0, Number(increment) || 0) <= limit;
 }

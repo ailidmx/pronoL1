@@ -57,6 +57,9 @@ jobs:
             "/firebase sync-secret posthog")
               echo "action=sync-posthog" >> "$GITHUB_OUTPUT"
               ;;
+            "/firebase promote-single-user admin")
+              echo "action=promote-single-user-admin" >> "$GITHUB_OUTPUT"
+              ;;
             *)
               echo "Unsupported Firebase control-plane command." >&2
               exit 64
@@ -70,6 +73,40 @@ jobs:
           set -euo pipefail
           firebase projects:list --json
           firebase functions:list --project "$FIREBASE_PROJECT_ID"
+
+      - name: Promote the only Firestore user to admin
+        if: steps.route.outputs.action == 'promote-single-user-admin'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          node --input-type=module <<'NODE'
+          import { initializeApp } from 'firebase-admin/app';
+          import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+
+          initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID });
+          const db = getFirestore();
+          const snapshot = await db.collection('users').limit(2).get();
+
+          if (snapshot.size !== 1) {
+            throw new Error(`Expected exactly one Firestore user document, found ${snapshot.size}. Refusing to guess.`);
+          }
+
+          const ref = snapshot.docs[0].ref;
+          await ref.set({
+            isAdmin: true,
+            isAllowed: true,
+            adminUpdatedAt: FieldValue.serverTimestamp(),
+          }, { merge: true });
+
+          const verified = await ref.get();
+          const data = verified.data() ?? {};
+          if (data.isAdmin !== true || data.isAllowed !== true) {
+            throw new Error('Admin promotion verification failed.');
+          }
+
+          console.log(`Promoted Firestore user document ${ref.id} to admin and allowed access.`);
+          NODE
 
       - name: Build and deploy backend
         if: steps.route.outputs.action == 'deploy-backend'

@@ -21,6 +21,9 @@ export const collections = {
   pushSubscriptions: "pushSubscriptions",
   pushRappels: "pushRappels",
   annonces: "annonces",
+  communities: "communities",
+  communityMemberships: "communityMemberships",
+  communityInvites: "communityInvites",
 };
 
 export const subcollections = {
@@ -47,4 +50,7 @@ export const paths = {
     `${collections.quizWeeks}/${weekId}/${subcollections.questions}/${questionId}`,
   pushSubscription: (userId, hash) => `${collections.pushSubscriptions}/${userId}_${hash}`,
   pushRappel: (userId, matchId) => `${collections.pushRappels}/${userId}_${matchId}`,
+  community: (communityId) => `${collections.communities}/${communityId}`,
+  communityMembership: (communityId, userId) => `${collections.communityMemberships}/${communityId}_${userId}`,
+  communityInvite: (code) => `${collections.communityInvites}/${code}`,
 };

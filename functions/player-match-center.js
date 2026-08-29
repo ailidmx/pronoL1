@@ -1,8 +1,10 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore } from "firebase-admin/firestore";
 import { collections, subcollections } from "@prono-l1/domain";
+import { canUseFeature, loadRequestAccess } from "./access.js";
 
 const db = getFirestore();
+const COMMUNITY_ODDS_MIN_SAMPLE = 5;
 
 function cleanMatch(document) {
   const data = document.data();
@@ -46,15 +48,49 @@ function cleanPrediction(document) {
   };
 }
 
+function cleanOfficialOdds(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const home = Number(value.coteDomApi);
+  const draw = Number(value.coteNulApi);
+  const away = Number(value.coteExtApi);
+  if (![home, draw, away].some(Number.isFinite)) return null;
+  return {
+    home: Number.isFinite(home) ? home : null,
+    draw: Number.isFinite(draw) ? draw : null,
+    away: Number.isFinite(away) ? away : null,
+    frozenAt: value.figeeLe ?? null,
+  };
+}
+
+function communityOdds(predictions = []) {
+  const usable = predictions.filter((prediction) => Number.isInteger(prediction.homeScore) && Number.isInteger(prediction.awayScore));
+  const sampleSize = usable.length;
+  if (sampleSize < COMMUNITY_ODDS_MIN_SAMPLE) {
+    return { sufficient: false, sampleSize, threshold: COMMUNITY_ODDS_MIN_SAMPLE, home: null, draw: null, away: null };
+  }
+  const counts = usable.reduce((result, prediction) => {
+    const key = prediction.homeScore === prediction.awayScore ? "draw" : prediction.homeScore > prediction.awayScore ? "home" : "away";
+    result[key] += 1;
+    return result;
+  }, { home: 0, draw: 0, away: 0 });
+  const asOdd = (count) => count > 0 ? Math.round((sampleSize / count) * 100) / 100 : null;
+  return { sufficient: true, sampleSize, threshold: COMMUNITY_ODDS_MIN_SAMPLE, home: asOdd(counts.home), draw: asOdd(counts.draw), away: asOdd(counts.away) };
+}
+
 export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Authentication required.");
-  const uid = request.auth.uid;
+  const access = await loadRequestAccess(db, request);
+  const uid = access.uid;
   const seasonId = Number(request.data?.seasonId);
   const scope = request.data?.scope === "history" ? "history" : "journey";
   const requestedJourney = Number(request.data?.journey);
   if (!Number.isInteger(seasonId) || seasonId < 2000 || seasonId > 2100) {
     throw new HttpsError("invalid-argument", "Invalid seasonId.");
   }
+  const oddsAccess = {
+    official: canUseFeature(access, "officialOdds"),
+    community: canUseFeature(access, "communityOdds"),
+  };
 
   const snapshot = await db.collection(collections.matches).where("seasonId", "==", seasonId).get();
   const allMatchDocs = snapshot.docs.sort((a, b) => String(a.data().date ?? "").localeCompare(String(b.data().date ?? "")));
@@ -77,11 +113,15 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
     ? candidateDocs.filter((match) => ownByMatch.has(match.id)).sort((a, b) => String(b.data().date ?? "").localeCompare(String(a.data().date ?? "")))
     : candidateDocs;
 
+  const allPredictions = new Map();
   const publicPredictions = new Map();
   await Promise.all(visibleDocs.map(async (match) => {
-    if (scope === "history" || match.data().statut === "a_venir") return;
+    const finishedAndVisible = scope !== "history" && match.data().statut !== "a_venir";
+    if (!finishedAndVisible && !oddsAccess.community) return;
     const predictions = await match.ref.collection(subcollections.pronostics).get();
-    publicPredictions.set(match.id, predictions.docs.map(cleanPrediction));
+    const cleaned = predictions.docs.map(cleanPrediction);
+    allPredictions.set(match.id, cleaned);
+    if (finishedAndVisible) publicPredictions.set(match.id, cleaned);
   }));
 
   const clubIds = [...new Set(visibleDocs.flatMap((match) => [String(match.data().clubDomId ?? ""), String(match.data().clubExtId ?? "")]).filter(Boolean))];
@@ -98,6 +138,8 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
     journeys,
     selectedJourney,
     clubs,
+    oddsAccess,
+    accessPlanId: access.planId,
     matches: visibleDocs.map((document) => ({
       ...cleanMatch(document),
       form: Object.fromEntries([String(document.data().clubDomId), String(document.data().clubExtId)].map((clubId) => [clubId, allMatchDocs
@@ -111,6 +153,10 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
       myPrediction: ownByMatch.get(document.id) ?? null,
       predictionsVisible: scope === "journey" && document.data().statut !== "a_venir",
       predictions: (publicPredictions.get(document.id) ?? []).map((prediction) => ({ ...prediction, displayName: playerNames.get(prediction.userId) ?? "Joueur" })),
+      odds: {
+        official: oddsAccess.official ? cleanOfficialOdds(document.data().odds) : null,
+        community: oddsAccess.community ? communityOdds(allPredictions.get(document.id) ?? []) : null,
+      },
     })),
   };
 });

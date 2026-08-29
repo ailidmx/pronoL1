@@ -4,6 +4,7 @@ import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { auth, getProfile, provider } from "./firebase.js";
 import UsersPanel from "./UsersPanel.jsx";
 import EntitlementsPanel from "./EntitlementsPanel.jsx";
+import ExperimentsPanel from "./ExperimentsPanel.jsx";
 import styles from "./App.module.scss";
 
 function Dashboard() { return <section><h2>Tableau de bord</h2><p>Le socle Admin est prêt pour le portage progressif des opérations legacy.</p></section>; }
@@ -24,10 +25,11 @@ export default function App() {
     ["Tableau de bord", "/"],
     ["Utilisateurs", "/utilisateurs"],
     ["Accès & tarifs", "/acces-tarifs"],
+    ["Expériences", "/experiences"],
     ["Quiz et bonus", "/quiz-et-bonus"],
     ["Données football", "/donnees-football"],
     ["Opérations", "/operations"],
   ];
 
-  return <div className={styles.shell}><aside><h1>Prono-L1 Admin</h1><nav>{links.map(([label, to]) => <NavLink key={to} to={to}>{label}</NavLink>)}</nav><button onClick={() => signOut(auth)}>Déconnexion</button></aside><main><Routes><Route path="/" element={<Dashboard/>}/><Route path="/utilisateurs" element={<UsersPanel/>}/><Route path="/acces-tarifs" element={<EntitlementsPanel/>}/><Route path="/quiz-et-bonus" element={<Placeholder title="Quiz et bonus"/>}/><Route path="/donnees-football" element={<Placeholder title="Données football"/>}/><Route path="/operations" element={<Placeholder title="Opérations"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main></div>;
+  return <div className={styles.shell}><aside><h1>Prono-L1 Admin</h1><nav>{links.map(([label, to]) => <NavLink key={to} to={to}>{label}</NavLink>)}</nav><button onClick={() => signOut(auth)}>Déconnexion</button></aside><main><Routes><Route path="/" element={<Dashboard/>}/><Route path="/utilisateurs" element={<UsersPanel/>}/><Route path="/acces-tarifs" element={<EntitlementsPanel/>}/><Route path="/experiences" element={<ExperimentsPanel/>}/><Route path="/quiz-et-bonus" element={<Placeholder title="Quiz et bonus"/>}/><Route path="/donnees-football" element={<Placeholder title="Données football"/>}/><Route path="/operations" element={<Placeholder title="Opérations"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main></div>;
 }

@@ -9,7 +9,7 @@ import { StatRows, type StatValues } from "./match-statistics";
 type PremiumStats = { home: StatValues; away: StatValues };
 
 export function AdvancedStatistics({ matchId }: { matchId: string }) {
-  const { isPremium, loading: entitlementLoading } = usePremium();
+  const { advancedStatistics, loading: entitlementLoading } = usePremium();
   const [stats, setStats] = useState<PremiumStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -17,7 +17,7 @@ export function AdvancedStatistics({ matchId }: { matchId: string }) {
   useEffect(() => {
     let cancelled = false;
 
-    if (!isPremium) {
+    if (!advancedStatistics) {
       setStats(null);
       setLoading(false);
       setError(false);
@@ -44,23 +44,23 @@ export function AdvancedStatistics({ matchId }: { matchId: string }) {
       });
 
     return () => { cancelled = true; };
-  }, [isPremium, matchId]);
+  }, [advancedStatistics, matchId]);
 
   if (entitlementLoading) {
     return (
       <section className="data-panel premium-gate" id="statistiques-avancees">
         <div className="section-heading"><div><p className="eyebrow">Premium</p><h2>Statistiques avancées</h2></div></div>
-        <p>Vérification de votre accès Premium…</p>
+        <p>Vérification de votre accès…</p>
       </section>
     );
   }
 
-  if (!isPremium) {
+  if (!advancedStatistics) {
     return (
       <section className="data-panel premium-gate" id="statistiques-avancees">
         <div className="section-heading"><div><p className="eyebrow">Premium</p><h2>Statistiques avancées</h2></div></div>
         <p>Buts attendus (xG), tirs détaillés, précision des passes et plus encore.</p>
-        <a href="/#offres">Débloquer avec Premium</a>
+        <a href="/#offres">Débloquer cette fonctionnalité</a>
       </section>
     );
   }
@@ -69,7 +69,7 @@ export function AdvancedStatistics({ matchId }: { matchId: string }) {
     return (
       <section className="data-panel" id="statistiques-avancees">
         <div className="section-heading"><div><p className="eyebrow">Premium</p><h2>Statistiques avancées</h2></div></div>
-        <p>Chargement des statistiques Premium…</p>
+        <p>Chargement des statistiques avancées…</p>
       </section>
     );
   }
@@ -78,7 +78,7 @@ export function AdvancedStatistics({ matchId }: { matchId: string }) {
     return (
       <section className="data-panel" id="statistiques-avancees">
         <div className="section-heading"><div><p className="eyebrow">Premium</p><h2>Statistiques avancées</h2></div></div>
-        <p>Impossible de charger les statistiques Premium pour le moment.</p>
+        <p>Impossible de charger les statistiques avancées pour le moment.</p>
       </section>
     );
   }

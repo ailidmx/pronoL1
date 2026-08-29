@@ -11,6 +11,7 @@ import { AuthButton } from "@/components/auth/auth-button";
 import { CompetitionSelector } from "@/components/navigation/competition-selector";
 import { PublicNav } from "@/components/navigation/public-nav";
 import "./global.scss";
+import "./navigation.scss";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,

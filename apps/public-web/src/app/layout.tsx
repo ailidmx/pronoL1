@@ -43,13 +43,17 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <GoogleTags />
         <header className="site-header">
           <div className="header-primary">
-            <a href="/" className="brand">{siteConfig.name}</a>
-            <CompetitionSelector />
+            <div className="header-branding">
+              <a href="/" className="brand">{siteConfig.name}</a>
+              <CompetitionSelector />
+            </div>
+            <div className="header-account">
+              <InstallApp />
+              <AuthButton />
+            </div>
           </div>
           <nav className="header-nav" aria-label="Navigation principale">
             <PublicNav />
-            <AuthButton />
-            <InstallApp />
           </nav>
         </header>
         <main>{children}</main>

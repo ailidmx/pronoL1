@@ -11,8 +11,6 @@ import {
 } from "@prono-l1/domain";
 import { accessLimit, canUseFeature, loadRequestAccess } from "./access.js";
 
-const db = getFirestore();
-
 function membershipId(communityId, uid) {
   return `${communityId}_${uid}`;
 }
@@ -36,6 +34,7 @@ function enforceLimits(access, memberships, competitionIds, extraCommunities = 1
 }
 
 export const getCommunities = onCall({ cors: true }, async (request) => {
+  const db = getFirestore();
   const access = await loadRequestAccess(db, request);
   if (!canUseFeature(access, "communities")) throw new HttpsError("permission-denied", "Communities entitlement required.");
   const memberships = await db.collection(collections.communityMemberships).where("userId", "==", access.uid).get();
@@ -69,6 +68,7 @@ export const getCommunities = onCall({ cors: true }, async (request) => {
 });
 
 export const createCommunity = onCall({ cors: true }, async (request) => {
+  const db = getFirestore();
   const access = await loadRequestAccess(db, request);
   if (!canUseFeature(access, "communities")) throw new HttpsError("permission-denied", "Communities entitlement required.");
   const name = normalizeCommunityName(request.data?.name);
@@ -116,6 +116,7 @@ export const createCommunity = onCall({ cors: true }, async (request) => {
 });
 
 export const joinCommunity = onCall({ cors: true }, async (request) => {
+  const db = getFirestore();
   const access = await loadRequestAccess(db, request);
   if (!canUseFeature(access, "communities")) throw new HttpsError("permission-denied", "Communities entitlement required.");
   const code = normalizeInviteCode(request.data?.code);
@@ -154,6 +155,7 @@ export const joinCommunity = onCall({ cors: true }, async (request) => {
 });
 
 export const leaveCommunity = onCall({ cors: true }, async (request) => {
+  const db = getFirestore();
   const access = await loadRequestAccess(db, request);
   const communityId = typeof request.data?.communityId === "string" ? request.data.communityId.trim() : "";
   if (!communityId) throw new HttpsError("invalid-argument", "communityId is required.");

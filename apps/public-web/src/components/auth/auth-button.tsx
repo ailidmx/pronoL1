@@ -60,6 +60,8 @@ export function AuthButton() {
             {user.email ? <span>{user.email}</span> : null}
           </div>
           <a href="/pronostics" role="menuitem" onClick={() => setOpen(false)}>Mes pronostics</a>
+          <a href="/favoris" role="menuitem" onClick={() => setOpen(false)}>Favoris</a>
+          <a href="/historique" role="menuitem" onClick={() => setOpen(false)}>Historique</a>
           <div className="account-apps" aria-label="Applications">
             <span>Applications</span>
             <InstallApp variant="menu" />

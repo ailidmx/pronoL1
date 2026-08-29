@@ -2,6 +2,7 @@ import { AdSlot } from "@/components/ads/ad-slot";
 import { DataFreshness } from "@/components/football/data-freshness";
 import { MatchList } from "@/components/football/match-list";
 import { StandingsTable } from "@/components/football/standings-table";
+import { HeroTitleRotator } from "@/components/hero/hero-title-rotator";
 import { competitions } from "@/config/competitions";
 import { siteConfig } from "@/config/site";
 import { publicContent } from "@/content/public-content";
@@ -23,6 +24,8 @@ const FEATURE_LABELS: Record<string, string> = {
   adFree: "Sans publicité",
   pronoAdvantages: "Avantages Prono L1",
 };
+
+const HERO_MESSAGES = ["Tout le foot.", "Tous les chiffres.", "Avant et après le match."] as const;
 
 async function loadData() {
   try { return await getSeasonOverview(2026); }
@@ -56,7 +59,7 @@ export default async function HomePage() {
       <section className="hero landing-hero">
         <div>
           <p className="eyebrow">{publicContent.hero.eyebrow}</p>
-          <h1>{publicContent.hero.title}</h1>
+          <HeroTitleRotator fullTitle={publicContent.hero.title} messages={HERO_MESSAGES} />
           <p>{publicContent.hero.description}</p>
           <div className="actions"><a className="primary" href="#resultats">Voir les derniers résultats</a><a href="#offres">Découvrir les offres</a></div>
           <div className="trust-row"><span>Actualisation régulière</span><span>Pages sans inscription</span><span>Sources API normalisées</span></div>

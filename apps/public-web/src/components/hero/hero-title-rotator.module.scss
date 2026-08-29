@@ -1,0 +1,101 @@
+.title {
+  position: relative;
+}
+
+.stage {
+  position: relative;
+  display: block;
+  height: 1.9em;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translate3d(-8%, .12em, 0) skewX(-4deg);
+  filter: blur(8px);
+  pointer-events: none;
+  transition:
+    opacity 180ms ease-out,
+    transform 520ms cubic-bezier(.16, 1, .3, 1),
+    filter 420ms ease-out;
+}
+
+.active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) skewX(0deg);
+  filter: blur(0);
+}
+
+.copy,
+.trail {
+  position: absolute;
+  left: 0;
+  max-width: 100%;
+}
+
+.copy {
+  z-index: 2;
+}
+
+.trail {
+  z-index: 1;
+  opacity: .16;
+  transform: translateX(-.055em);
+  filter: blur(7px);
+  color: var(--accent);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 700px) {
+  .stage {
+    height: 2.85em;
+  }
+
+  .message {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    height: auto;
+    overflow: visible;
+  }
+
+  .message {
+    display: none;
+    position: static;
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .message:first-of-type {
+    display: block;
+  }
+
+  .copy {
+    position: static;
+  }
+
+  .trail {
+    display: none;
+  }
+}

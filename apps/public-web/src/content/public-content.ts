@@ -2,6 +2,7 @@ export const publicContent = {
   hero: {
     eyebrow: "Scores, statistiques et analyses football",
     title: "Tout le foot. Tous les chiffres. Avant et après le match.",
+    titleMessages: ["Tout le foot.", "Tous les chiffres.", "Avant et après le match."],
     description: "Scores, faits de jeu, compositions, classements et confrontations réunis dans des pages rapides, lisibles et actualisées.",
   },
   tiers: [
@@ -16,4 +17,3 @@ export const publicContent = {
     { title: "Classements", text: "Position, points, différence de buts et dynamique récente dans chaque compétition." },
   ],
 } as const;
-

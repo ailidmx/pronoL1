@@ -119,7 +119,7 @@ function EntitlementsPanel() {
             </div>
             <div className="feature-matrix">
               {featureKeys.map((key) => (
-                <label key={key}><input type="checkbox" checked={plan.features?.[key] === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { [`features.${key}`]: e.target.checked })} /> {FEATURE_LABELS[key] ?? key}</label>
+                <label key={key}><input type="checkbox" checked={plan.features?.[key] === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { features: { ...(plan.features ?? {}), [key]: e.target.checked } })} /> {FEATURE_LABELS[key] ?? key}</label>
               ))}
             </div>
           </article>

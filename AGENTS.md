@@ -57,6 +57,17 @@ Agreed direction (finalize each decision as it is implemented):
 - Public must stay on a Firebase App Hosting supported Next.js release. Next.js 16 currently builds but fails during the Firebase adapter's standalone-manifest processing; keep `apps/public-web` on the supported 15.2.x line until Firebase promotes a newer active version.
 - Data seeds are manual operational commands and must not run as a side effect of an application deployment.
 
+### Firestore access contract
+
+- Treat callable Functions as the SQL service layer: all player mutations and
+  cross-collection joins are validated server-side through Admin SDK.
+- Clients may read shared reference/read-model collections and their own private
+  documents, but must never receive collection-wide access to `users`.
+- Expose leaderboard/profile joins as sanitized callable read models (for
+  example `getPronosticsLeaderboard`) instead of weakening profile rules.
+- Admin authorization prefers the Firebase Auth `admin` custom claim and keeps
+  the legacy `users/{uid}.isAdmin` lookup only as a migration fallback.
+
 ### Public growth application
 
 - `apps/public-web/` is the independent SEO/freemium application (Next.js App
@@ -224,6 +235,5 @@ This repo ships Claude Code skills in `.claude/skills/`:
   firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
   for local firebase commands targeting this app. (The GitHub Actions deploy is
   fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
-
 
 

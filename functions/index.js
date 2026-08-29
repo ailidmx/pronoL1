@@ -55,4 +55,5 @@ export { saveProfile } from "./profile.js";
 export { saveBonusAnswer } from "./bonus.js";
 export { saveQuizAnswer } from "./quizz.js";
 export { scoreFinishedMatches } from "./scoring.js";
+export { getPronosticsLeaderboard } from "./leaderboard.js";
 export { sendMatchAlerts } from "./push.js";

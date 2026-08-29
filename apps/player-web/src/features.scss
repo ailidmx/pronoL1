@@ -1,8 +1,8 @@
 :root {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
-  color: #1a1a2e;
-  background: #f5f6fa;
+  color: var(--txt);
+  background: var(--bg);
 }
 
 * {
@@ -17,7 +17,7 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  color: #666;
+  color: var(--txt2);
 }
 
 .app-header {
@@ -87,7 +87,9 @@ button:hover {
 
 .login input {
   padding: 0.6rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--bord);
+  color:var(--txt);
+  background:var(--bg2);
   border-radius: 0.35rem;
   font-size: 1rem;
 }
@@ -109,12 +111,12 @@ button:hover {
   gap: 0.5rem;
   width: min(100%, 360px);
   padding: 0.6rem;
-  background: #fff;
-  border: 1px solid #ccc;
+  background: var(--bg2);
+  border: 1px solid var(--bord);
   border-radius: 0.35rem;
   font-size: 1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--txt);
   cursor: pointer;
 }
 
@@ -156,25 +158,25 @@ button:hover {
 
 .login-reset {
   background: transparent;
-  color: #888;
+  color: var(--txt2);
   font-size: 0.85rem;
 }
 
 .standings table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--bg2);
 }
 
 .standings th,
 .standings td {
   padding: 0.5rem 0.6rem;
   text-align: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--bord);
 }
 
 .standings th {
-  background: #f0f1f5;
+  background: var(--bg3);
 }
 
 .standings td:nth-child(2) {
@@ -182,7 +184,7 @@ button:hover {
 }
 
 .profile {
-  background: #fff;
+  background: var(--bg2);
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
@@ -194,7 +196,7 @@ button:hover {
 }
 
 .profile-email {
-  color: #555;
+  color: var(--txt2);
 }
 
 .matches {
@@ -208,7 +210,7 @@ button:hover {
 }
 
 .match-card {
-  background: #fff;
+  background: var(--bg2);
   border-radius: 0.5rem;
   padding: 1rem;
   margin-bottom: 0.75rem;
@@ -222,13 +224,13 @@ button:hover {
 }
 
 .match-teams .vs {
-  color: #888;
+  color: var(--txt2);
   font-weight: 400;
 }
 
 .match-date {
   text-align: center;
-  color: #888;
+  color: var(--txt2);
   font-size: 0.85rem;
   margin: 0.25rem 0 0.75rem;
 }
@@ -251,7 +253,9 @@ button:hover {
   width: 3rem;
   text-align: center;
   padding: 0.4rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--bord);
+  color:var(--txt);
+  background:var(--bg3);
   border-radius: 0.35rem;
   font-size: 1rem;
 }

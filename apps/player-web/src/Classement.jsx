@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase.js";
+import { getPronosticsLeaderboard } from "./callables.js";
 
 function Classement() {
   const [rows, setRows] = useState([]);
-  const [userNames, setUserNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -24,20 +24,9 @@ function Classement() {
           return;
         }
 
-        const [rowsSnap, usersSnap] = await Promise.all([
-          getDocs(collection(db, "leaderboardPronostics", seasonKey, "rows")),
-          getDocs(collection(db, "users")),
-        ]);
+        const leaderboard = await getPronosticsLeaderboard({ seasonId: seasonKey });
         if (!mounted) return;
-
-        const names = {};
-        usersSnap.forEach((d) => {
-          names[d.id] = d.data().displayName ?? d.data().email ?? d.id;
-        });
-
-        const raw = rowsSnap.docs.map((d) => ({ userId: d.id, ...d.data() }));
-        setUserNames(names);
-        setRows(rank(raw));
+        setRows(leaderboard.data.rows ?? []);
       } catch (err) {
         if (mounted) setError(err.message);
       } finally {
@@ -69,7 +58,7 @@ function Classement() {
           {rows.map((r) => (
             <tr key={r.userId}>
               <td>{r.rank}</td>
-              <td>{userNames[r.userId] ?? r.userId}</td>
+              <td>{r.displayName}</td>
               <td>{r.points}</td>
             </tr>
           ))}
@@ -77,19 +66,6 @@ function Classement() {
       </table>
     </section>
   );
-}
-
-// Shared rank on ties (1, 1, 3, 3, 5…).
-function rank(rows) {
-  const sorted = [...rows].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
-  let prev = null;
-  let prevRank = 0;
-  return sorted.map((r, i) => {
-    const rk = (r.points ?? 0) === prev ? prevRank : i + 1;
-    prev = r.points ?? 0;
-    prevRank = rk;
-    return { ...r, rank: rk };
-  });
 }
 
 export default Classement;

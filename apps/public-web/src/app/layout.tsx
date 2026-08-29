@@ -9,7 +9,9 @@ import { InstallApp } from "@/components/pwa/install-app";
 import { AuthProvider } from "@/lib/client/auth";
 import { AuthButton } from "@/components/auth/auth-button";
 import { CompetitionSelector } from "@/components/navigation/competition-selector";
+import { PublicNav } from "@/components/navigation/public-nav";
 import "./global.scss";
+import "./navigation.scss";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,
@@ -42,13 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <CompetitionSelector />
           </div>
           <nav className="header-nav" aria-label="Navigation principale">
-            <a href="/ligue-1/2026-2027/resultats">Résultats</a>
-            <a href="/ligue-1/2026-2027/calendrier">Calendrier</a>
-            <a href="/ligue-1/2026-2027/classement/general">Classement</a>
-            <a href="/#offres">Offres</a>
-            <a href="/pronostics">Pronostics</a>
-            <a href="/favoris">Favoris</a>
-            <a href="/historique">Historique</a>
+            <PublicNav />
             <AuthButton />
             <InstallApp />
           </nav>

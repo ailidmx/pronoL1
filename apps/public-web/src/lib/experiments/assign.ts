@@ -1,10 +1,18 @@
-import { createHash } from "node:crypto";
 import type { Experiment, ExperimentAssignment } from "./types";
+
+export function experimentBucket(source: string, totalWeight: number) {
+  let hash = 2166136261;
+  for (let index = 0; index < source.length; index += 1) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % totalWeight;
+}
 
 export function assignVariant(
   experiment: Experiment,
   subjectId: string,
-  salt = process.env.EXPERIMENT_SALT ?? "local-development",
+  salt = process.env.NEXT_PUBLIC_EXPERIMENT_SALT ?? "",
 ): ExperimentAssignment {
   if (!experiment.enabled || experiment.variants.length === 0) {
     return { experiment: experiment.key, variant: "control" };
@@ -15,10 +23,7 @@ export function assignVariant(
     throw new Error(`Experiment ${experiment.key} must have a positive total weight`);
   }
 
-  const digest = createHash("sha256")
-    .update(`${salt}:${experiment.key}:${subjectId}`)
-    .digest();
-  const bucket = digest.readUInt32BE(0) % totalWeight;
+  const bucket = experimentBucket(`${salt}:${experiment.key}:${subjectId}`, totalWeight);
   let cursor = 0;
 
   for (const candidate of experiment.variants) {

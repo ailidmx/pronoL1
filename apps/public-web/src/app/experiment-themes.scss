@@ -1,0 +1,78 @@
+html[data-public-theme="editorial"] {
+  --ink: #181818;
+  --muted: #5f6368;
+  --accent: #d4142a;
+  --accent-2: #8f1020;
+  --panel: #fffdf7;
+  --line: #d9d4c8;
+  color-scheme: light;
+}
+
+html[data-public-theme="editorial"] body {
+  background: #f4f0e6;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+html[data-public-theme="editorial"] .site-header {
+  border-bottom-color: var(--line);
+  background: #f4f0e6f2;
+}
+
+html[data-public-theme="editorial"] .data-panel,
+html[data-public-theme="editorial"] .grid article,
+html[data-public-theme="editorial"] .placeholder,
+html[data-public-theme="editorial"] .pricing-grid article,
+html[data-public-theme="editorial"] .match-score-hero,
+html[data-public-theme="editorial"] .feature-grid article {
+  background: var(--panel);
+  border-color: var(--line);
+  box-shadow: 0 10px 30px #2a261915;
+}
+
+html[data-public-theme="editorial"] .brand,
+html[data-public-theme="editorial"] h1,
+html[data-public-theme="editorial"] h2,
+html[data-public-theme="editorial"] h3 {
+  letter-spacing: -0.035em;
+}
+
+html[data-public-theme="electric"] {
+  --ink: #f8f7ff;
+  --muted: #b7b2c9;
+  --accent: #ff4fd8;
+  --accent-2: #7dff7a;
+  --panel: #171126;
+  --line: #352b50;
+  color-scheme: dark;
+}
+
+html[data-public-theme="electric"] body {
+  background:
+    radial-gradient(circle at 15% -10%, #3e165f 0, transparent 32rem),
+    radial-gradient(circle at 90% 10%, #123f43 0, transparent 30rem),
+    #0c0913;
+  color: var(--ink);
+}
+
+html[data-public-theme="electric"] .site-header {
+  border-bottom-color: #4b3567;
+  background: #0c0913e8;
+}
+
+html[data-public-theme="electric"] .data-panel,
+html[data-public-theme="electric"] .grid article,
+html[data-public-theme="electric"] .placeholder,
+html[data-public-theme="electric"] .pricing-grid article,
+html[data-public-theme="electric"] .match-score-hero,
+html[data-public-theme="electric"] .feature-grid article {
+  border-color: var(--line);
+  background: linear-gradient(145deg, #1d1430, #11101b);
+  box-shadow: 0 18px 60px #0007;
+}
+
+html[data-public-theme="electric"] .brand,
+html[data-public-theme="electric"] .eyebrow,
+html[data-public-theme="electric"] .section-heading > a {
+  text-shadow: 0 0 22px color-mix(in srgb, var(--accent) 55%, transparent);
+}

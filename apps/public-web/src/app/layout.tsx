@@ -10,8 +10,10 @@ import { AuthProvider } from "@/lib/client/auth";
 import { AuthButton } from "@/components/auth/auth-button";
 import { CompetitionSelector } from "@/components/navigation/competition-selector";
 import { PublicNav } from "@/components/navigation/public-nav";
+import { ExperimentBootstrap } from "@/components/experiments/experiment-bootstrap";
 import "./global.scss";
 import "./navigation.scss";
+import "./experiment-themes.scss";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,
@@ -34,8 +36,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   try { updatedAt = (await getSeasonOverview(2026)).updatedAt; }
   catch (error) { console.error("Data freshness unavailable", error); }
   return (
-    <html lang={siteConfig.language}>
+    <html lang={siteConfig.language} suppressHydrationWarning>
       <body>
+        <ExperimentBootstrap />
         <AuthProvider>
         <GoogleTags />
         <header className="site-header">

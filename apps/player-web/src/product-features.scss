@@ -23,11 +23,18 @@
 .community-actions h3 { margin:0; }
 .community-actions label { display:grid; gap:.35rem; color:var(--txt2); font-size:.8rem; }
 .community-actions input { padding:.7rem; border:1px solid var(--bord); border-radius:8px; color:var(--txt); background:var(--bg); }
-.community-actions button,.community-card button { padding:.65rem .8rem; border:0; border-radius:8px; background:var(--vert); color:#07130c; font-weight:800; }
+.community-actions button,.community-card button,.invite-accept-card button { padding:.65rem .8rem; border:0; border-radius:8px; background:var(--vert); color:#07130c; font-weight:800; }
 .community-card { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
 .community-card h3,.community-card p { margin:.15rem 0; }
 .community-card p,.community-card small { color:var(--txt2); }
 .invite-code { display:grid; gap:.2rem; text-align:center; }
 .invite-code span { color:var(--txt2); font-size:.68rem; }
 .invite-code strong { padding:.4rem .55rem; border:1px dashed var(--vert); border-radius:7px; color:var(--vert); letter-spacing:.08em; }
-@media (max-width:700px) { .community-actions { grid-template-columns:1fr; } .community-card { align-items:flex-start; flex-direction:column; } .odds-row { grid-template-columns:1fr repeat(3,minmax(48px,.7fr)); font-size:.8rem; } }
+.invite-accept-card { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:.9rem; align-items:center; margin-bottom:1rem; padding:1rem; border:1px solid color-mix(in srgb,var(--vert) 55%,var(--bord)); border-radius:14px; background:color-mix(in srgb,var(--vert) 8%,var(--bg2)); }
+.invite-accept-card>span { font-size:1.7rem; }
+.invite-accept-card h3,.invite-accept-card p { margin:.15rem 0; }
+.invite-accept-card p { color:var(--txt2); }
+.community-invite-tools { display:grid; gap:.65rem; justify-items:center; }
+.invite-share-actions { display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; }
+.invite-share-actions .whatsapp-share { background:#25d366; color:#07130c; }
+@media (max-width:700px) { .community-actions { grid-template-columns:1fr; } .community-card { align-items:flex-start; flex-direction:column; } .community-invite-tools { width:100%; justify-items:stretch; } .invite-share-actions { justify-content:stretch; } .invite-share-actions button { flex:1 1 140px; } .invite-accept-card { grid-template-columns:auto 1fr; } .invite-accept-card button { grid-column:1 / -1; width:100%; } .odds-row { grid-template-columns:1fr repeat(3,minmax(48px,.7fr)); font-size:.8rem; } }

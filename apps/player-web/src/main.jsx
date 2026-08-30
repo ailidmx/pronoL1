@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './global.scss'
 import './features.scss'
 import './product-features.scss'
+import './profile.scss'
 import App from './App.jsx'
 import InstallApp from './InstallApp.jsx'
 

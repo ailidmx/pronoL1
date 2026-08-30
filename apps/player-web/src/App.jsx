@@ -17,10 +17,20 @@ function hasPlayerAccess(profile) {
   return profile?.isAdmin === true || profile?.isAllowed === true;
 }
 
+function getInviteCode() {
+  if (typeof window === "undefined") return "";
+  return (new URLSearchParams(window.location.search).get("join") || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 16);
+}
+
 function App() {
+  const initialInviteCode = getInviteCode();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState("pronostics");
+  const [page, setPage] = useState(initialInviteCode ? "communautes" : "pronostics");
   const [pronoTab, setPronoTab] = useState("journee");
   const [access, setAccess] = useState({ checking: true, allowed: false, error: false });
 
@@ -104,7 +114,7 @@ function App() {
         {pronoTab === "journee" ? <Matches /> : pronoTab === "historique" ? <Matches mode="history" /> : pronoTab === "cotes" ? <Odds /> : <Bonus />}
       </> : null}
       {page === "podium" ? <Classement /> : null}
-      {page === "communautes" ? <Communities /> : null}
+      {page === "communautes" ? <Communities initialInviteCode={initialInviteCode} /> : null}
       {page === "quiz" ? <Quiz /> : null}
       {page === "championnat" ? <Standings /> : null}
       {page === "profil" ? <><Profile /><button type="button" onClick={() => auth.signOut()}>Déconnexion</button></> : null}

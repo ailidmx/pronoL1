@@ -73,6 +73,14 @@ button:hover {
   padding: 2rem;
 }
 
+.login-app-icon {
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  margin: 0 auto .75rem;
+  border-radius: 1.15rem;
+}
+
 .login form {
   display: grid;
   gap: 1rem;

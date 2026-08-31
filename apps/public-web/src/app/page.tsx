@@ -3,27 +3,15 @@ import { DataFreshness } from "@/components/football/data-freshness";
 import { MatchList } from "@/components/football/match-list";
 import { StandingsTable } from "@/components/football/standings-table";
 import { HeroTitleRotator } from "@/components/hero/hero-title-rotator";
+import { PricingComparison } from "@/components/pricing/pricing-comparison";
 import { competitions } from "@/config/competitions";
 import { siteConfig } from "@/config/site";
 import { publicContent } from "@/content/public-content";
 import { JsonLd } from "@/lib/seo/json-ld";
 import { getSeasonOverview } from "@/server/football-repository";
-import { formatOfferPrice, getPublicEntitlementCatalog, offerIntervalLabel } from "@/server/entitlements-repository";
+import { getPublicEntitlementCatalog } from "@/server/entitlements-repository";
 
 export const dynamic = "force-dynamic";
-
-const FEATURE_LABELS: Record<string, string> = {
-  scores: "Scores et résultats",
-  calendar: "Calendrier",
-  standings: "Classements",
-  analyses: "Analyses de match",
-  favorites: "Favoris",
-  history: "Historique",
-  matchAlerts: "Alertes matchs",
-  advancedStatistics: "Statistiques avancées",
-  adFree: "Sans publicité",
-  pronoAdvantages: "Avantages Prono L1",
-};
 
 const HERO_MESSAGES = ["Tout le foot.", "Tous les chiffres.", "Avant et après le match."] as const;
 
@@ -42,8 +30,6 @@ export default async function HomePage() {
   const upcoming = data?.matches
     .filter((match) => !match.date || new Date(match.date).valueOf() >= now)
     .slice(0, 6) ?? [];
-  const planById = new Map(catalog.plans.map((plan) => [plan.id, plan]));
-  const freePlans = catalog.plans.filter((plan) => plan.isPaid !== true);
 
   return (
     <>
@@ -96,13 +82,7 @@ export default async function HomePage() {
 
       <section className="section-shell" id="offres">
         <div className="section-intro"><p className="eyebrow">Simple et transparent</p><h2>Commence gratuitement.</h2><p>Les informations essentielles restent accessibles. Les fonctions avancées et le confort sans publicité financent la plateforme.</p></div>
-        <div className="pricing-grid">
-          {freePlans.map((plan) => <article key={plan.id}><h3>{plan.name}</h3><strong>0 €</strong><ul>{Object.entries(plan.features ?? {}).filter(([, enabled]) => enabled).slice(0, 5).map(([key]) => <li key={key}>{FEATURE_LABELS[key] ?? key}</li>)}</ul><a href={plan.id === "public" ? "/ligue-1/2026-2027" : "/connexion"}>Commencer</a></article>)}
-          {catalog.offers.map((offer) => {
-            const plan = planById.get(offer.accessPlanId);
-            return <article className={offer.featured ? "featured" : ""} key={offer.id}>{offer.badge ? <span className="popular">{offer.badge}</span> : null}<h3>{offer.name}</h3><strong>{formatOfferPrice(offer)} <small>{offerIntervalLabel(offer)}</small></strong><ul>{Object.entries(plan?.features ?? {}).filter(([, enabled]) => enabled).slice(0, 6).map(([key]) => <li key={key}>{FEATURE_LABELS[key] ?? key}</li>)}</ul><a href="/pronostics">Choisir cette offre</a></article>;
-          })}
-        </div>
+        <PricingComparison plans={catalog.plans} offers={catalog.offers} />
       </section>
 
       <section className="section-shell prono-cta">

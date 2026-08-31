@@ -1,4 +1,6 @@
-export const DEFAULT_COMPETITION_KEY = "ligue-1:2026";
+import { buildCompetitionSeasonId, parseCompetitionSeasonId } from "./competitions.js";
+
+export const DEFAULT_COMPETITION_KEY = buildCompetitionSeasonId("ligue-1", 2026);
 export const COMMUNITY_NAME_MAX_LENGTH = 80;
 
 export function normalizeCommunityName(value) {
@@ -11,7 +13,7 @@ export function normalizeCompetitionKeys(value) {
   return [...new Set(value
     .filter((item) => typeof item === "string")
     .map((item) => item.trim().toLowerCase())
-    .filter((item) => /^[a-z0-9][a-z0-9-]*:\d{4}$/.test(item)))];
+    .filter((item) => parseCompetitionSeasonId(item) !== null))];
 }
 
 export function normalizeInviteCode(value) {

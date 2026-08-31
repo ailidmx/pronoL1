@@ -9,6 +9,8 @@ export type PublicAccessPlan = {
   isPaid: boolean;
   features: Record<string, boolean>;
   sortOrder: number;
+  maxCommunities?: number | null;
+  maxCompetitions?: number | null;
 };
 
 export type PublicSubscriptionOffer = {
@@ -25,9 +27,9 @@ export type PublicSubscriptionOffer = {
 };
 
 const fallbackPlans: PublicAccessPlan[] = [
-  { id: "public", name: "Accès libre", enabled: true, isPaid: false, sortOrder: 10, features: { scores: true, calendar: true, standings: true } },
-  { id: "registered", name: "Compte gratuit", enabled: true, isPaid: false, sortOrder: 20, features: { scores: true, calendar: true, standings: true, analyses: true, favorites: true, history: true, matchAlerts: true } },
-  { id: "premium", name: "Premium", enabled: true, isPaid: true, sortOrder: 30, features: { scores: true, calendar: true, standings: true, analyses: true, favorites: true, history: true, matchAlerts: true, advancedStatistics: true, adFree: true, pronoAdvantages: true } },
+  { id: "public", name: "Accès libre", enabled: true, isPaid: false, sortOrder: 10, maxCommunities: 0, maxCompetitions: 0, features: { scores: true, calendar: true, standings: true } },
+  { id: "registered", name: "Compte gratuit", enabled: true, isPaid: false, sortOrder: 20, maxCommunities: 1, maxCompetitions: 1, features: { scores: true, calendar: true, standings: true, analyses: true, favorites: true, history: true, matchAlerts: true, communities: true } },
+  { id: "premium", name: "Premium", enabled: true, isPaid: true, sortOrder: 30, maxCommunities: null, maxCompetitions: null, features: { scores: true, calendar: true, standings: true, analyses: true, favorites: true, history: true, matchAlerts: true, communities: true, multiCompetition: true, officialOdds: true, communityOdds: true, advancedStatistics: true, adFree: true, pronoAdvantages: true } },
 ];
 
 const fallbackOffers: PublicSubscriptionOffer[] = [

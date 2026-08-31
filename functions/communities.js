@@ -4,6 +4,7 @@ import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import {
   collections,
   DEFAULT_COMPETITION_KEY,
+  exceedsCompetitionLimitPerSeason,
   normalizeCommunityName,
   normalizeCompetitionKeys,
   normalizeInviteCode,
@@ -28,8 +29,8 @@ function enforceLimits(access, memberships, competitionIds, extraCommunities = 1
   memberships.docs.forEach((doc) => (doc.data().competitionIds ?? []).forEach((id) => activeCompetitions.add(id)));
   competitionIds.forEach((id) => activeCompetitions.add(id));
   const maxCompetitions = accessLimit(access, "maxCompetitions");
-  if (maxCompetitions !== null && activeCompetitions.size > maxCompetitions) {
-    throw new HttpsError("resource-exhausted", "Competition limit reached for this access plan.");
+  if (exceedsCompetitionLimitPerSeason([...activeCompetitions], maxCompetitions)) {
+    throw new HttpsError("resource-exhausted", "Annual competition limit reached for this access plan.");
   }
 }
 
@@ -61,7 +62,7 @@ export const getCommunities = onCall({ cors: true }, async (request) => {
     isAdmin: access.isAdmin,
     limits: {
       maxCommunities: accessLimit(access, "maxCommunities"),
-      maxCompetitions: accessLimit(access, "maxCompetitions"),
+      maxCompetitionsPerSeason: accessLimit(access, "maxCompetitions"),
     },
     defaultCompetitionId: DEFAULT_COMPETITION_KEY,
   };

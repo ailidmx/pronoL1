@@ -95,7 +95,7 @@ export default function Communities({ initialInviteCode = "" }) {
     <div className="feature-hero">
       <p className="feature-kicker">Mode communauté</p>
       <h2>Joue avec tes proches</h2>
-      <p>Crée une communauté ou rejoins-en une avec un code. Ton plan <strong>{data.planId}</strong> autorise {limitLabel(data.limits.maxCommunities)} communauté(s) et {limitLabel(data.limits.maxCompetitions)} compétition(s).</p>
+      <p>Crée une communauté ou rejoins-en une avec un code. Ton plan <strong>{data.planId}</strong> autorise {limitLabel(data.limits.maxCommunities)} communauté(s) et {limitLabel(data.limits.maxCompetitionsPerSeason)} compétition(s) par saison.</p>
     </div>
 
     {invitePending ? <section className="invite-accept-card" aria-live="polite">

@@ -95,7 +95,7 @@ function App() {
 
   return <div className={styles.app}>
     <header className={styles.header}>
-      <div className={styles.brand}><span aria-hidden="true">⚽</span><div><h1>Prono L1</h1><small>Prévois. Gagne. Partage.</small></div></div>
+      <div className={styles.brand}><img src="/icon-192.png" alt="" /><div><h1>Prono L1</h1><small>Prévois. Gagne. Partage.</small></div></div>
       <div className={styles.user}><span className={styles.email}>{user.email}</span><button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button></div>
     </header>
     <nav className={styles.nav} aria-label="Navigation principale">

@@ -3,6 +3,7 @@ export * from "./validation.js";
 export * from "./payload-builders.js";
 export * from "./users.js";
 export * from "./entitlements.js";
+export * from "./competitions.js";
 export * from "./communities.js";
 export * from "./pronostics.js";
 export * from "./scoring.js";

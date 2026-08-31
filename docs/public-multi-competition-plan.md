@@ -37,6 +37,20 @@ Avoid collisions between competitions and seasons:
 - `matches/{apiFixtureId}` with `competitionId`, `seasonId`, `updatedAt`
 - `standings/{competitionId}_{startYear}_general`
 
+The canonical business key is `competitionId:startYear` (for example
+`champions-league:2026`). It scopes community participation, prediction
+leaderboards, standings and synchronization runs without confusing two
+competitions played during the same year.
+
+## Freemium participation contract
+
+- a registered free user may belong to one community;
+- that community may participate in one competition per annual season;
+- the following season may select a new competition without being blocked by
+  the archived choice from the previous season;
+- Premium has no product limit on communities or competitions;
+- limits are enforced server-side in callable Functions, never only in the UI.
+
 Match detail fields:
 
 - `events[]`: minute, extraMinute, teamId, type, detail, player, assist

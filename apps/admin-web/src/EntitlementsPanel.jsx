@@ -105,7 +105,7 @@ function EntitlementsPanel() {
           <label>Nom<input value={plan.name ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { name: e.target.value })} /></label>
           <label>Limite analyses / jour<input type="number" min="0" value={plan.analysisDailyLimit ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { analysisDailyLimit: e.target.value === "" ? null : Number(e.target.value) })} /></label>
           <label>Communautés max <small>(vide = illimité)</small><input type="number" min="0" value={plan.maxCommunities ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { maxCommunities: e.target.value === "" ? null : Number(e.target.value) })} /></label>
-          <label>Compétitions max <small>(vide = illimité)</small><input type="number" min="0" value={plan.maxCompetitions ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { maxCompetitions: e.target.value === "" ? null : Number(e.target.value) })} /></label>
+          <label>Compétitions max par saison <small>(vide = illimité)</small><input type="number" min="0" value={plan.maxCompetitions ?? ""} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { maxCompetitions: e.target.value === "" ? null : Number(e.target.value) })} /></label>
           <label><input type="checkbox" checked={plan.enabled === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { enabled: e.target.checked })} /> Actif</label>
           <label><input type="checkbox" checked={plan.isPaid === true} disabled={busy} onChange={(e) => save("accessPlans", plan.id, { isPaid: e.target.checked })} /> Payant</label>
         </div>

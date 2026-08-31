@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
+import { getRedirectResult, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { auth, db, getProfile, provider } from "./firebase.js";
@@ -15,6 +15,17 @@ function useRedirectAuth() {
   if (typeof window === "undefined") return false;
   return window.matchMedia?.("(display-mode: standalone)").matches
     || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function authErrorMessage(error) {
+  const code = error?.code ?? "";
+  if (code === "auth/unauthorized-domain") {
+    return `Le domaine ${window.location.hostname} n’est pas encore autorisé dans Firebase Authentication.`;
+  }
+  if (code === "auth/network-request-failed") {
+    return "La connexion à Firebase a échoué. Vérifie le réseau puis réessaie.";
+  }
+  return `La connexion Google n’a pas abouti${code ? ` (${code})` : ""}. Réessaie.`;
 }
 
 async function verifyAdmin(user) {
@@ -53,14 +64,22 @@ export default function App() {
     setState({ loading: false, user, admin: result.admin, verificationError: result.error });
   }
 
-  useEffect(() => onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      setState({ loading: false, user: null, admin: false, verificationError: false });
-      return;
-    }
-    const result = await verifyAdmin(user);
-    setState({ loading: false, user, admin: result.admin, verificationError: result.error });
-  }), []);
+  useEffect(() => {
+    getRedirectResult(auth).catch((error) => {
+      console.error("Admin redirect sign-in failed", error);
+      setAuthError(authErrorMessage(error));
+      setSigningIn(false);
+    });
+
+    return onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setState({ loading: false, user: null, admin: false, verificationError: false });
+        return;
+      }
+      const result = await verifyAdmin(user);
+      setState({ loading: false, user, admin: result.admin, verificationError: result.error });
+    });
+  }, []);
 
   async function signInAdmin() {
     setAuthError("");
@@ -73,13 +92,13 @@ export default function App() {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Admin sign-in failed", error);
-      setAuthError("La connexion Google n’a pas abouti. Réessaie ou ouvre l’administration dans ton navigateur.");
+      setAuthError(authErrorMessage(error));
       setSigningIn(false);
     }
   }
 
-  if (state.loading) return <main className={styles.center}>Chargement…</main>;
-  if (!state.user) return <main className={styles.center}><section className={styles.loginCard}><span aria-hidden="true" className={styles.loginIcon}>⚽</span><h1>Prono-L1 Admin</h1><p>Connecte-toi avec ton compte administrateur.</p><button className={styles.primary} type="button" disabled={signingIn} onClick={signInAdmin}>{signingIn ? "Connexion…" : "Continuer avec Google"}</button>{authError ? <p className={styles.error}>{authError}</p> : null}</section></main>;
+  if (state.loading) return <main className={styles.center}><img className={styles.splashIcon} src="/icon-192.png" alt="" /><p>Chargement…</p></main>;
+  if (!state.user) return <main className={styles.center}><section className={styles.loginCard}><img className={styles.loginIcon} src="/icon-192.png" alt="Icône Prono-L1 Admin" /><h1>Prono-L1 Admin</h1><p>Connecte-toi avec ton compte administrateur.</p><button className={styles.primary} type="button" disabled={signingIn} onClick={signInAdmin}>{signingIn ? "Connexion…" : "Continuer avec Google"}</button>{authError ? <p className={styles.error}>{authError}</p> : null}</section></main>;
   if (state.verificationError) return <main className={styles.center}><section className={styles.loginCard}><h1>Vérification impossible</h1><p>Impossible de vérifier tes droits administrateur pour le moment.</p><div className={styles.actions}><button className={styles.primary} type="button" onClick={() => refreshAdmin(state.user)}>Réessayer</button><button type="button" onClick={() => signOut(auth)}>Changer de compte</button></div></section></main>;
   if (!state.admin) return <main className={styles.center}><section className={styles.loginCard}><h1>Accès refusé</h1><p>Ce compte n’a pas les droits administrateur Prono-L1.</p><div className={styles.actions}><button className={styles.primary} type="button" onClick={() => refreshAdmin(state.user)}>Revérifier l’accès</button><button type="button" onClick={() => signOut(auth)}>Changer de compte</button></div></section></main>;
 

@@ -88,7 +88,7 @@ function App() {
     return unsub;
   }, []);
 
-  if (loading || access.checking) return <div className={styles.loading}>Chargement…</div>;
+  if (loading || access.checking) return <div className={styles.loading}><img src="/icon-192.png" alt="" /><span>Chargement…</span></div>;
   if (!user) return <Login />;
   if (access.error) return <div className={styles.denied}><h1>Vérification impossible</h1><p>Prono-L1 n’a pas pu vérifier les droits de ton compte. Réessaie dans quelques instants.</p><button type="button" onClick={() => checkAccess(user)}>Réessayer</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
   if (!access.allowed) return <div className={styles.denied}><h1>Accès refusé</h1><p>Ton compte n’a pas encore accès à l’application Prono-L1. Demande à un administrateur du projet de t’autoriser.</p><button type="button" onClick={() => checkAccess(user)}>Revérifier l’accès</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;

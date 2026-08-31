@@ -2,6 +2,7 @@
 
 import type { Route } from "next";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const items: Array<{ href: string; label: string; isActive: (pathname: string) => boolean }> = [
@@ -29,6 +30,28 @@ const items: Array<{ href: string; label: string; isActive: (pathname: string) =
 
 export function PublicNav() {
   const pathname = usePathname();
+  const [offersActive, setOffersActive] = useState(false);
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setOffersActive(false);
+      return;
+    }
+    const section = document.getElementById("offres");
+    if (!section) return;
+    const syncHash = () => setOffersActive(window.location.hash === "#offres");
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    const observer = new IntersectionObserver(([entry]) => setOffersActive(entry.isIntersecting), {
+      rootMargin: "-20% 0px -55% 0px",
+      threshold: 0,
+    });
+    observer.observe(section);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("hashchange", syncHash);
+    };
+  }, [pathname]);
 
   return (
     <>
@@ -40,7 +63,7 @@ export function PublicNav() {
           </Link>
         );
       })}
-      <a href="/#offres">Offres</a>
+      <a href="/#offres" className={offersActive ? "is-active" : undefined} aria-current={offersActive ? "location" : undefined}>Offres</a>
       {items.slice(3).map((item) => {
         const active = item.isActive(pathname);
         return (

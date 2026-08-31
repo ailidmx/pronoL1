@@ -21,6 +21,7 @@ const app = initializeApp({
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
 const functions = getFunctions(app);
 export const getProfile = httpsCallable(functions, "getProfile");
 export const getExperimentDashboard = httpsCallable(functions, "getExperimentDashboard");

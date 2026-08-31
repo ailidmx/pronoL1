@@ -68,6 +68,7 @@ function Login() {
 
   return (
     <div className="login">
+      <img className="login-app-icon" src="/icon-192.png" alt="Icône Prono-L1" />
       <h1>Prono-L1</h1>
       <button type="button" className="login-google" onClick={handleGoogle} disabled={busy}>
         Continuer avec Google
@@ -116,4 +117,3 @@ function Login() {
 }
 
 export default Login;
-

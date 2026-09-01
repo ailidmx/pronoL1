@@ -11,7 +11,7 @@ import styles from "./App.module.scss";
 function Dashboard() { return <section><h2>Tableau de bord</h2><p>Le socle Admin est prêt pour le portage progressif des opérations legacy.</p></section>; }
 function Placeholder({ title }) { return <section><h2>{title}</h2><p>Cette capacité sera portée depuis le back-office legacy.</p></section>; }
 
-function useRedirectAuth() {
+function shouldUseRedirectAuth() {
   if (typeof window === "undefined") return false;
   return window.matchMedia?.("(display-mode: standalone)").matches
     || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -85,7 +85,7 @@ export default function App() {
     setAuthError("");
     setSigningIn(true);
     try {
-      if (useRedirectAuth()) {
+      if (shouldUseRedirectAuth()) {
         await signInWithRedirect(auth, provider);
         return;
       }

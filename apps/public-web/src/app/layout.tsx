@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import type { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { GoogleTags } from "@/components/analytics/google-tags";
@@ -16,6 +17,8 @@ import "./global.scss";
 import "./navigation.scss";
 import "./experiment-themes.scss";
 import "./pwa-menu.scss";
+
+const adsensePublisherId = "ca-pub-9809524492306432";
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.url,
@@ -41,6 +44,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang={siteConfig.language} suppressHydrationWarning>
       <body>
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePublisherId}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <ExperimentBootstrap />
         <BrowserTimezone />
         <AuthProvider>

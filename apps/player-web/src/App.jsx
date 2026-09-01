@@ -14,6 +14,15 @@ import Communities from "./Communities.jsx";
 import Adsense, { PlayerAdSlot, shouldShowAds } from "./Adsense.jsx";
 import styles from "./App.module.scss";
 
+const THEME_STORAGE_KEY = "prono-l1-theme";
+
+function getInitialTheme() {
+  if (typeof window === "undefined") return "dark";
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
 function hasPlayerAccess(profile) {
   return profile?.isAdmin === true || profile?.isAllowed === true;
 }
@@ -34,6 +43,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(initialInviteCode ? "communautes" : "pronostics");
   const [pronoTab, setPronoTab] = useState("journee");
+  const [theme, setTheme] = useState(getInitialTheme);
   const [access, setAccess] = useState({ checking: true, allowed: false, error: false });
 
   async function checkAccess(u) {
@@ -80,6 +90,12 @@ function App() {
   }
 
   useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) {
         setUser(null);
@@ -106,7 +122,11 @@ function App() {
     <Adsense enabled={adsEnabled} />
     <header className={styles.header}>
       <div className={styles.brand}><img src="/icon-192.png" alt="" /><div><h1>Prono L1</h1><small>Prévois. Gagne. Partage.</small></div></div>
-      <div className={styles.user}><span className={styles.email}>{user.email}</span><button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button></div>
+      <div className={styles.user}>
+        <span className={styles.email}>{user.email}</span>
+        <button className={styles.themeToggle} type="button" onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")} aria-label={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"} title={theme === "dark" ? "Thème clair" : "Thème sombre"}>{theme === "dark" ? "☀️" : "🌙"}</button>
+        <button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button>
+      </div>
     </header>
     <PlayerAdSlot enabled={adsEnabled} placement="masthead" />
     <nav className={styles.nav} aria-label="Navigation principale">

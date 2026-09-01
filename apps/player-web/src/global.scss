@@ -9,6 +9,12 @@
   font:18px/145% var(--sans); letter-spacing:.18px; color-scheme:dark; color:var(--text); background:var(--bg); font-synthesis:none; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   @media (max-width:1024px) { font-size:16px; }
 }
+:root[data-theme="light"] {
+  --bg:#f4f7fb; --bg2:#fff; --bg3:#e9eef5; --bord:#cbd5e1; --txt:#172033; --txt2:#586579;
+  --text:var(--txt2); --text-h:var(--txt); --code-bg:#edf1f6; --social-bg:rgba(255,255,255,.72);
+  --shadow:rgba(15,23,42,.09) 0 10px 20px -5px,rgba(15,23,42,.06) 0 4px 8px -4px;
+  color-scheme:light;
+}
 body { margin:0; background:var(--bg); }
 #root { width:1126px; max-width:100%; margin:0 auto; text-align:center; min-height:100svh; display:flex; flex-direction:column; box-sizing:border-box; }
 h1,h2 { font-family:var(--heading); font-weight:500; color:var(--text-h); }

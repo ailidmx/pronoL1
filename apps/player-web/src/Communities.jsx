@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createCommunity, getCommunities, joinCommunity, leaveCommunity } from "./callables.js";
-
-const CURRENT_COMPETITION = "ligue-1:2026";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 function limitLabel(value) {
   return value == null ? "illimité" : String(value);
@@ -15,6 +14,7 @@ function inviteUrl(code) {
 }
 
 export default function Communities({ initialInviteCode = "" }) {
+  const { competitionSeasonId } = useCompetitionSeason();
   const normalizedInvite = initialInviteCode.trim().toUpperCase();
   const [data, setData] = useState(null);
   const [name, setName] = useState("");
@@ -109,7 +109,7 @@ export default function Communities({ initialInviteCode = "" }) {
     </section> : null}
 
     <div className="community-actions">
-      <form onSubmit={(event) => { event.preventDefault(); if (name.trim()) run(async () => { const response = await createCommunity({ name, competitionIds: [CURRENT_COMPETITION] }); setName(""); setFeedback(`Communauté créée · code ${response.data.invitationCode}`); }); }}>
+      <form onSubmit={(event) => { event.preventDefault(); if (name.trim() && competitionSeasonId) run(async () => { const response = await createCommunity({ name, competitionIds: [competitionSeasonId] }); setName(""); setFeedback(`Communauté créée · code ${response.data.invitationCode}`); }); }}>
         <h3>Créer</h3>
         <label>Nom de la communauté<input value={name} onChange={(event) => setName(event.target.value)} maxLength="80" placeholder="Les collègues" /></label>
         <button type="submit" disabled={busy || name.trim().length < 3}>Créer la communauté</button>

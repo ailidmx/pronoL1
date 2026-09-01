@@ -9,7 +9,9 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
 // SCSS tokens are consumed at build time and live outside the App Hosting app
 // root. All other production dependencies must be installed inside the bundle:
 // Next's file tracer misses dynamic imports used by styled-jsx and Firebase.
-delete packageJson.dependencies["@prono-l1/design-tokens"];
+if (packageJson.dependencies) {
+  delete packageJson.dependencies["@prono-l1/design-tokens"];
+}
 delete packageJson.devDependencies;
 delete packageJson.scripts;
 

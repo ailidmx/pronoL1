@@ -182,6 +182,8 @@
   }
 
   .header-primary {
+    width: 100%;
+    max-width: 100%;
     gap: 0.55rem;
   }
 
@@ -204,10 +206,13 @@
   }
 
   .header-branding .competition-selector select {
+    width: 100%;
+    min-width: 0;
     max-width: min(145px, 34vw);
   }
 
   .header-account {
+    max-width: 45%;
     gap: 0.35rem;
   }
 
@@ -224,9 +229,10 @@
   }
 
   .header-nav {
-    width: calc(100% + 2rem);
-    margin-inline: -1rem;
-    padding: 0.15rem 1rem 0.35rem;
-    scroll-padding-inline: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+    padding: 0.15rem 0 0.35rem;
+    scroll-padding-inline: 0;
   }
 }

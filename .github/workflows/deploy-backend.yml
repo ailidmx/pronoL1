@@ -2,7 +2,7 @@ name: Deploy Backend
 on:
   push:
     branches: [main]
-    paths: ['functions/**', 'packages/domain/**', 'firestore.rules', 'firebase.json']
+    paths: ['functions/**', 'packages/domain/**', 'scripts/seed-sports-registry.mjs', 'scripts/seed-bonus-config.mjs', 'scripts/migrate-ligue1-2026-scope.mjs', 'firestore.rules', 'firebase.json']
   workflow_dispatch:
 jobs:
   deploy:
@@ -14,5 +14,6 @@ jobs:
       - uses: google-github-actions/auth@v2
         with: { credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' }
       - run: npm ci && npm run build -w @prono-l1/functions
+      - run: node scripts/seed-sports-registry.mjs && node scripts/migrate-ligue1-2026-scope.mjs && node scripts/seed-bonus-config.mjs --execute
       - run: npm install -g firebase-tools
       - run: firebase deploy --project pronol1 --only firestore,functions --non-interactive --force

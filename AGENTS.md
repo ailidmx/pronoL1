@@ -129,6 +129,12 @@ Agreed direction (finalize each decision as it is implemented):
 - Legacy visual density, mobile actions, dark/light themes and multichannel
   notifications are product requirements. New branded Player/Admin icons remain
   the only valid icon/splash assets.
+- During the current foundation and migration phase, prefer a visible failure to
+  a compatibility fallback. Code against the agreed canonical data contract and
+  surface missing/invalid data explicitly so it can be corrected. Do not infer
+  Ligue 1, the current season, legacy document IDs or substitute collections.
+  Add backward compatibility only for a documented migration window with an
+  owner, removal date and explicit product justification.
 
 ## 7. Skills
 
@@ -157,12 +163,10 @@ This repo ships Claude Code skills in `.claude/skills/`:
   NOT stored — the client sorts by `points` and applies the shared-rank rule on
   ties. Firestore rules allow signed-in read + admin write on
   `leaderboardPronostics` (the function writes via Admin SDK).
-- **Leaderboard season key = `match.seasonId`** (the API-Football year, e.g.
-  `2026`), NOT the `saisons` doc id. The sync writes `seasonId: 2026` (the
-  `SEASON` constant) onto current-season matches. The UI (`apps/player-apps/player-web/src/Classement.jsx`)
-  resolves it by finding the season with `statut == "en_cours"` and using its
-  `anneeDebut` (== `SEASON`). Do NOT use the `saisons` DB id (1/2) as the
-  leaderboard key — it would split points from the synced matches.
+- **Leaderboard key = canonical `competitionId:seasonId`** (for example
+  `ligue-1:2026`). Matches must carry both fields. Player screens receive that
+  identity from `CompetitionSeasonContext`; they must not query a separate
+  current season or hardcode a year.
 - **Known limitation:** `scoreFinishedMatches` marks a match `scoredAt` AFTER
   scoring, and skips already-scored matches, so a corrected FT score is NOT
   re-scored. There is no idempotent delta/transaction yet — for a ~10-player app
@@ -187,11 +191,9 @@ This repo ships Claude Code skills in `.claude/skills/`:
 
 ## 10. Phase 2 — bonus (new stack)
 
-- **Bonus model:** `bonus/{seasonId}/questions/{questionId}` (config, seeded from
-  `bonus_config`) + `bonus/{seasonId}/answers/{userId}` (one doc per user, a map
-  `questionId → { clubIds: number[], playerText: string|null }`). `seasonId` here
-  is again the API-Football year (`anneeDebut`, e.g. `2026`), NOT the legacy
-  `saison_id`.
+- **Bonus model:** `bonus/{competitionSeasonId}/questions/{questionId}` (config, seeded from
+  `bonus_config`) + `bonus/{competitionSeasonId}/answers/{userId}` (one doc per user, a map
+  `questionId → { clubIds: number[], playerText: string|null }`).
 - **Bonus answer types:** `club` (1 pick → `clubIds.length == 1`), `multi_club`
   (`nbChoix` distinct picks), `joueur` (free text in `playerText`, empty
   `clubIds`). `validateBonusAnswerForQuestion` enforces this; scoring is
@@ -243,4 +245,3 @@ This repo ships Claude Code skills in `.claude/skills/`:
   firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
   for local firebase commands targeting this app. (The GitHub Actions deploy is
   fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
-

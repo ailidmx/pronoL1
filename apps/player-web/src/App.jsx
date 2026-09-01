@@ -13,6 +13,7 @@ import Odds from "./Odds.jsx";
 import Communities from "./Communities.jsx";
 import Adsense, { PlayerAdSlot, shouldShowAds } from "./Adsense.jsx";
 import styles from "./App.module.scss";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 const THEME_STORAGE_KEY = "prono-l1-theme";
 
@@ -37,6 +38,7 @@ function getInviteCode() {
 }
 
 function App() {
+  const competitionSeason = useCompetitionSeason();
   const initialInviteCode = getInviteCode();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -115,6 +117,8 @@ function App() {
   if (!user) return <Login />;
   if (access.error) return <div className={styles.denied}><h1>Vérification impossible</h1><p>Prono-L1 n’a pas pu vérifier les droits de ton compte. Réessaie dans quelques instants.</p><button type="button" onClick={() => checkAccess(user)}>Réessayer</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
   if (!access.allowed) return <div className={styles.denied}><h1>Accès refusé</h1><p>Ton compte n’a pas encore accès à l’application Prono-L1. Demande à un administrateur du projet de t’autoriser.</p><button type="button" onClick={() => checkAccess(user)}>Revérifier l’accès</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
+  if (competitionSeason.loading) return <div className={styles.loading}><img src="/icon-192.png" alt="" /><span>Chargement des compétitions…</span></div>;
+  if (competitionSeason.error || !competitionSeason.selection) return <div className={styles.denied}><h1>Configuration sportive invalide</h1><p>{competitionSeason.error || "Aucune compétition et saison actives ne sont configurées."}</p><button type="button" onClick={() => window.location.reload()}>Réessayer</button></div>;
 
   const adsEnabled = shouldShowAds(profile);
 
@@ -128,6 +132,12 @@ function App() {
         <button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button>
       </div>
     </header>
+    <section className={styles.competitionBar} aria-label="Compétition et saison">
+      <label htmlFor="competition-season">Compétition</label>
+      <select id="competition-season" value={competitionSeason.selection?.key ?? ""} onChange={(event) => competitionSeason.select(event.target.value)} disabled={competitionSeason.loading || competitionSeason.selections.length < 2}>
+        {competitionSeason.selections.map((item) => <option key={item.key} value={item.key}>{item.competition.name} · {item.label}</option>)}
+      </select>
+    </section>
     <PlayerAdSlot enabled={adsEnabled} placement="masthead" />
     <nav className={styles.nav} aria-label="Navigation principale">
       {[

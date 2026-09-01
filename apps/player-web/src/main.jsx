@@ -6,12 +6,13 @@ import './product-features.scss'
 import './profile.scss'
 import App from './App.jsx'
 import InstallApp from './InstallApp.jsx'
+import { CompetitionSeasonProvider } from './CompetitionSeasonContext.jsx'
 
 const buildVersion = import.meta.env.VITE_BUILD_VERSION || 'dev'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <CompetitionSeasonProvider><App /></CompetitionSeasonProvider>
     <InstallApp />
     <footer className="app-version-footer" title="Version de build UTC">v{buildVersion}</footer>
   </StrictMode>,

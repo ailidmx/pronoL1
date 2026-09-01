@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase.js";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 function Standings() {
+  const { competitionId, competitionName, seasonId, seasonLabel } = useCompetitionSeason();
   const [mode, setMode] = useState("general");
   const [rows, setRows] = useState([]);
   const [clubNames, setClubNames] = useState({});
@@ -16,7 +18,7 @@ function Standings() {
       setError("");
       try {
         const [standingsSnap, clubsSnap] = await Promise.all([
-          getDoc(doc(db, "standings", `2026_${mode}`)),
+          getDoc(doc(db, "standings", `${competitionId}_${seasonId}_${mode}`)),
           getDocs(collection(db, "clubs")),
         ]);
         if (!mounted) return;
@@ -36,7 +38,7 @@ function Standings() {
     return () => {
       mounted = false;
     };
-  }, [mode]);
+  }, [competitionId, mode, seasonId]);
 
   if (loading) return <p>Chargement du classement…</p>;
   if (error) return <p className="error">Erreur : {error}</p>;
@@ -45,7 +47,7 @@ function Standings() {
 
   return (
     <section className="standings">
-      <div className="section-title-row"><div><p className="section-kicker">Championnat</p><h2>Classement Ligue 1</h2></div></div>
+      <div className="section-title-row"><div><p className="section-kicker">{seasonLabel}</p><h2>Classement {competitionName}</h2></div></div>
       <div className="view-switcher"><button type="button" className={mode === "general" ? "active" : ""} onClick={() => setMode("general")}>📊 Général</button><button type="button" className={mode === "domicile" ? "active" : ""} onClick={() => setMode("domicile")}>🏠 Domicile</button><button type="button" className={mode === "exterieur" ? "active" : ""} onClick={() => setMode("exterieur")}>✈️ Extérieur</button></div>
       <div className="table-scroll"><table>
         <thead>

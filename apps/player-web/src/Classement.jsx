@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase.js";
 import { getPronosticsLeaderboard } from "./callables.js";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 function Classement() {
+  const { competitionName, competitionSeasonId, seasonLabel } = useCompetitionSeason();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -11,20 +11,10 @@ function Classement() {
   useEffect(() => {
     let mounted = true;
     async function load() {
+      setLoading(true);
+      setError("");
       try {
-        // Current season (statut === "en_cours") → its anneeDebut is the
-        // leaderboard key (same seasonId as on the synced matches).
-        const seasonsSnap = await getDocs(collection(db, "seasons"));
-        let seasonKey = null;
-        seasonsSnap.forEach((d) => {
-          if (d.data().statut === "en_cours") seasonKey = String(d.data().anneeDebut);
-        });
-        if (!seasonKey) {
-          if (mounted) setError("Aucune saison en cours.");
-          return;
-        }
-
-        const leaderboard = await getPronosticsLeaderboard({ seasonId: seasonKey });
+        const leaderboard = await getPronosticsLeaderboard({ competitionSeasonId });
         if (!mounted) return;
         setRows(leaderboard.data.rows ?? []);
       } catch (err) {
@@ -37,7 +27,7 @@ function Classement() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [competitionSeasonId]);
 
   if (loading) return <p>Chargement du classement…</p>;
   if (error) return <p className="error">Erreur : {error}</p>;
@@ -45,7 +35,7 @@ function Classement() {
 
   return (
     <section className="classement">
-      <div className="section-title-row"><div><p className="section-kicker">Tous les joueurs</p><h2>Podium des pronostiqueurs</h2></div></div>
+      <div className="section-title-row"><div><p className="section-kicker">{competitionName} · {seasonLabel}</p><h2>Podium des pronostiqueurs</h2></div></div>
       <div className="podium">{rows.slice(0, 3).map((row) => <article key={row.userId} className={`podium-rank podium-rank-${row.rank}`}><span>{row.rank === 1 ? "🥇" : row.rank === 2 ? "🥈" : "🥉"}</span><strong>{row.displayName}</strong><b>{row.points} pts</b></article>)}</div>
       <div className="table-scroll"><table>
         <thead>

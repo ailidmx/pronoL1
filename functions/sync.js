@@ -11,6 +11,7 @@ const apiFootballKey = defineSecret("API_FOOTBALL_KEY");
 const API_BASE = "https://v3.football.api-sports.io";
 const LIGUE1_ID = 61;
 const SEASON = 2026; // Ligue 1 2026-27 → start year 2026
+const COMPETITION_ID = "ligue-1";
 
 function mapStandingRows(rows, mode) {
   const mapped = (rows ?? []).map((s) => {
@@ -78,13 +79,14 @@ export const syncFootballData = onSchedule(
       );
     }
 
-    // 2. Standings → standings/{seasonId}_general
+    // 2. Standings → standings/{competitionId}_{seasonId}_general
     const standings = await apiFootball(`/standings?league=${LIGUE1_ID}&season=${SEASON}`);
     const league = standings.response?.[0]?.league;
     const rawRows = league?.standings?.[0] ?? [];
     const rows = mapStandingRows(rawRows, "general");
     for (const mode of ["general", "domicile", "exterieur"]) {
-      await db.collection(collections.standings).doc(`${SEASON}_${mode}`).set({
+      await db.collection(collections.standings).doc(`${COMPETITION_ID}_${SEASON}_${mode}`).set({
+        competitionId: COMPETITION_ID,
         seasonId: SEASON,
         mode,
         rows: mapStandingRows(rawRows, mode),
@@ -184,6 +186,7 @@ export const syncFixtures = onSchedule(
       await db.collection(collections.matches).doc(String(f.id)).set(
         {
           seasonId: SEASON,
+          competitionId: COMPETITION_ID,
           apfFixtureId: f.id,
           journee,
           date: f.date ?? null,

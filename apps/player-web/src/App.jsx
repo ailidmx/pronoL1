@@ -11,7 +11,18 @@ import Bonus from "./Bonus.jsx";
 import Quiz from "./Quiz.jsx";
 import Odds from "./Odds.jsx";
 import Communities from "./Communities.jsx";
+import Adsense, { PlayerAdSlot, shouldShowAds } from "./Adsense.jsx";
 import styles from "./App.module.scss";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
+
+const THEME_STORAGE_KEY = "prono-l1-theme";
+
+function getInitialTheme() {
+  if (typeof window === "undefined") return "dark";
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
 
 function hasPlayerAccess(profile) {
   return profile?.isAdmin === true || profile?.isAllowed === true;
@@ -27,15 +38,19 @@ function getInviteCode() {
 }
 
 function App() {
+  const competitionSeason = useCompetitionSeason();
   const initialInviteCode = getInviteCode();
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(initialInviteCode ? "communautes" : "pronostics");
   const [pronoTab, setPronoTab] = useState("journee");
+  const [theme, setTheme] = useState(getInitialTheme);
   const [access, setAccess] = useState({ checking: true, allowed: false, error: false });
 
   async function checkAccess(u) {
     setAccess({ checking: true, allowed: false, error: false });
+    setProfile(null);
 
     let callableSucceeded = false;
     let callableAllowed = false;
@@ -44,6 +59,7 @@ function App() {
       callableSucceeded = true;
       callableAllowed = hasPlayerAccess(data);
       if (callableAllowed) {
+        setProfile(data);
         setAccess({ checking: false, allowed: true, error: false });
         return;
       }
@@ -54,7 +70,9 @@ function App() {
     try {
       const snapshot = await getDoc(doc(db, "users", u.uid));
       if (snapshot.exists()) {
-        setAccess({ checking: false, allowed: hasPlayerAccess(snapshot.data()), error: false });
+        const data = snapshot.data();
+        setProfile(data);
+        setAccess({ checking: false, allowed: hasPlayerAccess(data), error: false });
         return;
       }
 
@@ -74,9 +92,16 @@ function App() {
   }
 
   useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) {
         setUser(null);
+        setProfile(null);
         setAccess({ checking: false, allowed: false, error: false });
         setLoading(false);
         return;
@@ -92,12 +117,28 @@ function App() {
   if (!user) return <Login />;
   if (access.error) return <div className={styles.denied}><h1>Vérification impossible</h1><p>Prono-L1 n’a pas pu vérifier les droits de ton compte. Réessaie dans quelques instants.</p><button type="button" onClick={() => checkAccess(user)}>Réessayer</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
   if (!access.allowed) return <div className={styles.denied}><h1>Accès refusé</h1><p>Ton compte n’a pas encore accès à l’application Prono-L1. Demande à un administrateur du projet de t’autoriser.</p><button type="button" onClick={() => checkAccess(user)}>Revérifier l’accès</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
+  if (competitionSeason.loading) return <div className={styles.loading}><img src="/icon-192.png" alt="" /><span>Chargement des compétitions…</span></div>;
+  if (competitionSeason.error || !competitionSeason.selection) return <div className={styles.denied}><h1>Configuration sportive invalide</h1><p>{competitionSeason.error || "Aucune compétition et saison actives ne sont configurées."}</p><button type="button" onClick={() => window.location.reload()}>Réessayer</button></div>;
+
+  const adsEnabled = shouldShowAds(profile);
 
   return <div className={styles.app}>
+    <Adsense enabled={adsEnabled} />
     <header className={styles.header}>
       <div className={styles.brand}><img src="/icon-192.png" alt="" /><div><h1>Prono L1</h1><small>Prévois. Gagne. Partage.</small></div></div>
-      <div className={styles.user}><span className={styles.email}>{user.email}</span><button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button></div>
+      <div className={styles.user}>
+        <span className={styles.email}>{user.email}</span>
+        <button className={styles.themeToggle} type="button" onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")} aria-label={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"} title={theme === "dark" ? "Thème clair" : "Thème sombre"}>{theme === "dark" ? "☀️" : "🌙"}</button>
+        <button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button>
+      </div>
     </header>
+    <section className={styles.competitionBar} aria-label="Compétition et saison">
+      <label htmlFor="competition-season">Compétition</label>
+      <select id="competition-season" value={competitionSeason.selection?.key ?? ""} onChange={(event) => competitionSeason.select(event.target.value)} disabled={competitionSeason.loading || competitionSeason.selections.length < 2}>
+        {competitionSeason.selections.map((item) => <option key={item.key} value={item.key}>{item.competition.name} · {item.label}</option>)}
+      </select>
+    </section>
+    <PlayerAdSlot enabled={adsEnabled} placement="masthead" />
     <nav className={styles.nav} aria-label="Navigation principale">
       {[
         ["pronostics", "📅", "Pronos / Matchs"],
@@ -112,12 +153,14 @@ function App() {
       {page === "pronostics" ? <>
         <nav className={styles.subnav} aria-label="Pronostics"><button type="button" className={pronoTab === "journee" ? styles.active : ""} onClick={() => setPronoTab("journee")}>Journée</button><button type="button" className={pronoTab === "historique" ? styles.active : ""} onClick={() => setPronoTab("historique")}>Mes pronos</button><button type="button" className={pronoTab === "cotes" ? styles.active : ""} onClick={() => setPronoTab("cotes")}>Cotes</button><button type="button" className={pronoTab === "bonus" ? styles.active : ""} onClick={() => setPronoTab("bonus")}>Bonus</button></nav>
         {pronoTab === "journee" ? <Matches /> : pronoTab === "historique" ? <Matches mode="history" /> : pronoTab === "cotes" ? <Odds /> : <Bonus />}
+        <PlayerAdSlot enabled={adsEnabled} placement="pronostics" />
       </> : null}
-      {page === "podium" ? <Classement /> : null}
-      {page === "communautes" ? <Communities initialInviteCode={initialInviteCode} /> : null}
-      {page === "quiz" ? <Quiz /> : null}
-      {page === "championnat" ? <Standings /> : null}
+      {page === "podium" ? <><Classement /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
+      {page === "communautes" ? <><Communities initialInviteCode={initialInviteCode} /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
+      {page === "quiz" ? <><Quiz /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
+      {page === "championnat" ? <><Standings /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
       {page === "profil" ? <><Profile /><button type="button" onClick={() => auth.signOut()}>Déconnexion</button></> : null}
+      {page !== "profil" ? <PlayerAdSlot enabled={adsEnabled} placement="bottom" /> : null}
     </main>
   </div>;
 }

@@ -8,10 +8,11 @@ import {
   subcollections,
   decomposePoints,
   DEFAULT_BAREME,
+  buildCompetitionSeasonId,
 } from "@prono-l1/domain";
 
 // Scores pronostics of finished matches not yet scored, then materializes the
-// per-player leaderboard (leaderboardPronostics/{seasonId}/rows/{userId}).
+// per-player leaderboard (leaderboardPronostics/{competitionSeasonId}/rows/{userId}).
 export const scoreFinishedMatches = onSchedule(
   { schedule: "*/15 * * * *", timeoutSeconds: 300 },
   async () => {
@@ -28,7 +29,8 @@ export const scoreFinishedMatches = onSchedule(
       const scoreDom = match.scoreDom;
       const scoreExt = match.scoreExt;
       if (scoreDom == null || scoreExt == null) continue;
-      const seasonId = match.seasonId;
+      const competitionSeasonId = buildCompetitionSeasonId(match.competitionId, match.seasonId);
+      if (!competitionSeasonId) throw new Error(`Match ${matchDoc.id} has no canonical competition-season identity.`);
 
       const pronosSnap = await matchDoc.ref.collection(subcollections.pronostics).get();
       for (const pDoc of pronosSnap.docs) {
@@ -44,9 +46,7 @@ export const scoreFinishedMatches = onSchedule(
           },
           { merge: true },
         );
-        if (seasonId != null) {
-          await addLeaderboardPoints(db, String(seasonId), pDoc.id, decomposition);
-        }
+        await addLeaderboardPoints(db, competitionSeasonId, pDoc.id, decomposition);
         scoredPronostics++;
       }
 
@@ -58,10 +58,10 @@ export const scoreFinishedMatches = onSchedule(
   },
 );
 
-async function addLeaderboardPoints(db, seasonId, userId, d) {
+async function addLeaderboardPoints(db, competitionSeasonId, userId, d) {
   const rowRef = db
     .collection(collections.leaderboardPronostics)
-    .doc(seasonId)
+    .doc(competitionSeasonId)
     .collection("rows")
     .doc(userId);
   const rowSnap = await rowRef.get();

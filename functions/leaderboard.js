@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore } from "firebase-admin/firestore";
-import { collections } from "@prono-l1/domain";
+import { collections, parseCompetitionSeasonId } from "@prono-l1/domain";
 
 const db = getFirestore();
 
@@ -12,12 +12,12 @@ const db = getFirestore();
 export const getPronosticsLeaderboard = onCall({ cors: true }, async (request) => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Authentication required.");
 
-  const seasonId = String(request.data?.seasonId ?? "");
-  if (!/^\d{4}$/.test(seasonId)) throw new HttpsError("invalid-argument", "Invalid seasonId.");
+  const competitionSeasonId = String(request.data?.competitionSeasonId ?? "");
+  if (!parseCompetitionSeasonId(competitionSeasonId)) throw new HttpsError("invalid-argument", "Invalid competitionSeasonId.");
 
   const rowsSnapshot = await db
     .collection(collections.leaderboardPronostics)
-    .doc(seasonId)
+    .doc(competitionSeasonId)
     .collection("rows")
     .get();
 
@@ -32,7 +32,7 @@ export const getPronosticsLeaderboard = onCall({ cors: true }, async (request) =
   let previousPoints = null;
   let previousRank = 0;
   return {
-    seasonId,
+    competitionSeasonId,
     rows: rows.map((row, index) => {
       const rank = row.points === previousPoints ? previousRank : index + 1;
       previousPoints = row.points;

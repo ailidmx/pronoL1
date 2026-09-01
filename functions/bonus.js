@@ -8,6 +8,7 @@ import {
   validateBonusAnswer,
   validateBonusAnswerForQuestion,
   buildBonusAnswerPayload,
+  parseCompetitionSeasonId,
 } from "@prono-l1/domain";
 
 // Save (or update) the signed-in user's answer to one bonus question.
@@ -16,7 +17,7 @@ export const saveBonusAnswer = onCall({ cors: true }, async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required.");
   }
   const uid = request.auth.uid;
-  const { seasonId, questionId } = request.data ?? {};
+  const { competitionSeasonId, questionId } = request.data ?? {};
   const raw = request.data?.answer ?? {};
 
   // Normalize (undefined → null/[]) so Firestore never receives `undefined`.
@@ -25,8 +26,8 @@ export const saveBonusAnswer = onCall({ cors: true }, async (request) => {
     playerText: typeof raw.playerText === "string" && raw.playerText.trim() ? raw.playerText : null,
   };
 
-  if (typeof seasonId !== "string" || !seasonId) {
-    throw new HttpsError("invalid-argument", "seasonId is required.");
+  if (!parseCompetitionSeasonId(competitionSeasonId)) {
+    throw new HttpsError("invalid-argument", "competitionSeasonId is invalid.");
   }
   if (typeof questionId !== "string" || !questionId) {
     throw new HttpsError("invalid-argument", "questionId is required.");
@@ -36,7 +37,7 @@ export const saveBonusAnswer = onCall({ cors: true }, async (request) => {
   }
 
   const db = getFirestore();
-  const qRef = db.collection(collections.bonus).doc(seasonId).collection("questions").doc(questionId);
+  const qRef = db.collection(collections.bonus).doc(competitionSeasonId).collection("questions").doc(questionId);
   const qSnap = await qRef.get();
   if (!qSnap.exists) {
     throw new HttpsError("not-found", "Bonus question not found.");
@@ -53,7 +54,7 @@ export const saveBonusAnswer = onCall({ cors: true }, async (request) => {
   }
 
   const payload = buildBonusAnswerPayload(answer);
-  const ansRef = db.collection(collections.bonus).doc(seasonId).collection("answers").doc(uid);
+  const ansRef = db.collection(collections.bonus).doc(competitionSeasonId).collection("answers").doc(uid);
   const ansSnap = await ansRef.get();
   const answers = ansSnap.exists ? (ansSnap.data().answers ?? {}) : {};
   answers[questionId] = { clubIds: payload.clubIds, playerText: payload.playerText ?? null };

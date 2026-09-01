@@ -81,9 +81,13 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Authentication required.");
   const access = await loadRequestAccess(db, request);
   const uid = access.uid;
+  const competitionId = String(request.data?.competitionId ?? "");
   const seasonId = Number(request.data?.seasonId);
   const scope = request.data?.scope === "history" ? "history" : "journey";
   const requestedJourney = Number(request.data?.journey);
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(competitionId)) {
+    throw new HttpsError("invalid-argument", "Invalid competitionId.");
+  }
   if (!Number.isInteger(seasonId) || seasonId < 2000 || seasonId > 2100) {
     throw new HttpsError("invalid-argument", "Invalid seasonId.");
   }
@@ -93,7 +97,9 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
   };
 
   const snapshot = await db.collection(collections.matches).where("seasonId", "==", seasonId).get();
-  const allMatchDocs = snapshot.docs.sort((a, b) => String(a.data().date ?? "").localeCompare(String(b.data().date ?? "")));
+  const allMatchDocs = snapshot.docs
+    .filter((match) => match.data().competitionId === competitionId)
+    .sort((a, b) => String(a.data().date ?? "").localeCompare(String(b.data().date ?? "")));
   const journeys = [...new Set(allMatchDocs.map((match) => match.data().journee).filter(Number.isInteger))].sort((a, b) => a - b);
 
   let selectedJourney = requestedJourney;
@@ -133,6 +139,7 @@ export const getPlayerMatchCenter = onCall({ cors: true }, async (request) => {
   const playerNames = new Map(playerSnapshots.map((player) => [player.id, player.data()?.displayName || "Joueur"]));
 
   return {
+    competitionId,
     seasonId,
     scope,
     journeys,

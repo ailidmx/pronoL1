@@ -13,7 +13,7 @@ import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { collections } from "@prono-l1/domain";
 
-const SEASON_ID = "2026";
+const COMPETITION_SEASON_ID = "ligue-1:2026";
 const DRY_RUN = !process.argv.includes("--execute");
 
 const QUESTIONS = [
@@ -35,20 +35,20 @@ async function main() {
     initializeApp({ projectId: "pronol1", credential: applicationDefault() });
   }
   const db = getFirestore();
-  console.log(`${DRY_RUN ? "[dry-run]" : "[execute]"} Seeding ${QUESTIONS.length} bonus questions → bonus/${SEASON_ID}/questions`);
+  console.log(`${DRY_RUN ? "[dry-run]" : "[execute]"} Seeding ${QUESTIONS.length} bonus questions → bonus/${COMPETITION_SEASON_ID}/questions`);
 
   for (const q of QUESTIONS) {
     const doc = {
       ...q,
-      seasonId: SEASON_ID,
+      competitionSeasonId: COMPETITION_SEASON_ID,
       dateLimite: DATE_LIMITE,
       actif: true,
     };
     if (DRY_RUN) {
-      console.log(`  would set bonus/${SEASON_ID}/questions/${q.id}: ${q.label}`);
+      console.log(`  would set bonus/${COMPETITION_SEASON_ID}/questions/${q.id}: ${q.label}`);
     } else {
-      await db.collection(collections.bonus).doc(SEASON_ID).collection("questions").doc(String(q.id)).set(doc, { merge: true });
-      console.log(`  set bonus/${SEASON_ID}/questions/${q.id}: ${q.label}`);
+      await db.collection(collections.bonus).doc(COMPETITION_SEASON_ID).collection("questions").doc(String(q.id)).set(doc, { merge: true });
+      console.log(`  set bonus/${COMPETITION_SEASON_ID}/questions/${q.id}: ${q.label}`);
     }
   }
   console.log("Done.");

@@ -42,6 +42,8 @@ export default async function HomePage() {
         inLanguage: "fr-FR",
       }} />
 
+      <AdSlot name="home-masthead" format="billboard" />
+
       <section className="hero landing-hero">
         <div>
           <p className="eyebrow">{publicContent.hero.eyebrow}</p>
@@ -63,7 +65,7 @@ export default async function HomePage() {
         <div className="feature-grid">{publicContent.featureCards.map((feature, index) => <article key={feature.title}><span>0{index + 1}</span><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</div>
       </section>
 
-      <AdSlot name="home-top" format="leaderboard" />
+      <AdSlot name="home-after-features" format="leaderboard" />
 
       <section className="section-shell" id="resultats">
         <div className="section-heading standalone"><div><p className="eyebrow">Ligue 1</p><h2>Derniers résultats</h2></div><a href="/ligue-1/2026-2027">Tous les matchs</a></div>
@@ -79,6 +81,8 @@ export default async function HomePage() {
         <div className="section-intro"><p className="eyebrow">Couverture</p><h2>La France aujourd’hui. L’Europe ensuite.</h2><p>Le moteur est conçu pour accueillir plusieurs compétitions sans dupliquer la logique ni créer de pages pauvres.</p></div>
         <div className="competition-grid">{competitions.map((competition) => <article className={competition.status === "live" ? "is-live" : ""} key={competition.id}><span>{competition.shortName}</span><div><h3>{competition.name}</h3><p>{competition.status === "live" ? "Disponible" : "Ouverture planifiée"}</p></div></article>)}</div>
       </section>
+
+      <AdSlot name="home-mid-content" format="in-feed" />
 
       <section className="section-shell" id="offres">
         <div className="section-intro"><p className="eyebrow">Simple et transparent</p><h2>Commence gratuitement.</h2><p>Les informations essentielles restent accessibles. Les fonctions avancées et le confort sans publicité financent la plateforme.</p></div>

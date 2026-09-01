@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { auth, db, saveBonusAnswer } from "./firebase.js";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 function emptyAnswer(q) {
   return {
@@ -10,7 +11,7 @@ function emptyAnswer(q) {
 }
 
 function Bonus() {
-  const [seasonId, setSeasonId] = useState(null);
+  const { competitionSeasonId } = useCompetitionSeason();
   const [questions, setQuestions] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [drafts, setDrafts] = useState({});
@@ -22,22 +23,14 @@ function Bonus() {
   useEffect(() => {
     let mounted = true;
     async function load() {
+      setLoading(true);
+      setError("");
       try {
-        const seasonsSnap = await getDocs(collection(db, "seasons"));
-        let seasonKey = null;
-        seasonsSnap.forEach((d) => {
-          if (d.data().statut === "en_cours") seasonKey = String(d.data().anneeDebut);
-        });
-        if (!seasonKey) {
-          if (mounted) setError("Aucune saison en cours.");
-          return;
-        }
-
         const uid = auth.currentUser?.uid;
         const [questionsSnap, clubsSnap, answersSnap] = await Promise.all([
-          getDocs(collection(db, "bonus", seasonKey, "questions")),
+          getDocs(collection(db, "bonus", competitionSeasonId, "questions")),
           getDocs(collection(db, "clubs")),
-          uid ? getDoc(doc(db, "bonus", seasonKey, "answers", uid)) : Promise.resolve(null),
+          uid ? getDoc(doc(db, "bonus", competitionSeasonId, "answers", uid)) : Promise.resolve(null),
         ]);
         if (!mounted) return;
 
@@ -63,7 +56,6 @@ function Bonus() {
             : emptyAnswer(q);
         }
         setDrafts(init);
-        setSeasonId(seasonKey);
       } catch (err) {
         if (mounted) setError(err.message);
       } finally {
@@ -74,7 +66,7 @@ function Bonus() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [competitionSeasonId]);
 
   function setPick(q, index, value) {
     setDrafts((prev) => {
@@ -101,7 +93,7 @@ function Bonus() {
     }
     const playerText = q.type === "joueur" ? (draft.playerText.trim() || null) : null;
     try {
-      await saveBonusAnswer({ seasonId, questionId: q.id, answer: { clubIds, playerText } });
+      await saveBonusAnswer({ competitionSeasonId, questionId: q.id, answer: { clubIds, playerText } });
       setSavedId(q.id);
     } catch (err) {
       setError(err.message);
@@ -173,4 +165,3 @@ function formatDate(value) {
 }
 
 export default Bonus;
-

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { savePronostic } from "./firebase.js";
 import { getPlayerMatchCenter } from "./callables.js";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 function PronosticForm({ matchId, initial, onSaved }) {
   const [home, setHome] = useState(initial?.homeScore ?? "");
@@ -75,6 +76,7 @@ function MatchDetails({ match, clubs }) {
 }
 
 export default function Matches({ mode = "journey" }) {
+  const { competitionId, competitionName, seasonId, seasonLabel } = useCompetitionSeason();
   const [data, setData] = useState(null);
   const [journey, setJourney] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -84,7 +86,7 @@ export default function Matches({ mode = "journey" }) {
     setLoading(true);
     setError("");
     try {
-      const response = await getPlayerMatchCenter({ seasonId: 2026, scope: mode, journey: nextJourney });
+      const response = await getPlayerMatchCenter({ competitionId, seasonId, scope: mode, journey: nextJourney });
       setData(response.data);
       setJourney(response.data.selectedJourney);
     } catch (loadError) {
@@ -92,12 +94,12 @@ export default function Matches({ mode = "journey" }) {
     } finally {
       setLoading(false);
     }
-  }, [journey, mode]);
+  }, [competitionId, journey, mode, seasonId]);
 
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect
     load(null);
-  }, [mode]); // oxlint-disable-line react-hooks/exhaustive-deps
+  }, [competitionId, mode, seasonId]); // oxlint-disable-line react-hooks/exhaustive-deps
 
   function handleSaved(matchId, prediction) {
     setData((current) => ({ ...current, matches: current.matches.map((match) => match.id === matchId ? { ...match, myPrediction: prediction } : match) }));
@@ -108,7 +110,7 @@ export default function Matches({ mode = "journey" }) {
   const journeys = data?.journeys ?? [];
   const index = journeys.indexOf(journey);
   return <section className="matches">
-    <div className="section-title-row"><div><p className="section-kicker">{mode === "history" ? "Mes résultats" : "Saison 2026-2027"}</p><h2>{mode === "history" ? "Historique de mes pronostics" : `Journée ${journey ?? "–"}`}</h2></div>{loading ? <span className="refreshing">Actualisation…</span> : null}</div>
+    <div className="section-title-row"><div><p className="section-kicker">{mode === "history" ? `Mes résultats · ${competitionName} ${seasonLabel}` : `${competitionName} · ${seasonLabel}`}</p><h2>{mode === "history" ? "Historique de mes pronostics" : `Journée ${journey ?? "–"}`}</h2></div>{loading ? <span className="refreshing">Actualisation…</span> : null}</div>
     {mode === "journey" ? <div className="journey-nav"><button type="button" onClick={() => load(journeys[0])} disabled={index <= 0} aria-label="Première journée">⏮</button><button type="button" onClick={() => load(journeys[index - 1])} disabled={index <= 0} aria-label="Journée précédente">◀</button><select value={journey ?? ""} onChange={(event) => load(Number(event.target.value))} aria-label="Choisir une journée">{journeys.map((number) => <option key={number} value={number}>Journée {number}</option>)}</select><button type="button" onClick={() => load(journeys[index + 1])} disabled={index < 0 || index >= journeys.length - 1} aria-label="Journée suivante">▶</button><button type="button" onClick={() => load(journeys.at(-1))} disabled={index < 0 || index >= journeys.length - 1} aria-label="Dernière journée">⏭</button></div> : null}
     {error ? <p className="error">{error}</p> : null}
     <div className="match-list">{data?.matches?.length ? data.matches.map((match) => <MatchCard key={match.id} match={match} clubs={data.clubs} onSaved={handleSaved} />) : <p className="empty-state">Aucun match à afficher.</p>}</div>

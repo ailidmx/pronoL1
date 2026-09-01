@@ -16,6 +16,7 @@ Architecture overview: `docs/architecture.md`.
 
 Docs: `docs/guide_prono_l1.md` (player guide), `docs/faq_prono_l1.pdf`,
 `docs/design_groupes_prives.md` (future private groups — not coded yet),
+`docs/legacy-parity/README.md` (exhaustive legacy-to-modern parity program),
 `recap-session-*.md` (work-session notes / where the last session left off).
 
 ## 2. Current state (LEGACY — PHP + MySQL + vanilla JS)
@@ -121,6 +122,13 @@ Agreed direction (finalize each decision as it is implemented):
 - Don't hardcode user-facing copy — centralize it (a `content` module in the new
   stack).
 - Reuse components (atomic design in the new frontend) — don't reinvent.
+- The PHP Player is the functional and interaction reference for the React
+  migration. A feature is not migrated merely because a similarly named screen
+  exists. Track full parity through `docs/legacy-parity/` and do not remove or
+  simplify a legacy capability without an explicit product decision.
+- Legacy visual density, mobile actions, dark/light themes and multichannel
+  notifications are product requirements. New branded Player/Admin icons remain
+  the only valid icon/splash assets.
 
 ## 7. Skills
 
@@ -235,5 +243,4 @@ This repo ships Claude Code skills in `.claude/skills/`:
   firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
   for local firebase commands targeting this app. (The GitHub Actions deploy is
   fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
-
 

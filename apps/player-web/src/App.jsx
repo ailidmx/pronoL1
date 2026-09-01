@@ -11,7 +11,7 @@ import Bonus from "./Bonus.jsx";
 import Quiz from "./Quiz.jsx";
 import Odds from "./Odds.jsx";
 import Communities from "./Communities.jsx";
-import Adsense, { shouldShowAds } from "./Adsense.jsx";
+import Adsense, { PlayerAdSlot, shouldShowAds } from "./Adsense.jsx";
 import styles from "./App.module.scss";
 
 function hasPlayerAccess(profile) {
@@ -100,12 +100,15 @@ function App() {
   if (access.error) return <div className={styles.denied}><h1>Vérification impossible</h1><p>Prono-L1 n’a pas pu vérifier les droits de ton compte. Réessaie dans quelques instants.</p><button type="button" onClick={() => checkAccess(user)}>Réessayer</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
   if (!access.allowed) return <div className={styles.denied}><h1>Accès refusé</h1><p>Ton compte n’a pas encore accès à l’application Prono-L1. Demande à un administrateur du projet de t’autoriser.</p><button type="button" onClick={() => checkAccess(user)}>Revérifier l’accès</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
 
+  const adsEnabled = shouldShowAds(profile);
+
   return <div className={styles.app}>
-    <Adsense enabled={shouldShowAds(profile)} />
+    <Adsense enabled={adsEnabled} />
     <header className={styles.header}>
       <div className={styles.brand}><img src="/icon-192.png" alt="" /><div><h1>Prono L1</h1><small>Prévois. Gagne. Partage.</small></div></div>
       <div className={styles.user}><span className={styles.email}>{user.email}</span><button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button></div>
     </header>
+    <PlayerAdSlot enabled={adsEnabled} placement="masthead" />
     <nav className={styles.nav} aria-label="Navigation principale">
       {[
         ["pronostics", "📅", "Pronos / Matchs"],
@@ -120,12 +123,14 @@ function App() {
       {page === "pronostics" ? <>
         <nav className={styles.subnav} aria-label="Pronostics"><button type="button" className={pronoTab === "journee" ? styles.active : ""} onClick={() => setPronoTab("journee")}>Journée</button><button type="button" className={pronoTab === "historique" ? styles.active : ""} onClick={() => setPronoTab("historique")}>Mes pronos</button><button type="button" className={pronoTab === "cotes" ? styles.active : ""} onClick={() => setPronoTab("cotes")}>Cotes</button><button type="button" className={pronoTab === "bonus" ? styles.active : ""} onClick={() => setPronoTab("bonus")}>Bonus</button></nav>
         {pronoTab === "journee" ? <Matches /> : pronoTab === "historique" ? <Matches mode="history" /> : pronoTab === "cotes" ? <Odds /> : <Bonus />}
+        <PlayerAdSlot enabled={adsEnabled} placement="pronostics" />
       </> : null}
-      {page === "podium" ? <Classement /> : null}
-      {page === "communautes" ? <Communities initialInviteCode={initialInviteCode} /> : null}
-      {page === "quiz" ? <Quiz /> : null}
-      {page === "championnat" ? <Standings /> : null}
+      {page === "podium" ? <><Classement /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
+      {page === "communautes" ? <><Communities initialInviteCode={initialInviteCode} /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
+      {page === "quiz" ? <><Quiz /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
+      {page === "championnat" ? <><Standings /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
       {page === "profil" ? <><Profile /><button type="button" onClick={() => auth.signOut()}>Déconnexion</button></> : null}
+      {page !== "profil" ? <PlayerAdSlot enabled={adsEnabled} placement="bottom" /> : null}
     </main>
   </div>;
 }

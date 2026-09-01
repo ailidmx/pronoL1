@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import { getPlayerMatchCenter } from "./callables.js";
+import { useCompetitionSeason } from "./CompetitionSeasonContext.jsx";
 
 function odd(value) {
   return Number.isFinite(value) ? Number(value).toFixed(2) : "—";
 }
 
 export default function Odds() {
+  const { competitionId, seasonId } = useCompetitionSeason();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    getPlayerMatchCenter({ seasonId: 2026, scope: "journey" })
+    setData(null);
+    setError("");
+    getPlayerMatchCenter({ competitionId, seasonId, scope: "journey" })
       .then((response) => setData(response.data))
       .catch((reason) => setError(reason.message || "Cotes indisponibles."));
-  }, []);
+  }, [competitionId, seasonId]);
 
   if (error) return <p className="feature-error">{error}</p>;
   if (!data) return <p>Chargement des cotes…</p>;

@@ -89,10 +89,10 @@ export function DocfootExperienceHeader() {
       </header>
 
       <div className="mobile-experience-actions" aria-label="Actions rapides">
-        <a className="mobile-action mobile-action-data" href="/#resultats">Lancer une analyse</a>
+        <a className="mobile-action mobile-action-data" href="/#resultats" data-experiment-action="launch-analysis" data-experiment-location="mobile-sticky">Lancer une analyse</a>
         <details className="mobile-action mobile-action-live">
           <summary>Pronostic flash <span>1 tap</span></summary>
-          <div><p>Qui gagne le prochain match ?</p><a href="/pronostics">Domicile</a><a href="/pronostics">Nul</a><a href="/pronostics">Extérieur</a></div>
+          <div><p>Qui gagne le prochain match ?</p><a href="/pronostics" data-experiment-action="flash-home" data-experiment-location="mobile-sheet">Domicile</a><a href="/pronostics" data-experiment-action="flash-draw" data-experiment-location="mobile-sheet">Nul</a><a href="/pronostics" data-experiment-action="flash-away" data-experiment-location="mobile-sheet">Extérieur</a></div>
         </details>
         <details className="mobile-action mobile-action-encyclopedia">
           <summary>Le saviez-vous ? <span>Découvrir</span></summary>

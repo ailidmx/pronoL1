@@ -45,7 +45,7 @@ export function AuthButton() {
   if (!user) return <a href="/connexion" className="auth-link">Se connecter</a>;
 
   const isAdmin = profile?.isAdmin === true;
-  const canUsePlayer = isAdmin || profile?.isAllowed === true;
+  const canUsePlayer = user.emailVerified && Boolean(profile);
 
   return (
     <div className="account-menu" ref={menuRef}>

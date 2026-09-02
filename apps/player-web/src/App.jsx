@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, reload, sendEmailVerification } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db, getProfile } from "./firebase.js";
+import { auth, authActionSettings, db, getProfile } from "./firebase.js";
 import Login from "./Login.jsx";
 import Standings from "./Standings.jsx";
 import Profile from "./Profile.jsx";
@@ -25,7 +25,7 @@ function getInitialTheme() {
 }
 
 function hasPlayerAccess(profile) {
-  return profile?.isAdmin === true || profile?.isAllowed === true;
+  return Boolean(profile);
 }
 
 function getInviteCode() {
@@ -47,10 +47,16 @@ function App() {
   const [pronoTab, setPronoTab] = useState("journee");
   const [theme, setTheme] = useState(getInitialTheme);
   const [access, setAccess] = useState({ checking: true, allowed: false, error: false });
+  const [verificationMessage, setVerificationMessage] = useState("");
 
   async function checkAccess(u) {
     setAccess({ checking: true, allowed: false, error: false });
     setProfile(null);
+
+    if (!u.emailVerified) {
+      setAccess({ checking: false, allowed: false, error: false });
+      return;
+    }
 
     let callableSucceeded = false;
     let callableAllowed = false;
@@ -115,8 +121,9 @@ function App() {
 
   if (loading || access.checking) return <div className={styles.loading}><img src="/icon-192.png" alt="" /><span>Chargement…</span></div>;
   if (!user) return <Login />;
+  if (!user.emailVerified) return <div className={styles.denied}><h1>Vérifie ton adresse email</h1><p>Nous avons envoyé un lien d’activation à <strong>{user.email}</strong>. Ouvre-le pour activer ton compte, puis reviens ici.</p>{verificationMessage && <p>{verificationMessage}</p>}<button type="button" onClick={async () => { setVerificationMessage(""); await reload(user); if (user.emailVerified) await checkAccess(user); else setVerificationMessage("L’adresse n’est pas encore vérifiée."); }}>J’ai vérifié mon email</button><button type="button" onClick={async () => { await sendEmailVerification(user, authActionSettings); setVerificationMessage("Un nouveau lien d’activation vient d’être envoyé."); }}>Renvoyer l’email</button><button type="button" onClick={() => auth.signOut()}>Changer d’adresse</button></div>;
   if (access.error) return <div className={styles.denied}><h1>Vérification impossible</h1><p>Prono-L1 n’a pas pu vérifier les droits de ton compte. Réessaie dans quelques instants.</p><button type="button" onClick={() => checkAccess(user)}>Réessayer</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
-  if (!access.allowed) return <div className={styles.denied}><h1>Accès refusé</h1><p>Ton compte n’a pas encore accès à l’application Prono-L1. Demande à un administrateur du projet de t’autoriser.</p><button type="button" onClick={() => checkAccess(user)}>Revérifier l’accès</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
+  if (!access.allowed) return <div className={styles.denied}><h1>Activation impossible</h1><p>Ton profil n’a pas pu être créé automatiquement. Réessaie dans quelques instants.</p><button type="button" onClick={() => checkAccess(user)}>Réessayer</button><button type="button" onClick={() => auth.signOut()}>Changer de compte</button></div>;
   if (competitionSeason.loading) return <div className={styles.loading}><img src="/icon-192.png" alt="" /><span>Chargement des compétitions…</span></div>;
   if (competitionSeason.error || !competitionSeason.selection) return <div className={styles.denied}><h1>Configuration sportive invalide</h1><p>{competitionSeason.error || "Aucune compétition et saison actives ne sont configurées."}</p><button type="button" onClick={() => window.location.reload()}>Réessayer</button></div>;
 

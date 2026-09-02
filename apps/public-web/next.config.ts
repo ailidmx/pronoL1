@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
   experimental: {
     typedRoutes: true,
   },
+  async rewrites() {
+    return [{ source: "/__/auth/:path*", destination: "https://pronol1.firebaseapp.com/__/auth/:path*" }];
+  },
   webpack(config) {
     config.resolve.alias["@"] = path.resolve(process.cwd(), "src");
     return config;

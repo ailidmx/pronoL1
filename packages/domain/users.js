@@ -31,7 +31,7 @@ export const DEFAULT_USER_PROFILE = {
   avatarInitiales: null,
   equipeCoeurId: null,
   isAdmin: false,
-  isAllowed: false,
+  isAllowed: true,
   isPremium: false,
   accessPlanId: "registered",
   notifEmail: true,

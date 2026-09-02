@@ -84,7 +84,7 @@ test("user profile validation", () => {
 
 test("default user profile is safe", () => {
   assert.equal(DEFAULT_USER_PROFILE.isAdmin, false);
-  assert.equal(DEFAULT_USER_PROFILE.isAllowed, false);
+  assert.equal(DEFAULT_USER_PROFILE.isAllowed, true);
   assert.equal(DEFAULT_USER_PROFILE.isPremium, false);
   assert.equal(DEFAULT_USER_PROFILE.notifEmail, true);
 });

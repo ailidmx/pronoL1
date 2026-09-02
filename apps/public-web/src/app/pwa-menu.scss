@@ -1,4 +1,7 @@
 .account-apps { display:grid; gap:.25rem; padding:.55rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.account-experience { display:grid; gap:.35rem; padding:.65rem .75rem; border-top:1px solid var(--line); }
+.account-experience>span { color:var(--muted); font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+.account-experience select { width:100%; padding:.58rem .65rem; border:1px solid var(--line); border-radius:.55rem; color:var(--ink); background:var(--panel); font:inherit; font-size:.8rem; cursor:pointer; }
 .account-apps>span { padding:.15rem .75rem; color:var(--muted); font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
 .account-apps>a,.install-app-menu>button { width:100%; padding:.58rem .75rem; border:0; border-radius:.45rem; color:var(--ink); background:transparent; font:inherit; font-size:.8rem; text-align:left; cursor:pointer; }
 .account-apps>a:hover,.install-app-menu>button:hover { background:#242a34; color:var(--accent); }

@@ -40,9 +40,9 @@ export default async function HomePage() {
         inLanguage: "fr-FR",
       }} />
 
-      <AdSlot name="home-masthead" format="billboard" />
       <ExperimentConversionTracker />
       <HomeExperienceHero matches={data?.matches.length ?? null} clubs={data?.clubs.length ?? null} updatedAt={data?.updatedAt ?? null} />
+      <AdSlot name="home-masthead" format="billboard" className="home-masthead-ad" />
 
       <section className="section-shell" id="fonctionnalites" data-experiment-section="features">
         <div className="section-intro"><p className="eyebrow">Une seule destination</p><h2>Le match, sans chercher partout.</h2><p>Chaque donnée importante possède sa propre page, son historique et ses liens vers les clubs, la journée et la compétition.</p></div>

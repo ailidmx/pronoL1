@@ -4,9 +4,10 @@ import Script from "next/script";
 import { useEffect } from "react";
 import { consentChangedEvent, consentStorageKey } from "@/lib/google/consent";
 import { publicThemeExperiment } from "@/lib/experiments/registry";
+import { publicExperienceChangedEvent, publicExperienceStorageKey } from "@/lib/experiments/client";
 
 const visitorStorageKey = "prono-l1-visitor-id-v1";
-const assignmentStorageKey = "docfoot-experience-assignment-v2";
+const assignmentStorageKey = publicExperienceStorageKey;
 const exposureStorageKey = "docfoot-exposure-experience-v2";
 const experimentKey = publicThemeExperiment.key;
 const experimentEnabled = publicThemeExperiment.enabled;
@@ -89,8 +90,13 @@ export function ExperimentBootstrap() {
   useEffect(() => {
     void captureExposure();
     const onConsentChanged = () => void captureExposure();
+    const onExperienceChanged = () => void captureExposure();
     window.addEventListener(consentChangedEvent, onConsentChanged);
-    return () => window.removeEventListener(consentChangedEvent, onConsentChanged);
+    window.addEventListener(publicExperienceChangedEvent, onExperienceChanged);
+    return () => {
+      window.removeEventListener(consentChangedEvent, onConsentChanged);
+      window.removeEventListener(publicExperienceChangedEvent, onExperienceChanged);
+    };
   }, []);
   return <Script id="public-experiment-bootstrap" strategy="beforeInteractive">{bootstrap}</Script>;
 }

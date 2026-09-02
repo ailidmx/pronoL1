@@ -141,6 +141,7 @@ html[data-public-theme] .feature-grid article>span { position:absolute; top:1.4r
 html[data-public-theme] .feature-grid h3 { margin:4rem 0 .5rem; text-align:center; text-wrap:balance; }
 html[data-public-theme] .feature-grid p { color:#dbe3ea; text-align:center; text-shadow:0 2px 12px #000; }
 html[data-public-theme="data-lab"] .feature-grid article { background-image:url('/experiences/docfoot-data-cards.jpg'); border-color:#0e87cc66; }
+html[data-public-theme="data-lab"] .feature-grid article:nth-child(even) { background-image:url('/experiences/docfoot-tactical-cards.jpg'); }
 html[data-public-theme="data-lab"] .data-panel,html[data-public-theme="data-lab"] .pricing-comparison-scroll { background:#0b2639; border-color:#0e87cc55; }
 html[data-public-theme="match-day"] .feature-grid article { background-image:url('/experiences/docfoot-live-cards.jpg'); border-color:#00e67655; }
 html[data-public-theme="match-day"] .data-panel,html[data-public-theme="match-day"] .pricing-comparison-scroll { background:#0d1422; border-color:#00e67635; }

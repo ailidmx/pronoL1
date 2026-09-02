@@ -80,12 +80,15 @@ export function DocfootExperienceHeader() {
               )}
             </section>
           ))}
+          <div className="experience-competition-row"><CompetitionSelector /></div>
         </div>
 
         <div className="header-navigation-row">
-          <CompetitionSelector />
           <nav className="header-nav" aria-label="Navigation principale"><PublicNav /></nav>
         </div>
+        <a className="prono-promo-banner" href="/pronostics">
+          <span>⚽ Prono L1</span><strong>Pronostique. Défie tes proches. Gagne le classement.</strong><b>Découvrir →</b>
+        </a>
       </header>
 
       <div className="mobile-experience-actions" aria-label="Actions rapides">

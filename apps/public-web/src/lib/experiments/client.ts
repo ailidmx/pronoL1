@@ -10,6 +10,7 @@ export const publicExperienceOptions = [
 export function setPublicExperience(variant: string) {
   if (!publicExperienceOptions.some((option) => option.key === variant)) return;
   localStorage.setItem(publicExperienceStorageKey, variant);
+  document.cookie = `${publicExperienceStorageKey}=${variant}; Path=/; Max-Age=31536000; SameSite=Lax`;
   document.documentElement.dataset.publicTheme = variant;
   window.__PRONO_EXPERIMENTS__ = { ...window.__PRONO_EXPERIMENTS__, "docfoot-experience-v2": variant };
   window.dispatchEvent(new CustomEvent(publicExperienceChangedEvent, { detail: { variant } }));

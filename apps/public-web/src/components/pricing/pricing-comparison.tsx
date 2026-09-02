@@ -85,7 +85,7 @@ export function PricingComparison({ plans, offers }: { plans: PublicAccessPlan[]
                 {column.badge ? <span className="comparison-badge">{column.badge}</span> : null}
                 <strong>{column.name}</strong>
                 <span className="comparison-price">{column.price} {column.interval ? <small>{column.interval}</small> : null}</span>
-                <a href={column.href}>{column.action}</a>
+                <a href={column.href} data-experiment-action={`pricing-${column.id}`} data-experiment-location="pricing-table">{column.action}</a>
               </th>)}
             </tr>
           </thead>

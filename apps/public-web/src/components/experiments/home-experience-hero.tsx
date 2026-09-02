@@ -20,7 +20,7 @@ export function HomeExperienceHero({ matches, clubs, updatedAt }: Props) {
           <p>Scores, xG, forme et tendances réunis dans un laboratoire de données lisible, précis et actionnable.</p>
           <div className="actions">
             <a className="primary" href="#resultats" data-experiment-action="launch-analysis" data-experiment-location="hero">Lancer une analyse</a>
-            <a href="#competitions" data-experiment-action="browse-competitions" data-experiment-location="hero">Explorer les données</a>
+            <a href="#offres" data-experiment-action="view-offers" data-experiment-location="hero">Voir les offres</a>
           </div>
           <div className="trust-row"><span>Sources normalisées</span><span>Analyses documentées</span><span>Données actualisées</span></div>
         </div>
@@ -40,7 +40,7 @@ export function HomeExperienceHero({ matches, clubs, updatedAt }: Props) {
           <p>Le direct, les moments clés et les statistiques qui expliquent ce qui se passe maintenant sur le terrain.</p>
           <div className="actions">
             <a className="primary" href="#resultats" data-experiment-action="follow-live" data-experiment-location="hero">Suivre le direct</a>
-            <a href="/pronostics" data-experiment-action="flash-prediction" data-experiment-location="hero">Pronostic flash</a>
+            <a href="#offres" data-experiment-action="view-offers" data-experiment-location="hero">Voir les offres</a>
           </div>
         </div>
         <aside className="live-match-card" aria-label="Aperçu match en direct">
@@ -60,7 +60,7 @@ export function HomeExperienceHero({ matches, clubs, updatedAt }: Props) {
           <p>Grands récits, tactiques, archives et données : la référence qui relie chaque match à l’histoire du football.</p>
           <div className="actions">
             <a className="primary" href="#fonctionnalites" data-experiment-action="read-feature" data-experiment-location="hero">Lire le dossier</a>
-            <a href="#resultats" data-experiment-action="open-archives" data-experiment-location="hero">Consulter les archives</a>
+            <a href="#offres" data-experiment-action="view-offers" data-experiment-location="hero">Voir les offres</a>
           </div>
           <div className="reading-note"><span>À la une</span><strong>Comment les données ont changé la lecture d’un match</strong><small>7 min de lecture</small></div>
         </div>

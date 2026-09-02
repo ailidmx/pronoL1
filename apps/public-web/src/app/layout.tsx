@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   catch (error) { console.error("Data freshness unavailable", error); }
   const buildVersion = process.env.NEXT_PUBLIC_BUILD_VERSION ?? "dev";
   return (
-    <html lang={siteConfig.language} suppressHydrationWarning>
+    <html lang={siteConfig.language} data-public-theme="data-lab" suppressHydrationWarning>
       <body>
         <Script
           async

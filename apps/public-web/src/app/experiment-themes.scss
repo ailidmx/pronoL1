@@ -23,6 +23,9 @@ html[data-public-theme="encyclopedia"] body { background:linear-gradient(135deg,
 .docfoot-header { gap:0; padding:0 5vw; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--experience-bg) 94%,transparent); }
 .docfoot-utility { display:flex; align-items:center; justify-content:space-between; min-height:34px; color:var(--muted); font:600 .68rem/1 Arial,sans-serif; }
 .experience-stage { min-width:0; }
+.experience-competition-row { padding:.35rem 1rem; border-inline:1px solid color-mix(in srgb,var(--line) 80%,transparent); background:color-mix(in srgb,var(--experience-surface) 96%,#000); }
+.experience-competition-row .competition-selector { width:max-content; color:var(--muted); }
+.experience-competition-row .competition-selector select { min-height:34px; padding-block:.3rem; color:var(--ink); border-color:var(--line); background:color-mix(in srgb,var(--panel) 88%,#000); }
 .experience-brand { display:none; min-height:136px; align-items:center; justify-content:space-between; gap:2rem; padding:1.1rem 1.5rem; overflow:hidden; border:1px solid color-mix(in srgb,var(--line) 80%,transparent); border-bottom:0; border-radius:20px 20px 0 0; background:var(--experience-surface); }
 html[data-public-theme="data-lab"] .experience-data-lab,
 html[data-public-theme="match-day"] .experience-match-day,
@@ -69,6 +72,9 @@ html[data-public-theme="encyclopedia"] .experience-encyclopedia { display:flex; 
 .header-navigation-row .header-nav>a.is-active { color:var(--accent); }
 html[data-public-theme="match-day"] .header-navigation-row { border-bottom:2px solid #b6ff33; }
 html[data-public-theme="encyclopedia"] .header-navigation-row { font-family:Georgia,serif; }
+.prono-promo-banner { min-height:34px; display:flex; align-items:center; justify-content:center; gap:.75rem; padding:.35rem 1rem; color:#07110b; background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 65%,#fff)); font:700 .72rem/1.2 Arial,sans-serif; letter-spacing:.01em; }
+.prono-promo-banner span,.prono-promo-banner b { white-space:nowrap; }
+.prono-promo-banner b { text-transform:uppercase; font-size:.64rem; letter-spacing:.08em; }
 
 html[data-public-theme] .data-panel,
 html[data-public-theme] .grid article,
@@ -129,13 +135,19 @@ html[data-public-theme="encyclopedia"] .home-experience-editorial { display:grid
 .editorial-cover { display:flex; flex-direction:column; justify-content:flex-end; min-height:430px; color:#fffaf0; background:linear-gradient(0deg,#0d1829 5%,#15274455 70%),url('/experiences/docfoot-encyclopedia.jpg') center/cover; border-color:#d5ae5b99; }
 .editorial-cover span { color:#e4c77e; text-transform:uppercase; letter-spacing:.12em; font-size:.72rem; }.editorial-cover strong { margin:.5rem 0; font-size:1.75rem; line-height:1.08; }.editorial-cover small { color:#ded4c0; }
 
-html[data-public-theme="data-lab"] .feature-grid article { background:linear-gradient(145deg,#102f47,#0b2639); border-color:#0e87cc66; }
+html[data-public-theme] .feature-grid article { position:relative; isolation:isolate; display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; background-position:center; background-size:cover; }
+html[data-public-theme] .feature-grid article::before { content:""; position:absolute; z-index:-1; inset:0; background:linear-gradient(180deg,#05090f30 0%,#05090fd9 64%,#05090ff5 100%); }
+html[data-public-theme] .feature-grid article>span { position:absolute; top:1.4rem; left:1.4rem; }
+html[data-public-theme] .feature-grid h3 { margin:4rem 0 .5rem; text-align:center; text-wrap:balance; }
+html[data-public-theme] .feature-grid p { color:#dbe3ea; text-align:center; text-shadow:0 2px 12px #000; }
+html[data-public-theme="data-lab"] .feature-grid article { background-image:url('/experiences/docfoot-data-cards.jpg'); border-color:#0e87cc66; }
 html[data-public-theme="data-lab"] .data-panel,html[data-public-theme="data-lab"] .pricing-comparison-scroll { background:#0b2639; border-color:#0e87cc55; }
-html[data-public-theme="match-day"] .feature-grid article { background:linear-gradient(145deg,#121a2b,#070a10); border-color:#00e67635; }
+html[data-public-theme="match-day"] .feature-grid article { background-image:url('/experiences/docfoot-live-cards.jpg'); border-color:#00e67655; }
 html[data-public-theme="match-day"] .data-panel,html[data-public-theme="match-day"] .pricing-comparison-scroll { background:#0d1422; border-color:#00e67635; }
 html[data-public-theme="match-day"] .match-row:hover { background:#00e6760b; }
 html[data-public-theme="encyclopedia"] .section-shell h2,html[data-public-theme="encyclopedia"] .section-shell h3 { font-family:Georgia,"Times New Roman",serif; }
 html[data-public-theme="encyclopedia"] .feature-grid article,html[data-public-theme="encyclopedia"] .data-panel,html[data-public-theme="encyclopedia"] .pricing-comparison-scroll { background:linear-gradient(145deg,#253246,#192436); border-color:#d5ae5b44; }
+html[data-public-theme="encyclopedia"] .feature-grid article::before { background:linear-gradient(180deg,#1924361f,#101827ed); }
 html[data-public-theme="encyclopedia"] .feature-grid article>span { color:#d5ae5b; }
 html[data-public-theme="encyclopedia"] .prono-cta { border-color:#d5ae5b77; background:radial-gradient(circle at top right,#6f5428,#192436 58%); }
 
@@ -144,6 +156,7 @@ html[data-public-theme="encyclopedia"] .prono-cta { border-color:#d5ae5b77; back
 @keyframes docfoot-pulse { 50% { opacity:.35; transform:scale(.75); } }
 
 @media (max-width:768px) {
+  .related-block>h2 { margin-inline:auto; padding-inline:1rem; text-align:center; text-wrap:balance; }
   .home-experience-heroes { padding:1rem 1rem 2.25rem; }
   .home-experience { min-height:610px; grid-template-columns:1fr; align-content:end; gap:1.3rem; padding:clamp(1.25rem,5vw,1.75rem); border-radius:24px; }
   .home-experience-mark { top:1rem; right:50%; width:min(70vw,270px); opacity:.34; transform:translateX(50%) rotate(2deg); }
@@ -162,11 +175,15 @@ html[data-public-theme="encyclopedia"] .prono-cta { border-color:#d5ae5b77; back
   .home-experience-editorial .home-experience-copy { padding-inline:1rem; }
   .editorial-cover { min-height:360px; border-radius:0; border-inline:0; }
   .docfoot-header { position:sticky; z-index:120; top:0; display:grid; padding:0; box-shadow:0 10px 32px #0009; backdrop-filter:blur(18px); }
-  .docfoot-utility { background:var(--experience-bg); }
-  .docfoot-utility { min-height:38px; padding:max(.45rem,env(safe-area-inset-top)) 1rem .35rem; }
+  .docfoot-utility { position:absolute; z-index:3; top:10px; right:12px; min-height:0; padding:0; background:transparent; }
   .docfoot-utility>span { display:none; }
-  .docfoot-utility .header-account { width:100%; justify-content:flex-end; }
-  .experience-brand { min-height:74px; padding:8px 16px; border-inline:0; border-radius:0; }
+  .docfoot-utility .header-account { width:auto; justify-content:flex-end; }
+  .docfoot-utility .install-app { display:none; }
+  .experience-brand { min-height:74px; padding:8px 76px 8px 16px; border-inline:0; border-radius:0; }
+  .experience-competition-row { padding:.2rem 16px .3rem; border-inline:0; }
+  .experience-competition-row .competition-selector { width:100%; }
+  .experience-competition-row .competition-selector>span { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  .experience-competition-row .competition-selector select { width:100%; max-width:none; min-height:34px; padding:.28rem 2rem .28rem .7rem; border-radius:9px; font-size:.74rem; }
   .docfoot-logo { width:54px; height:54px; flex-basis:54px; }
   .docfoot-title { font-size:1.5rem; line-height:1.2; }
   .docfoot-subtitle { max-width:220px; margin-top:.15rem; font-size:.62rem; line-height:1.25; }
@@ -200,8 +217,6 @@ html[data-public-theme="encyclopedia"] .prono-cta { border-color:#d5ae5b77; back
   .experience-encyclopedia .editorial-summary { position:absolute; right:12px; bottom:12px; left:12px; padding:.55rem; background:#101827d9; }
   .experience-encyclopedia .editorial-summary>span,.experience-encyclopedia .editorial-summary>strong,.experience-encyclopedia .editorial-summary>small { color:#fffaf0; }
   .header-navigation-row { display:block; padding:.45rem 1rem .25rem; box-shadow:none; }
-  .header-navigation-row .competition-selector { margin-bottom:.25rem; }
-  .header-navigation-row .competition-selector select { min-height:40px; }
   .header-navigation-row .header-nav { width:calc(100% + 2rem); margin-inline:-1rem; padding:0 1rem .2rem; scroll-snap-type:x proximity; }
   .header-navigation-row .header-nav>a { flex:0 0 auto; min-height:44px; display:inline-flex; align-items:center; scroll-snap-align:start; }
   .mobile-experience-actions { display:block; }
@@ -220,6 +235,8 @@ html[data-public-theme="encyclopedia"] .prono-cta { border-color:#d5ae5b77; back
   .mobile-action-encyclopedia p { margin:0; padding:0 1rem 1rem; color:var(--muted); }
   body { padding-bottom:calc(76px + env(safe-area-inset-bottom)); }
   .home-masthead-ad { width:calc(100% - 2rem); min-height:118px; margin:0 1rem 2.75rem; }
+  .prono-promo-banner { justify-content:space-between; gap:.45rem; min-height:32px; padding:.3rem .75rem; font-size:.64rem; }
+  .prono-promo-banner strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 }
 
 @media (max-width:350px) {

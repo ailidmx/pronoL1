@@ -27,7 +27,8 @@ const bootstrap = `(() => {
     localStorage.setItem(visitorKey, visitorId);
   }
   const allowedVariants = variants.map((item) => item.key);
-  let variant = localStorage.getItem(assignmentKey);
+  const cookieVariant = document.cookie.split("; ").find((item) => item.startsWith(assignmentKey + "="))?.split("=")[1];
+  let variant = localStorage.getItem(assignmentKey) || cookieVariant;
   if (!variant || !allowedVariants.includes(variant)) {
     variant = variants[0]?.key || "data-lab";
   }
@@ -47,6 +48,7 @@ const bootstrap = `(() => {
     }
   }
   localStorage.setItem(assignmentKey, variant);
+  document.cookie = assignmentKey + "=" + variant + "; Path=/; Max-Age=31536000; SameSite=Lax";
   document.documentElement.dataset.publicTheme = variant;
   window.__PRONO_EXPERIMENTS__ = { ...(window.__PRONO_EXPERIMENTS__ || {}), [experimentKey]: variant };
 })();`;

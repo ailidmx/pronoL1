@@ -25,3 +25,4 @@ provider.setCustomParameters({ prompt: "select_account" });
 const functions = getFunctions(app);
 export const getProfile = httpsCallable(functions, "getProfile");
 export const getExperimentDashboard = httpsCallable(functions, "getExperimentDashboard");
+export const getCompetitionReadiness = httpsCallable(functions, "getCompetitionReadiness");

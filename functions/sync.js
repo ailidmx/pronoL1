@@ -5,13 +5,16 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { defineSecret } from "firebase-functions/params";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { collections } from "@prono-l1/domain";
+import {
+  collections,
+  competitionsToSynchronize,
+  CURRENT_SEASON_START_YEAR,
+  parseCompetitionRound,
+} from "@prono-l1/domain";
 
 const apiFootballKey = defineSecret("API_FOOTBALL_KEY");
 const API_BASE = "https://v3.football.api-sports.io";
-const LIGUE1_ID = 61;
-const SEASON = 2026; // Ligue 1 2026-27 → start year 2026
-const COMPETITION_ID = "ligue-1";
+const SYNC_TARGETS = competitionsToSynchronize().map((competition) => ({ ...competition, seasonId: CURRENT_SEASON_START_YEAR }));
 
 function mapStandingRows(rows, mode) {
   const mapped = (rows ?? []).map((s) => {
@@ -57,22 +60,19 @@ async function apiFootball(path) {
   return res.json();
 }
 
-export const syncFootballData = onSchedule(
-  { schedule: "0 * * * *", timeoutSeconds: 300, secrets: [apiFootballKey] },
-  async () => {
-    const db = getFirestore();
-
-    // 1. Teams → clubs
-    const teams = await apiFootball(`/teams?league=${LIGUE1_ID}&season=${SEASON}`);
+async function syncCompetitionRegistry(db, target) {
+    const teams = await apiFootball(`/teams?league=${target.apiFootballId}&season=${target.seasonId}`);
+    const batch = db.batch();
     for (const item of teams.response ?? []) {
       const t = item.team;
-      await db.collection(collections.clubs).doc(String(t.id)).set(
+      batch.set(db.collection(collections.clubs).doc(String(t.id)),
         {
           apfId: t.id,
           nom: t.name,
           code: t.code ?? null,
           logoUrl: t.logo ?? null,
           pays: t.country ?? null,
+          competitionIds: FieldValue.arrayUnion(target.id),
           updatedAt: FieldValue.serverTimestamp(),
         },
         { merge: true },
@@ -80,21 +80,47 @@ export const syncFootballData = onSchedule(
     }
 
     // 2. Standings → standings/{competitionId}_{seasonId}_general
-    const standings = await apiFootball(`/standings?league=${LIGUE1_ID}&season=${SEASON}`);
+    const standings = await apiFootball(`/standings?league=${target.apiFootballId}&season=${target.seasonId}`);
     const league = standings.response?.[0]?.league;
-    const rawRows = league?.standings?.[0] ?? [];
+    const rawRows = (league?.standings ?? []).flat();
     const rows = mapStandingRows(rawRows, "general");
     for (const mode of ["general", "domicile", "exterieur"]) {
-      await db.collection(collections.standings).doc(`${COMPETITION_ID}_${SEASON}_${mode}`).set({
-        competitionId: COMPETITION_ID,
-        seasonId: SEASON,
+      batch.set(db.collection(collections.standings).doc(`${target.id}_${target.seasonId}_${mode}`), {
+        competitionId: target.id,
+        seasonId: target.seasonId,
         mode,
         rows: mapStandingRows(rawRows, mode),
         updatedAt: FieldValue.serverTimestamp(),
       });
     }
+    await batch.commit();
 
-    return { clubs: (teams.response ?? []).length, standings: rows.length };
+    return { competitionId: target.id, clubs: (teams.response ?? []).length, standings: rows.length };
+}
+
+async function runForTargets(db, operation, name) {
+  const results = [];
+  for (const target of SYNC_TARGETS) {
+    const seasonRef = db.collection(collections.seasons).doc(`${target.id}_${target.seasonId}`);
+    await seasonRef.set({ sync: { [`${name}LastAttemptAt`]: FieldValue.serverTimestamp() } }, { merge: true });
+    try {
+      const result = await operation(db, target);
+      await seasonRef.set({ sync: { [`${name}LastSuccessAt`]: FieldValue.serverTimestamp(), [`${name}Error`]: null, [`${name}Result`]: result } }, { merge: true });
+      results.push({ ...result, ok: true });
+    } catch (error) {
+      console.error(`${name} failed`, { competitionId: target.id, error: error.message });
+      await seasonRef.set({ sync: { [`${name}Error`]: error.message, [`${name}FailedAt`]: FieldValue.serverTimestamp() } }, { merge: true });
+      results.push({ competitionId: target.id, ok: false, error: error.message });
+    }
+  }
+  return results;
+}
+
+export const syncFootballData = onSchedule(
+  { schedule: "0 * * * *", timeoutSeconds: 300, secrets: [apiFootballKey] },
+  async () => {
+    const db = getFirestore();
+    return { competitions: await runForTargets(db, syncCompetitionRegistry, "registry") };
   },
 );
 
@@ -168,27 +194,26 @@ function mapStatus(short) {
   return "a_venir";
 }
 
-// Sync Ligue 1 fixtures (matches + scores) from API-Football.
-export const syncFixtures = onSchedule(
-  { schedule: "0 * * * *", timeoutSeconds: 300, secrets: [apiFootballKey] },
-  async () => {
-    const db = getFirestore();
-    const fixtures = await apiFootball(`/fixtures?league=${LIGUE1_ID}&season=${SEASON}`);
-    console.log("syncFixtures: fetched", fixtures.response?.length, "fixtures");
+async function syncCompetitionFixtures(db, target) {
+    const fixtures = await apiFootball(`/fixtures?league=${target.apiFootballId}&season=${target.seasonId}`);
+    console.log("syncFixtures: fetched", { competitionId: target.id, count: fixtures.response?.length ?? 0 });
     let count = 0;
+    const batch = db.batch();
     for (const item of fixtures.response ?? []) {
       const f = item.fixture;
       const teams = item.teams;
       const goals = item.goals;
-      const round = item.league?.round ?? null;
-      const m = round ? round.match(/(\d+)\s*$/) : null;
-      const journee = m ? Number(m[1]) : null;
-      await db.collection(collections.matches).doc(String(f.id)).set(
+      const round = parseCompetitionRound(item.league?.round, target.format);
+      batch.set(db.collection(collections.matches).doc(String(f.id)),
         {
-          seasonId: SEASON,
-          competitionId: COMPETITION_ID,
+          seasonId: target.seasonId,
+          competitionId: target.id,
           apfFixtureId: f.id,
-          journee,
+          journee: round.journey,
+          stage: round.stage,
+          roundKey: round.roundKey,
+          roundLabel: round.roundLabel,
+          leg: round.leg,
           date: f.date ?? null,
           clubDomId: teams.home.id,
           clubExtId: teams.away.id,
@@ -201,7 +226,15 @@ export const syncFixtures = onSchedule(
       );
       count++;
     }
-    console.log("syncFixtures: wrote", count, "matches");
-    return { matches: count };
+    await batch.commit();
+    console.log("syncFixtures: wrote", { competitionId: target.id, count });
+    return { competitionId: target.id, matches: count };
+}
+
+export const syncFixtures = onSchedule(
+  { schedule: "0 * * * *", timeoutSeconds: 300, secrets: [apiFootballKey] },
+  async () => {
+    const db = getFirestore();
+    return { competitions: await runForTargets(db, syncCompetitionFixtures, "fixtures") };
   },
 );

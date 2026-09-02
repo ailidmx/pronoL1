@@ -12,6 +12,23 @@ input,select { min-height:2.25rem; padding:.35rem .5rem; border:1px solid #cbd5e
 .admin-card { margin:1rem 0; padding:1rem; background:white; border:1px solid #e2e8f0; border-radius:.75rem; }
 .admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); gap:.75rem; }
 .admin-grid label { display:grid; gap:.35rem; }
+.section-title-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.section-kicker { margin:0; color:#64748b; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.admin-data-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:1rem; margin-top:1rem; }
+.admin-data-card { padding:1rem; border:1px solid #e2e8f0; border-radius:.75rem; background:white; box-shadow:0 6px 20px #0f172a0b; }
+.admin-data-card-title { display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem; }
+.admin-data-card-title h3 { margin:.15rem 0 0; }
+.admin-data-card-title small { color:#64748b; }
+.admin-data-card-title strong { padding:.3rem .55rem; border-radius:999px; font-size:.75rem; white-space:nowrap; }
+.admin-data-card-title strong.ready { color:#08783e; background:#dcfce7; }
+.admin-data-card-title strong.waiting { color:#9a5b00; background:#fff1cf; }
+.admin-data-card dl { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin:1rem 0; }
+.admin-data-card dl div { padding:.5rem; border-radius:.5rem; background:#f4f6fa; text-align:center; }
+.admin-data-card dt { color:#64748b; font-size:.7rem; }
+.admin-data-card dd { margin:.2rem 0 0; font-weight:800; }
+.readiness-gates { margin:0; padding:0; display:grid; gap:.35rem; list-style:none; font-size:.85rem; }
+.readiness-gates .passed { color:#08783e; }
+.readiness-gates .failed { color:#9a5b00; }
 .feature-matrix { display:grid; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:.5rem 1rem; margin-top:1rem; padding-top:1rem; border-top:1px solid #e2e8f0; }
 .feature-matrix label { display:flex; gap:.5rem; align-items:center; }
 [role="alert"] { padding:.75rem; border-radius:.5rem; background:#fee2e2; color:#991b1b; }

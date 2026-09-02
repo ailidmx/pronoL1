@@ -35,12 +35,9 @@ export function CompetitionSeasonProvider({ children }) {
       const competitionList = competitionSnapshot.docs
         .map((item) => ({ id: item.id, name: item.data().name ?? item.data().nom ?? item.id, shortName: item.data().shortName ?? item.data().name ?? item.id, status: item.data().status }))
         .filter((item) => item.status !== "planned" && item.status !== "paused");
-      const seasonList = seasonSnapshot.docs.map(normalizeSeason).filter(Boolean);
+      const seasonList = seasonSnapshot.docs.map(normalizeSeason).filter((season) => season && competitionList.some((competition) => competition.id === season.competitionId));
       if (!competitionList.length) throw new Error("Aucune compétition active conforme dans competitions.");
       if (!seasonList.length) throw new Error("Aucune saison conforme dans seasons.");
-      if (seasonList.some((season) => !season.competitionId || !competitionList.some((competition) => competition.id === season.competitionId))) {
-        throw new Error("Chaque saison doit référencer un competitionId existant.");
-      }
       setCompetitions(competitionList);
       setSeasons(seasonList);
     }).catch((reason) => {

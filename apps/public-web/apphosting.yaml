@@ -20,7 +20,7 @@ env:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_SITE_NAME
-    value: Stat de Foot
+    value: DocFoot.fr
     availability:
       - BUILD
       - RUNTIME
@@ -50,7 +50,7 @@ env:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_EXPERIMENT_SALT
-    value: prono-l1-public-theme-v1
+    value: docfoot-experience-v2
     availability:
       - BUILD
       - RUNTIME

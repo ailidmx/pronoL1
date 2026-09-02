@@ -6,7 +6,8 @@ import { consentChangedEvent, consentStorageKey } from "@/lib/google/consent";
 import { publicThemeExperiment } from "@/lib/experiments/registry";
 
 const visitorStorageKey = "prono-l1-visitor-id-v1";
-const exposureStorageKey = "prono-l1-exposure-public-theme-v1";
+const assignmentStorageKey = "docfoot-experience-assignment-v2";
+const exposureStorageKey = "docfoot-exposure-experience-v2";
 const experimentKey = publicThemeExperiment.key;
 const experimentEnabled = publicThemeExperiment.enabled;
 const experimentSalt = process.env.NEXT_PUBLIC_EXPERIMENT_SALT ?? "";
@@ -15,6 +16,7 @@ const experimentVariants = publicThemeExperiment.variants;
 const bootstrap = `(() => {
   const enabled = ${experimentEnabled ? "true" : "false"};
   const visitorKey = ${JSON.stringify(visitorStorageKey)};
+  const assignmentKey = ${JSON.stringify(assignmentStorageKey)};
   const experimentKey = ${JSON.stringify(experimentKey)};
   const salt = ${JSON.stringify(experimentSalt)};
   const variants = ${JSON.stringify(experimentVariants)};
@@ -23,8 +25,12 @@ const bootstrap = `(() => {
     visitorId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
     localStorage.setItem(visitorKey, visitorId);
   }
-  let variant = "control";
-  if (enabled && variants.length) {
+  const allowedVariants = variants.map((item) => item.key);
+  let variant = localStorage.getItem(assignmentKey);
+  if (!variant || !allowedVariants.includes(variant)) {
+    variant = variants[0]?.key || "data-lab";
+  }
+  if (enabled && variants.length && !localStorage.getItem(assignmentKey)) {
     const totalWeight = variants.reduce((sum, item) => sum + item.weight, 0);
     const source = salt + ":" + experimentKey + ":" + visitorId;
     let hash = 2166136261;
@@ -39,6 +45,7 @@ const bootstrap = `(() => {
       if (bucket < cursor) { variant = candidate.key; break; }
     }
   }
+  localStorage.setItem(assignmentKey, variant);
   document.documentElement.dataset.publicTheme = variant;
   window.__PRONO_EXPERIMENTS__ = { ...(window.__PRONO_EXPERIMENTS__ || {}), [experimentKey]: variant };
 })();`;

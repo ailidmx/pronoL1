@@ -6,12 +6,9 @@ import { GoogleTags } from "@/components/analytics/google-tags";
 import { ConsentBanner, PrivacySettingsButton } from "@/components/privacy/consent-banner";
 import { DataFreshness } from "@/components/football/data-freshness";
 import { getSeasonOverview } from "@/server/football-repository";
-import { InstallApp } from "@/components/pwa/install-app";
 import { AuthProvider } from "@/lib/client/auth";
-import { AuthButton } from "@/components/auth/auth-button";
-import { CompetitionSelector } from "@/components/navigation/competition-selector";
-import { PublicNav } from "@/components/navigation/public-nav";
 import { ExperimentBootstrap } from "@/components/experiments/experiment-bootstrap";
+import { DocfootExperienceHeader } from "@/components/experiments/docfoot-experience-header";
 import { BrowserTimezone } from "@/components/system/browser-timezone";
 import "./global.scss";
 import "./navigation.scss";
@@ -29,7 +26,7 @@ export const metadata: Metadata = {
   creator: siteConfig.name,
   publisher: siteConfig.name,
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Stat de Foot" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "DocFoot" },
   icons: { icon: "/app-icon.svg", apple: "/app-icon-192.png" },
   formatDetection: { email: false, address: false, telephone: false },
 };
@@ -54,19 +51,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <BrowserTimezone />
         <AuthProvider>
         <GoogleTags />
-        <header className="site-header">
-          <div className="header-primary">
-            <div className="header-branding">
-              <a href="/" className="brand">{siteConfig.name}</a>
-              <CompetitionSelector />
-            </div>
-            <div className="header-account">
-              <InstallApp />
-              <AuthButton />
-            </div>
-          </div>
-          <nav className="header-nav" aria-label="Navigation principale"><PublicNav /></nav>
-        </header>
+        <DocfootExperienceHeader />
         <main>{children}</main>
         <footer>
           <div><strong>{siteConfig.name}</strong><span>Site indépendant, non affilié aux compétitions citées.</span></div>

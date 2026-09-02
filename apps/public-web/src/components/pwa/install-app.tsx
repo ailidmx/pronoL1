@@ -67,11 +67,11 @@ export function InstallApp({ variant = "header" }: Props) {
 
   return (
     <div className={`install-app install-app-${variant}`}>
-      <button type="button" onClick={install}>Installer Stat de Foot</button>
+      <button type="button" onClick={install}>Installer DocFoot</button>
       {showHelp ? (
-        <div className="install-help" role="dialog" aria-modal="true" aria-label="Installer Stat de Foot">
+        <div className="install-help" role="dialog" aria-modal="true" aria-label="Installer DocFoot">
           <button type="button" className="install-close" onClick={() => setShowHelp(false)} aria-label="Fermer">×</button>
-          <strong>Installer Stat de Foot</strong>
+          <strong>Installer DocFoot</strong>
           <p>{help}</p>
         </div>
       ) : null}

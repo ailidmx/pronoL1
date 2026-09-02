@@ -152,6 +152,10 @@ main { min-height:calc(100vh - 144px); }
 .connexion-form { display:grid; gap:1rem; margin:1rem 0; }
 .connexion-form label { display:grid; gap:.25rem; font-weight:600; }
 .connexion-form input { padding:.6rem; border:1px solid var(--line); border-radius:.4rem; background:transparent; color:var(--ink); font-size:1rem; }
+.login-password-help { display:block; margin:-.35rem 0 .15rem; color:var(--muted); font-size:.72rem; }
+.connexion-verification .actions { align-items:stretch; flex-direction:column; }
+.connexion-verification .actions button { padding:.75rem 1rem; border:1px solid var(--line); border-radius:999px; color:var(--ink); background:transparent; cursor:pointer; }
+.connexion-verification .actions button.primary { color:#0b0e13; background:var(--accent); border-color:var(--accent); font-weight:800; }
 .login-google { display:flex; align-items:center; justify-content:center; gap:.5rem; width:100%; padding:.7rem; background:#fff; border:1px solid var(--line); border-radius:999px; font-weight:700; color:#0b0e13; cursor:pointer; }
 .login-google:hover:not(:disabled) { background:#e8e8e2; }
 .login-google:disabled { opacity:.6; cursor:default; }

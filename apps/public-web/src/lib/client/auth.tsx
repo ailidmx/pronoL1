@@ -70,6 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setState({ user, loading: false, profile: null, accessPlan: null, profileLoading: true, profileError: null });
 
+      if (!user.emailVerified) {
+        setState({ user, loading: false, profile: null, accessPlan: null, profileLoading: false, profileError: null });
+        return;
+      }
+
       getProfile()
         .then(() => {
           if (currentGeneration !== generation) return;

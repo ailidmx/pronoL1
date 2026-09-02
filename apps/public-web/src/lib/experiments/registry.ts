@@ -5,12 +5,12 @@ function enabled(value: string | undefined) {
 }
 
 export const publicThemeExperiment: Experiment = {
-  key: "public-theme-v1",
+  key: "docfoot-experience-v2",
   enabled: enabled(process.env.NEXT_PUBLIC_THEME_EXPERIMENT_ENABLED),
   variants: [
-    { key: "control", weight: 50 },
-    { key: "editorial", weight: 25 },
-    { key: "electric", weight: 25 },
+    { key: "data-lab", weight: 34 },
+    { key: "match-day", weight: 33 },
+    { key: "encyclopedia", weight: 33 },
   ],
 };
 

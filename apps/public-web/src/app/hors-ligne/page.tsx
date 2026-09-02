@@ -1,3 +1,3 @@
 import { createPageMetadata } from "@/lib/seo/metadata";
-export const metadata=createPageMetadata({title:"Connexion indisponible",description:"Stat de Foot nécessite une connexion pour actualiser les résultats.",path:"/hors-ligne",noIndex:true});
+export const metadata=createPageMetadata({title:"Connexion indisponible",description:"DocFoot nécessite une connexion pour actualiser les résultats.",path:"/hors-ligne",noIndex:true});
 export default function OfflinePage(){return <main className="content compact-content"><p className="eyebrow">Mode hors ligne</p><h1>Le terrain attend le réseau.</h1><p className="intro">Les résultats et statistiques doivent rester à jour. Reconnectez-vous puis rechargez cette page.</p><div className="actions"><a className="primary" href="/">Réessayer</a></div></main>}

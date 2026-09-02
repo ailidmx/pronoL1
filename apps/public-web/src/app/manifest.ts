@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Stat de Foot — résultats et statistiques", short_name: "Stat de Foot",
+    name: "DocFoot.fr — résultats, données et expertise", short_name: "DocFoot",
     description: "Résultats, calendriers, classements, compositions et statistiques de football.",
     start_url: "/?source=pwa", scope: "/", display: "standalone", orientation: "portrait-primary",
     background_color: "#0b0e13", theme_color: "#0b0e13", lang: "fr", categories: ["sports", "news"],

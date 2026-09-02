@@ -162,11 +162,11 @@ html[data-public-theme="encyclopedia"] .prono-cta { border-color:#d5ae5b77; back
   .home-experience-editorial .home-experience-copy { padding-inline:1rem; }
   .editorial-cover { min-height:360px; border-radius:0; border-inline:0; }
   .docfoot-header { position:sticky; z-index:120; top:0; display:grid; padding:0; box-shadow:0 10px 32px #0009; backdrop-filter:blur(18px); }
-  .docfoot-utility { background:var(--experience-bg); }
-  .docfoot-utility { min-height:38px; padding:max(.45rem,env(safe-area-inset-top)) 1rem .35rem; }
+  .docfoot-utility { position:absolute; z-index:3; top:10px; right:12px; min-height:0; padding:0; background:transparent; }
   .docfoot-utility>span { display:none; }
-  .docfoot-utility .header-account { width:100%; justify-content:flex-end; }
-  .experience-brand { min-height:74px; padding:8px 16px; border-inline:0; border-radius:0; }
+  .docfoot-utility .header-account { width:auto; justify-content:flex-end; }
+  .docfoot-utility .install-app { display:none; }
+  .experience-brand { min-height:74px; padding:8px 76px 8px 16px; border-inline:0; border-radius:0; }
   .docfoot-logo { width:54px; height:54px; flex-basis:54px; }
   .docfoot-title { font-size:1.5rem; line-height:1.2; }
   .docfoot-subtitle { max-width:220px; margin-top:.15rem; font-size:.62rem; line-height:1.25; }

@@ -59,3 +59,4 @@ export { getPremiumMatchStatistics } from "./premium-statistics.js";
 export { getCommunities, createCommunity, joinCommunity, leaveCommunity } from "./communities.js";
 export { sendMatchAlerts } from "./push.js";
 export { getExperimentDashboard } from "./experiments.js";
+export { getCompetitionReadiness } from "./competition-readiness.js";

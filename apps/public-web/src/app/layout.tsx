@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "DocFoot" },
   icons: { icon: "/app-icon.svg", apple: "/app-icon-192.png" },
   formatDetection: { email: false, address: false, telephone: false },
+  other: { "google-adsense-account": adsensePublisherId },
 };
 
 export const viewport: Viewport = { themeColor: "#0b0e13", colorScheme: "dark" };

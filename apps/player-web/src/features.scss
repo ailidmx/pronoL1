@@ -157,6 +157,7 @@ button:hover {
 .login-message {
   color: #2d6a4f;
 }
+.login-password-help { display:block; margin:-.35rem 0 .15rem; color:var(--txt2); font-size:.72rem; }
 
 .login-links {
   display: grid;

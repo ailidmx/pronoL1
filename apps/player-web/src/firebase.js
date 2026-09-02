@@ -4,10 +4,8 @@ import { getFirestore } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 // Firebase web config — public values (not secrets).
-const hostingAuthDomain = typeof window !== "undefined"
-  && /(?:\.web\.app|\.firebaseapp\.com)$/.test(window.location.hostname)
-  ? window.location.hostname
-  : "pronol1.firebaseapp.com";
+const hostingAuthDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "play.docfoot.fr";
+const playerAppUrl = import.meta.env.VITE_PLAYER_APP_URL || "https://play.docfoot.fr";
 
 const firebaseConfig = {
   projectId: "pronol1",
@@ -30,6 +28,12 @@ export const functions = getFunctions(app);
 // provider is on (Firebase creates an account on first sign-in).
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
+
+export const authActionSettings = {
+  url: playerAppUrl,
+  linkDomain: hostingAuthDomain,
+  handleCodeInApp: false,
+};
 
 export const getProfile = httpsCallable(functions, "getProfile");
 export const saveProfile = httpsCallable(functions, "saveProfile");

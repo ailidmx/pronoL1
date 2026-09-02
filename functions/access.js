@@ -9,11 +9,11 @@ import {
 
 export async function loadRequestAccess(db, request) {
   if (!request.auth) throw new HttpsError("unauthenticated", "Authentication required.");
+  if (request.auth.token.email_verified !== true) throw new HttpsError("permission-denied", "Verified email required.");
   const profileSnap = await db.collection(collections.users).doc(request.auth.uid).get();
   if (!profileSnap.exists) throw new HttpsError("permission-denied", "User profile required.");
   const profile = profileSnap.data() ?? {};
   const isAdmin = request.auth.token.admin === true || profile.isAdmin === true;
-  if (!isAdmin && profile.isAllowed !== true) throw new HttpsError("permission-denied", "Player access required.");
   const planId = resolveProfileAccessPlanId(profile);
   const planSnap = await db.collection(collections.accessPlans).doc(planId).get();
   const plan = planSnap.exists ? { id: planId, ...planSnap.data() } : getDefaultAccessPlan(planId);

@@ -4,12 +4,21 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
+  sendEmailVerification,
 } from "firebase/auth";
-import { auth, googleProvider } from "./firebase.js";
+import { auth, authActionSettings, googleProvider } from "./firebase.js";
+
+const passwordRules = {
+  minLength: 8,
+  isValid(value) {
+    return value.length >= this.minLength && /[A-Za-z]/.test(value) && /\d/.test(value);
+  },
+};
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [mode, setMode] = useState("signin");
@@ -24,7 +33,14 @@ function Login() {
       if (mode === "signin") {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        if (!passwordRules.isValid(password)) {
+          throw new Error("Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre.");
+        }
+        if (password !== passwordConfirmation) {
+          throw new Error("Les deux mots de passe ne correspondent pas.");
+        }
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(credential.user, authActionSettings);
       }
     } catch (err) {
       setError(err.message);
@@ -57,7 +73,7 @@ function Login() {
     }
     setBusy(true);
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email, authActionSettings);
       setMessage("Email de réinitialisation envoyé.");
     } catch (err) {
       setError(err.message);
@@ -92,10 +108,26 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={6}
-            autoComplete="current-password"
+            minLength={mode === "signup" ? passwordRules.minLength : undefined}
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
           />
         </label>
+        {mode === "signup" && (
+          <>
+            <small className="login-password-help">8 caractères minimum, avec au moins une lettre et un chiffre.</small>
+            <label>
+              Confirmer le mot de passe
+              <input
+                type="password"
+                value={passwordConfirmation}
+                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                required
+                minLength={passwordRules.minLength}
+                autoComplete="new-password"
+              />
+            </label>
+          </>
+        )}
         {error && <p className="login-error">{error}</p>}
         {message && <p className="login-message">{message}</p>}
         <button type="submit" disabled={busy}>
@@ -103,7 +135,7 @@ function Login() {
         </button>
       </form>
       <div className="login-links">
-        <button type="button" className="login-toggle" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
+        <button type="button" className="login-toggle" onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setPassword(""); setPasswordConfirmation(""); setError(""); setMessage(""); }}>
           {mode === "signin" ? "Pas de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
         </button>
         {mode === "signin" && (

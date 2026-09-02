@@ -1,4 +1,8 @@
 import { DataFreshness } from "@/components/football/data-freshness";
+import { HeroTitleRotator } from "@/components/hero/hero-title-rotator";
+
+const HERO_MESSAGES = ["Tout le foot.", "Tous les chiffres.", "Avant et après le match."] as const;
+const HERO_FULL_TITLE = HERO_MESSAGES.join(" ");
 
 type Props = { matches: number | null; clubs: number | null; updatedAt: string | null };
 
@@ -9,9 +13,10 @@ export function HomeExperienceHero({ matches, clubs, updatedAt }: Props) {
   return (
     <section className="home-experience-heroes" data-experiment-section="hero">
       <article className="home-experience home-experience-data">
+        <img className="home-experience-mark" src="/experiences/docfoot-data-lab.jpg" alt="" aria-hidden="true" />
         <div className="home-experience-copy">
           <p className="eyebrow">Modern Data Lab</p>
-          <h1>Le football passe au diagnostic.</h1>
+          <HeroTitleRotator fullTitle={HERO_FULL_TITLE} messages={HERO_MESSAGES} />
           <p>Scores, xG, forme et tendances réunis dans un laboratoire de données lisible, précis et actionnable.</p>
           <div className="actions">
             <a className="primary" href="#resultats" data-experiment-action="launch-analysis" data-experiment-location="hero">Lancer une analyse</a>
@@ -28,9 +33,10 @@ export function HomeExperienceHero({ matches, clubs, updatedAt }: Props) {
       </article>
 
       <article className="home-experience home-experience-live">
+        <img className="home-experience-mark" src="/experiences/docfoot-match-day.jpg" alt="" aria-hidden="true" />
         <div className="home-experience-copy">
           <p className="eyebrow"><span className="live-beacon" /> Match Day Live</p>
-          <h1>Prends le pouls du match.</h1>
+          <HeroTitleRotator fullTitle={HERO_FULL_TITLE} messages={HERO_MESSAGES} />
           <p>Le direct, les moments clés et les statistiques qui expliquent ce qui se passe maintenant sur le terrain.</p>
           <div className="actions">
             <a className="primary" href="#resultats" data-experiment-action="follow-live" data-experiment-location="hero">Suivre le direct</a>
@@ -47,9 +53,10 @@ export function HomeExperienceHero({ matches, clubs, updatedAt }: Props) {
       </article>
 
       <article className="home-experience home-experience-editorial">
+        <img className="home-experience-mark" src="/experiences/docfoot-encyclopedia.jpg" alt="" aria-hidden="true" />
         <div className="home-experience-copy">
           <p className="eyebrow">L’encyclopédie vivante du football</p>
-          <h1>Comprendre le jeu. Conserver sa mémoire.</h1>
+          <HeroTitleRotator fullTitle={HERO_FULL_TITLE} messages={HERO_MESSAGES} />
           <p>Grands récits, tactiques, archives et données : la référence qui relie chaque match à l’histoire du football.</p>
           <div className="actions">
             <a className="primary" href="#fonctionnalites" data-experiment-action="read-feature" data-experiment-location="hero">Lire le dossier</a>

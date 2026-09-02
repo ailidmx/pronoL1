@@ -6,6 +6,7 @@ import { auth } from "@/lib/client/firebase";
 import { useAuth } from "@/lib/client/auth";
 import { InstallApp } from "@/components/pwa/install-app";
 import { ADMIN_APP_URL, PLAYER_APP_URL } from "@/config/app-links";
+import { publicExperienceOptions, publicExperienceStorageKey, setPublicExperience } from "@/lib/experiments/client";
 
 function initials(name?: string | null, email?: string | null) {
   const source = name?.trim() || email?.split("@")[0] || "?";
@@ -16,6 +17,7 @@ function initials(name?: string | null, email?: string | null) {
 export function AuthButton() {
   const { user, loading, profile } = useAuth();
   const [open, setOpen] = useState(false);
+  const [experience, setExperience] = useState("data-lab");
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +33,10 @@ export function AuthButton() {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
+  }, []);
+
+  useEffect(() => {
+    setExperience(localStorage.getItem(publicExperienceStorageKey) || document.documentElement.dataset.publicTheme || "data-lab");
   }, []);
 
   const avatarLabel = useMemo(() => initials(user?.displayName, user?.email), [user?.displayName, user?.email]);
@@ -60,6 +66,14 @@ export function AuthButton() {
           <a href="/pronostics" role="menuitem" onClick={() => setOpen(false)}>Mes pronostics</a>
           <a href="/favoris" role="menuitem" onClick={() => setOpen(false)}>Favoris</a>
           <a href="/historique" role="menuitem" onClick={() => setOpen(false)}>Historique</a>
+          {isAdmin ? (
+            <label className="account-experience">
+              <span>Expérience publique</span>
+              <select value={experience} onChange={(event) => { setExperience(event.target.value); setPublicExperience(event.target.value); }}>
+                {publicExperienceOptions.map((option) => <option value={option.key} key={option.key}>{option.label}</option>)}
+              </select>
+            </label>
+          ) : null}
           <div className="account-apps" aria-label="Applications">
             <span>Applications</span>
             <InstallApp variant="menu" />

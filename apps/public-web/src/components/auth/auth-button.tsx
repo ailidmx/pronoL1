@@ -5,9 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { auth } from "@/lib/client/firebase";
 import { useAuth } from "@/lib/client/auth";
 import { InstallApp } from "@/components/pwa/install-app";
-
-const PLAYER_APP_URL = process.env.NEXT_PUBLIC_PRIVATE_APP_URL ?? "https://pronol1.web.app";
-const ADMIN_APP_URL = process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://pronol1-admin.web.app";
+import { ADMIN_APP_URL, PLAYER_APP_URL } from "@/config/app-links";
 
 function initials(name?: string | null, email?: string | null) {
   const source = name?.trim() || email?.split("@")[0] || "?";

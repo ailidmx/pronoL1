@@ -37,6 +37,8 @@ export const authActionSettings = {
 
 export const getProfile = httpsCallable(functions, "getProfile");
 export const saveProfile = httpsCallable(functions, "saveProfile");
+export const registerPlayerPushSubscription = httpsCallable(functions, "registerPlayerPushSubscription");
+export const sendNotificationTest = httpsCallable(functions, "sendNotificationTest");
 export const savePronostic = httpsCallable(functions, "savePronostic");
 export const saveBonusAnswer = httpsCallable(functions, "saveBonusAnswer");
 export const saveQuizAnswer = httpsCallable(functions, "saveQuizAnswer");

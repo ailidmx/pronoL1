@@ -74,6 +74,7 @@ test("user profile validation", () => {
     notifPush: false,
     notifTelegram: false,
     telegramChatId: null,
+    notificationPreferences: DEFAULT_USER_PROFILE.notificationPreferences,
   };
   assert.equal(validateUserProfile(valid), null);
   assert.equal(validateUserProfile({ ...valid, email: "" }), "email");
@@ -96,6 +97,9 @@ test("profile edit validates editable fields", () => {
     notifEmail: true,
     notifPush: false,
     notifTelegram: false,
+    telegramChatId: null,
+    avatarInitiales: "KA",
+    notificationPreferences: DEFAULT_USER_PROFILE.notificationPreferences,
   };
   assert.equal(validateProfileEdit(valid), null);
   assert.equal(validateProfileEdit({ ...valid, notifEmail: undefined }), "notifEmail");
@@ -105,7 +109,7 @@ test("profile edit validates editable fields", () => {
 test("buildProfileEditPayload stamps and validates", () => {
   const now = new Date("2026-01-01T00:00:00Z");
   const payload = buildProfileEditPayload(
-    { displayName: "Karla", equipeCoeurId: 85, notifEmail: true, notifPush: false, notifTelegram: false },
+    { displayName: "Karla", avatarInitiales: "KA", equipeCoeurId: 85, notifEmail: true, notifPush: false, notifTelegram: false, telegramChatId: null, notificationPreferences: DEFAULT_USER_PROFILE.notificationPreferences },
     { now },
   );
   assert.equal(payload.displayName, "Karla");

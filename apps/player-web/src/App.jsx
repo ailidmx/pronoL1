@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, authActionSettings, db, getProfile } from "./firebase.js";
 import Login from "./Login.jsx";
 import Standings from "./Standings.jsx";
-import Profile from "./Profile.jsx";
+import AccountCenter from "./AccountCenter.jsx";
 import Matches from "./Matches.jsx";
 import Classement from "./Classement.jsx";
 import Bonus from "./Bonus.jsx";
@@ -48,6 +48,8 @@ function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [access, setAccess] = useState({ checking: true, allowed: false, error: false });
   const [verificationMessage, setVerificationMessage] = useState("");
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [accountSection, setAccountSection] = useState(null);
 
   async function checkAccess(u) {
     setAccess({ checking: true, allowed: false, error: false });
@@ -136,7 +138,10 @@ function App() {
       <div className={styles.user}>
         <span className={styles.email}>{user.email}</span>
         <button className={styles.themeToggle} type="button" onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")} aria-label={theme === "dark" ? "Activer le thème clair" : "Activer le thème sombre"} title={theme === "dark" ? "Thème clair" : "Thème sombre"}>{theme === "dark" ? "☀️" : "🌙"}</button>
-        <button className={styles.avatar} type="button" onClick={() => setPage("profil")} aria-label="Mon profil">{(user.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button>
+        <div className={styles.accountMenu}>
+          <button className={styles.avatar} type="button" onClick={() => setAccountMenuOpen((value) => !value)} aria-haspopup="menu" aria-expanded={accountMenuOpen} aria-label="Ouvrir le menu du compte">{profile?.avatarInitiales || (profile?.displayName || user.email || "J").slice(0, 1).toUpperCase()}</button>
+          {accountMenuOpen ? <div className={styles.accountDropdown} role="menu"><strong>{profile?.displayName || "Mon compte"}</strong><span>{user.email}</span>{[["identity", "✏️ Pseudo et initiales"], ["team", "⭐ Équipe de cœur"], ["notifications", "🔔 Notifications"], ["rules", "📖 Règles"], ["password", "🔒 Mot de passe"]].map(([id, label]) => <button type="button" role="menuitem" key={id} onClick={() => { setAccountSection(id); setAccountMenuOpen(false); }}>{label}</button>)}<button type="button" role="menuitem" onClick={() => auth.signOut()}>🚪 Déconnexion</button></div> : null}
+        </div>
       </div>
     </header>
     <section className={styles.competitionBar} aria-label="Compétition et saison">
@@ -153,7 +158,6 @@ function App() {
         ["communautes", "👥", "Communautés"],
         ["quiz", "🎯", "Quiz"],
         ["championnat", "🗓️", "Championnat"],
-        ["profil", "👤", "Profil"],
       ].map(([id, icon, label]) => <button key={id} type="button" className={page === id ? styles.active : ""} onClick={() => setPage(id)}><span>{icon}</span><small>{label}</small></button>)}
     </nav>
     <main className={styles.main}>
@@ -166,9 +170,9 @@ function App() {
       {page === "communautes" ? <><Communities initialInviteCode={initialInviteCode} /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
       {page === "quiz" ? <><Quiz /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
       {page === "championnat" ? <><Standings /><PlayerAdSlot enabled={adsEnabled} placement="section" /></> : null}
-      {page === "profil" ? <><Profile /><button type="button" onClick={() => auth.signOut()}>Déconnexion</button></> : null}
-      {page !== "profil" ? <PlayerAdSlot enabled={adsEnabled} placement="bottom" /> : null}
+      <PlayerAdSlot enabled={adsEnabled} placement="bottom" />
     </main>
+    {accountSection ? <AccountCenter section={accountSection} onSectionChange={setAccountSection} onClose={() => setAccountSection(null)} onSignOut={() => auth.signOut()} /> : null}
   </div>;
 }
 

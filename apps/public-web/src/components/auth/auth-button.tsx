@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/client/auth";
 import { InstallApp } from "@/components/pwa/install-app";
 import { ADMIN_APP_URL, PLAYER_APP_URL } from "@/config/app-links";
 import { publicExperienceOptions, publicExperienceStorageKey, setPublicExperience } from "@/lib/experiments/client";
+import { PasswordChangeDialog } from "./password-change-dialog";
 
 function initials(name?: string | null, email?: string | null) {
   const source = name?.trim() || email?.split("@")[0] || "?";
@@ -18,6 +19,7 @@ export function AuthButton() {
   const { user, loading, profile } = useAuth();
   const [open, setOpen] = useState(false);
   const [experience, setExperience] = useState("data-lab");
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function AuthButton() {
   const isAdmin = profile?.isAdmin === true;
   const canUsePlayer = user.emailVerified && Boolean(profile);
 
-  return (
+  return (<>
     <div className="account-menu" ref={menuRef}>
       <button className="account-trigger" type="button" aria-haspopup="menu" aria-expanded={open} aria-label="Ouvrir le menu du compte" onClick={() => setOpen((value) => !value)}>
         {user.photoURL ? (
@@ -80,9 +82,11 @@ export function AuthButton() {
             {canUsePlayer ? <a href={`${PLAYER_APP_URL}/?install=1`} role="menuitem">Installer Prono L1</a> : null}
             {isAdmin ? <a href={`${ADMIN_APP_URL}/?install=1`} role="menuitem">Installer Prono L1 Admin</a> : null}
           </div>
+          <button type="button" role="menuitem" onClick={() => { setOpen(false); setPasswordOpen(true); }}>Changer mon mot de passe</button>
           <button type="button" role="menuitem" onClick={() => signOut(auth)}>Déconnexion</button>
         </div>
       ) : null}
     </div>
-  );
+    {passwordOpen ? <PasswordChangeDialog user={user} onClose={() => setPasswordOpen(false)} /> : null}
+  </>);
 }

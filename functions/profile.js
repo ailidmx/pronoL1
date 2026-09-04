@@ -7,7 +7,7 @@ import {
   collections,
   validateProfileEdit,
   buildProfileEditPayload,
-  initialsFromName,
+  normalizeAvatarInitiales,
 } from "@prono-l1/domain";
 
 // Save the signed-in user's editable profile fields (pseudo, favorite team,
@@ -26,6 +26,9 @@ export const saveProfile = onCall({ cors: true }, async (request) => {
     notifEmail: data.notifEmail,
     notifPush: data.notifPush,
     notifTelegram: data.notifTelegram,
+    telegramChatId: data.telegramChatId,
+    avatarInitiales: data.avatarInitiales,
+    notificationPreferences: data.notificationPreferences,
   };
 
   const invalid = validateProfileEdit(fields);
@@ -34,7 +37,7 @@ export const saveProfile = onCall({ cors: true }, async (request) => {
   }
 
   const payload = buildProfileEditPayload(fields);
-  payload.avatarInitiales = initialsFromName(payload.displayName);
+  payload.avatarInitiales = normalizeAvatarInitiales(payload.avatarInitiales, payload.displayName);
 
   const db = getFirestore();
   await db.collection(collections.users).doc(uid).set(payload, { merge: true });

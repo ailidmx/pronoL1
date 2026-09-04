@@ -2,120 +2,12 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db, getProfile, saveProfile } from "./firebase.js";
 
-function Profile() {
-  const [profile, setProfile] = useState(null);
-  const [clubs, setClubs] = useState([]);
-  const [displayName, setDisplayName] = useState("");
-  const [equipeCoeurId, setEquipeCoeurId] = useState("");
-  const [notifEmail, setNotifEmail] = useState(true);
-  const [notifPush, setNotifPush] = useState(false);
-  const [notifTelegram, setNotifTelegram] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const [profileRes, clubsSnap] = await Promise.all([
-          getProfile(),
-          getDocs(collection(db, "clubs")),
-        ]);
-        if (!mounted) return;
-        const p = profileRes.data;
-        setProfile(p);
-        setDisplayName(p.displayName ?? "");
-        setEquipeCoeurId(p.equipeCoeurId != null ? String(p.equipeCoeurId) : "");
-        setNotifEmail(p.notifEmail ?? true);
-        setNotifPush(p.notifPush ?? false);
-        setNotifTelegram(p.notifTelegram ?? false);
-
-        const list = [];
-        clubsSnap.forEach((d) => list.push({ id: d.id, nom: d.data().nom ?? d.id }));
-        list.sort((a, b) => a.nom.localeCompare(b.nom));
-        setClubs(list);
-      } catch (err) {
-        if (mounted) setError(err.message);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  async function submit(e) {
-    e.preventDefault();
-    setError("");
-    setSaved(false);
-    setSaving(true);
-    try {
-      await saveProfile({
-        displayName: displayName.trim() || null,
-        equipeCoeurId: equipeCoeurId === "" ? null : Number(equipeCoeurId),
-        notifEmail,
-        notifPush,
-        notifTelegram,
-      });
-      setSaved(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  if (error && !profile) return <p className="error">Erreur profil : {error}</p>;
-  if (!profile) return <p>Chargement du profil…</p>;
-
-  return (
-    <section className="profile">
-      <h2>Mon profil</h2>
-      <p className="profile-email">{profile.email}</p>
-      <form onSubmit={submit} className="profile-form">
-        <label>
-          Pseudo
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Ton pseudo"
-          />
-        </label>
-        <label>
-          Équipe de cœur
-          <select value={equipeCoeurId} onChange={(e) => setEquipeCoeurId(e.target.value)}>
-            <option value="">—</option>
-            {clubs.map((c) => (
-              <option key={c.id} value={c.id}>{c.nom}</option>
-            ))}
-          </select>
-        </label>
-        <fieldset>
-          <legend>Notifications</legend>
-          <label>
-            <input type="checkbox" checked={notifEmail} onChange={(e) => setNotifEmail(e.target.checked)} />
-            Email
-          </label>
-          <label>
-            <input type="checkbox" checked={notifPush} onChange={(e) => setNotifPush(e.target.checked)} />
-            Push
-          </label>
-          <label>
-            <input type="checkbox" checked={notifTelegram} onChange={(e) => setNotifTelegram(e.target.checked)} />
-            Telegram
-          </label>
-        </fieldset>
-        <button type="submit" disabled={saving}>
-          {saving ? "Enregistrement…" : "Enregistrer"}
-        </button>
-        {saved && <p className="success">Profil enregistré.</p>}
-        {error && <p className="error">{error}</p>}
-      </form>
-    </section>
-  );
+export default function Profile({ section = "identity", onSaved }) {
+  const [profile, setProfile] = useState(null); const [clubs, setClubs] = useState([]);
+  const [displayName, setDisplayName] = useState(""); const [avatarInitiales, setAvatarInitiales] = useState(""); const [equipeCoeurId, setEquipeCoeurId] = useState("");
+  const [status, setStatus] = useState({ saving: false, error: "", saved: false });
+  useEffect(() => { Promise.all([getProfile(), getDocs(collection(db, "clubs"))]).then(([response, snapshot]) => { const value = response.data; setProfile(value); setDisplayName(value.displayName ?? ""); setAvatarInitiales(value.avatarInitiales ?? ""); setEquipeCoeurId(value.equipeCoeurId == null ? "" : String(value.equipeCoeurId)); setClubs(snapshot.docs.map((doc) => ({ id: doc.id, nom: doc.data().nom ?? doc.id })).sort((a, b) => a.nom.localeCompare(b.nom))); }).catch((error) => setStatus((current) => ({ ...current, error: error.message }))); }, []);
+  async function submit(event) { event.preventDefault(); setStatus({ saving: true, error: "", saved: false }); try { await saveProfile({ displayName: displayName.trim() || null, avatarInitiales: avatarInitiales.trim() || null, equipeCoeurId: equipeCoeurId === "" ? null : Number(equipeCoeurId), notifEmail: profile.notifEmail ?? true, notifPush: profile.notifPush ?? false, notifTelegram: profile.notifTelegram ?? false, telegramChatId: profile.telegramChatId ?? null, notificationPreferences: profile.notificationPreferences }); setStatus({ saving: false, error: "", saved: true }); onSaved?.(); } catch (error) { setStatus({ saving: false, error: error.message, saved: false }); } }
+  if (!profile) return <p>{status.error ? `Erreur profil : ${status.error}` : "Chargement du profil…"}</p>;
+  return <form onSubmit={submit} className="account-form">{section === "identity" ? <><h2>✏️ Mon identité</h2><label>Pseudo<input value={displayName} onChange={(event) => setDisplayName(event.target.value)} maxLength="40" /></label><label>Initiales de l’avatar <small>1 ou 2 caractères, laisse vide pour les générer depuis ton pseudo.</small><input className="initials-input" value={avatarInitiales} onChange={(event) => setAvatarInitiales(event.target.value)} maxLength="2" /></label></> : <><h2>⭐ Mon équipe de cœur</h2><label>Choisir un club (facultatif)<select value={equipeCoeurId} onChange={(event) => setEquipeCoeurId(event.target.value)}><option value="">Aucune</option>{clubs.map((club) => <option key={club.id} value={club.id}>{club.nom}</option>)}</select></label></>}<button className="account-primary" disabled={status.saving}>{status.saving ? "Enregistrement…" : "Enregistrer"}</button>{status.saved ? <p className="success">Modification enregistrée.</p> : null}{status.error ? <p className="error">{status.error}</p> : null}</form>;
 }
-
-export default Profile;
-

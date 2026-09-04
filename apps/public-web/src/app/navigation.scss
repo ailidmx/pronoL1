@@ -150,6 +150,9 @@
 .account-dropdown > button:hover {
   background: #202631;
 }
+.password-overlay { position:fixed; z-index:300; inset:0; display:grid; place-items:center; padding:1rem; background:#000b; backdrop-filter:blur(7px); }
+.password-dialog { position:relative; width:min(440px,100%); padding:1.4rem; border:1px solid var(--line); border-radius:18px; color:var(--ink); background:var(--panel); box-shadow:0 24px 80px #000c; }
+.password-dialog>button { position:absolute; top:.6rem; right:.7rem; border:0; color:var(--muted); background:transparent; font-size:1.8rem; }.password-dialog form,.password-dialog label { display:grid; gap:.55rem; }.password-dialog form { gap:1rem; }.password-dialog input { padding:.75rem; border:1px solid var(--line); border-radius:9px; color:var(--ink); background:#111820; }.password-dialog form>button { min-height:44px; border:0; border-radius:9px; color:#07110b; background:var(--accent); font-weight:800; }
 
 .journey-picker {
   display: flex;

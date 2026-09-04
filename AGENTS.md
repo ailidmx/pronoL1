@@ -245,3 +245,18 @@ This repo ships Claude Code skills in `.claude/skills/`:
   firebase command can silently hit `boda-500805`. ALWAYS pass `--project pronol1`
   for local firebase commands targeting this app. (The GitHub Actions deploy is
   fine — the auth step sets `GCLOUD_PROJECT=pronol1` + the pronol1 service account.)
+
+## 13. Phase 2 — Player account notifications
+
+- Player notification preferences are a matrix stored in `users/{uid}.notificationPreferences`:
+  topics `results`, `predictionReminders`, `quizBonus`, `announcements` × channels
+  `email`, `telegram`, `push`. The legacy channel booleans are derived summaries
+  during migration, not the routing source.
+- `notificationOutbox` is the delivery boundary. Scoring and deadline jobs enqueue
+  idempotent messages; `dispatchNotifications` applies the user's matrix and records
+  each channel result. Do not send directly from scoring/data jobs.
+- The first delivery phase enables Telegram + browser push only. Email remains
+  visible but disabled in the UI; its dormant adapter is kept in
+  `email-notifications.disabled.js` for the later Resend phase and is never
+  imported by deployed Functions. Active delivery needs only Firebase secrets
+  `TELEGRAM_BOT_TOKEN` and `VAPID_PRIVATE_KEY`.

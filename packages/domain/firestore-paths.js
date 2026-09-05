@@ -22,6 +22,7 @@ export const collections = {
   bonus: "bonus",
   pushSubscriptions: "pushSubscriptions",
   pushRappels: "pushRappels",
+  notificationOutbox: "notificationOutbox",
   annonces: "annonces",
   communities: "communities",
   communityMemberships: "communityMemberships",

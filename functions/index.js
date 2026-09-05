@@ -28,7 +28,17 @@ export const getProfile = onCall({ cors: true }, async (request) => {
   const snap = await ref.get();
 
   if (snap.exists) {
-    return { id: uid, ...snap.data() };
+    const stored = snap.data();
+    if (stored.notificationPreferences == null) {
+      const notificationPreferences = Object.fromEntries(Object.keys(DEFAULT_USER_PROFILE.notificationPreferences).map((topic) => [topic, {
+        email: false,
+        telegram: stored.notifTelegram === true,
+        push: stored.notifPush === true,
+      }]));
+      await ref.set({ notificationPreferences, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+      return { id: uid, ...stored, notificationPreferences };
+    }
+    return { id: uid, ...stored };
   }
 
   const profile = {
@@ -58,5 +68,7 @@ export { getPlayerMatchCenter } from "./player-match-center.js";
 export { getPremiumMatchStatistics } from "./premium-statistics.js";
 export { getCommunities, createCommunity, joinCommunity, leaveCommunity } from "./communities.js";
 export { sendMatchAlerts } from "./push.js";
+export { registerPlayerPushSubscription, sendNotificationTest, dispatchNotifications } from "./notifications.js";
+export { createNotificationReminders } from "./notification-reminders.js";
 export { getExperimentDashboard } from "./experiments.js";
 export { getCompetitionReadiness } from "./competition-readiness.js";

@@ -6,3 +6,5 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET" || event.request.mode !== "navigate") return;
   event.respondWith(fetch(event.request).then((response) => { const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put("/", copy)); return response; }).catch(() => caches.match("/").then((response) => response || Response.error())));
 });
+self.addEventListener("push", (event) => { const data = event.data?.json() || {}; event.waitUntil(self.registration.showNotification(data.title || "Prono L1", { body: data.body || "Nouvelle notification", icon: "/icon-192.png", data: { url: data.url || "/" } })); });
+self.addEventListener("notificationclick", (event) => { event.notification.close(); event.waitUntil(clients.openWindow(event.notification.data?.url || "/")); });

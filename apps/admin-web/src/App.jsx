@@ -8,6 +8,7 @@ import EntitlementsPanel from "./EntitlementsPanel.jsx";
 import ExperimentsPanel from "./ExperimentsPanel.jsx";
 import FootballDataPanel from "./FootballDataPanel.jsx";
 import styles from "./App.module.scss";
+import PasswordDialog from "./PasswordDialog.jsx";
 
 function Dashboard() { return <section><h2>Tableau de bord</h2><p>Le socle Admin est prêt pour le portage progressif des opérations legacy.</p></section>; }
 function Placeholder({ title }) { return <section><h2>{title}</h2><p>Cette capacité sera portée depuis le back-office legacy.</p></section>; }
@@ -58,6 +59,7 @@ export default function App() {
   const [state, setState] = useState({ loading: true, user: null, admin: false, verificationError: false });
   const [authError, setAuthError] = useState("");
   const [signingIn, setSigningIn] = useState(false);
+  const [passwordOpen, setPasswordOpen] = useState(false);
 
   async function refreshAdmin(user) {
     setState((current) => ({ ...current, loading: true, verificationError: false }));
@@ -113,5 +115,5 @@ export default function App() {
     ["Opérations", "/operations"],
   ];
 
-  return <div className={styles.shell}><aside><h1>Prono-L1 Admin</h1><nav>{links.map(([label, to]) => <NavLink key={to} to={to}>{label}</NavLink>)}</nav><button onClick={() => signOut(auth)}>Déconnexion</button></aside><main><Routes><Route path="/" element={<Dashboard/>}/><Route path="/utilisateurs" element={<UsersPanel/>}/><Route path="/acces-tarifs" element={<EntitlementsPanel/>}/><Route path="/experiences" element={<ExperimentsPanel/>}/><Route path="/quiz-et-bonus" element={<Placeholder title="Quiz et bonus"/>}/><Route path="/donnees-football" element={<FootballDataPanel/>}/><Route path="/operations" element={<Placeholder title="Opérations"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main></div>;
+  return <div className={styles.shell}><aside><h1>Prono-L1 Admin</h1><nav>{links.map(([label, to]) => <NavLink key={to} to={to}>{label}</NavLink>)}</nav><button onClick={() => setPasswordOpen(true)}>Mot de passe</button><button onClick={() => signOut(auth)}>Déconnexion</button></aside><main><Routes><Route path="/" element={<Dashboard/>}/><Route path="/utilisateurs" element={<UsersPanel/>}/><Route path="/acces-tarifs" element={<EntitlementsPanel/>}/><Route path="/experiences" element={<ExperimentsPanel/>}/><Route path="/quiz-et-bonus" element={<Placeholder title="Quiz et bonus"/>}/><Route path="/donnees-football" element={<FootballDataPanel/>}/><Route path="/operations" element={<Placeholder title="Opérations"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main>{passwordOpen ? <PasswordDialog onClose={() => setPasswordOpen(false)} /> : null}</div>;
 }

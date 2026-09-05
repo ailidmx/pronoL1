@@ -47,6 +47,15 @@ export const scoreFinishedMatches = onSchedule(
           { merge: true },
         );
         await addLeaderboardPoints(db, competitionSeasonId, pDoc.id, decomposition);
+        await db.collection(collections.notificationOutbox).doc(`result_${matchDoc.id}_${pDoc.id}`).set({
+          uid: pDoc.id,
+          topic: "results",
+          title: "Ton pronostic a été compté",
+          body: `${decomposition.total} point${decomposition.total > 1 ? "s" : ""} gagné${decomposition.total > 1 ? "s" : ""} sur ce match.`,
+          url: `/`,
+          status: "pending",
+          createdAt: FieldValue.serverTimestamp(),
+        }, { merge: true });
         scoredPronostics++;
       }
 
